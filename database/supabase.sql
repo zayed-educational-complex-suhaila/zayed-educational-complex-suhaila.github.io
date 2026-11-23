@@ -166,19 +166,19 @@ create or replace function public._subj_match(p_subject text, f text) returns bo
   select f is null or f = '' or f = 'ALL' or p_subject = f or (f = 'Science' and p_subject in ('Science','Physics','Chemistry','Biology'))
 $$;
 
-create or replace function public._exam_summary(e public.exams) returns jsonb
-language sql stable security definer set search_path = public as $$
-  with best as (select student_id, max(percentage) pct from attempts where exam_id = e.id group by student_id)
-  select jsonb_build_object(
-    'id', e.id, 'title', e.title, 'subject', e.subject, 'grade_num', e.grade_num, 'track', e.track, 'term', e.term,
-    'target_sections', e.target_sections, 'teacher_name', e.teacher_name, 'is_published', case when e.is_published then 1 else 0 end,
-    'q_count', jsonb_array_length(e.questions), 'total_marks', _total(e.questions), 'created_at', e.created_at, 'updated_at', e.updated_at,
-    'duration_minutes', (e.config->>'durationMinutes')::numeric, 'calculator_allowed', coalesce((e.config->>'calculatorAllowed')::boolean, false),
-    'passing_percent', coalesce((e.config->>'passingPercent')::numeric, 50),
-    'unique_students', (select count(*) from best), 'attempts_count', (select count(*) from attempts where exam_id = e.id),
-    'avg_best_pct', (select avg(pct) from best),
-    'class_total', (select count(*) from students s where _visible(e, s.grade_num, s.track, s.section)))
-$$;
+-- Question count and total marks are stored on each exam (kept up to date by a trigger), so exam lists never have to
+-- unpack the questions. Exams with pictures can be several MB each; reading them all made lists hit the statement timeout.
+alter table public.exams add column if not exists q_count int, add column if not exists total_marks numeric;
+create or replace function public._exam_counts() returns trigger language plpgsql as $$
+begin
+  new.q_count := jsonb_array_length(coalesce(new.questions, '[]')); new.total_marks := _total(new.questions); return new;
+end $$;
+drop trigger if exists trg_exam_counts on public.exams;
+create trigger trg_exam_counts before insert or update of questions on public.exams for each row execute function public._exam_counts();
+update public.exams set q_count = jsonb_array_length(questions), total_marks = _total(questions) where q_count is null or total_marks is null;
+
+-- old helper took the whole exam row (which unpacks the questions); exam lists now read only the columns they need
+drop function if exists public._exam_summary(public.exams);
 
 create or replace function public._attempt_row(a public.attempts, with_answers boolean default false) returns jsonb
 language sql stable security definer set search_path = public as $$
@@ -389,7 +389,18 @@ create or replace function public.api_exams(p_token text, p jsonb) returns jsonb
 language plpgsql stable security definer set search_path = public as $$
 begin
   perform _sess(p_token, array['admin', 'teacher']);
-  return coalesce((select jsonb_agg(_exam_summary(e) order by e.created_at desc) from exams e
+  return coalesce((select jsonb_agg(jsonb_build_object(
+      'id', e.id, 'title', e.title, 'subject', e.subject, 'grade_num', e.grade_num, 'track', e.track, 'term', e.term,
+      'target_sections', e.target_sections, 'teacher_name', e.teacher_name, 'is_published', case when e.is_published then 1 else 0 end,
+      'q_count', e.q_count, 'total_marks', e.total_marks, 'created_at', e.created_at, 'updated_at', e.updated_at,
+      'duration_minutes', (e.config->>'durationMinutes')::numeric, 'calculator_allowed', coalesce((e.config->>'calculatorAllowed')::boolean, false),
+      'passing_percent', coalesce((e.config->>'passingPercent')::numeric, 50),
+      'unique_students', st.u, 'attempts_count', st.n, 'avg_best_pct', st.avg_pct,
+      'class_total', (select count(*) from students s where s.grade_num = e.grade_num and (e.track = 'All' or s.track = e.track)
+                        and (e.target_sections ? 'ALL' or e.target_sections ? s.section))) order by e.created_at desc)
+    from exams e
+    left join lateral (select count(*) u, coalesce(sum(c), 0) n, avg(pct) avg_pct
+                       from (select count(*) c, max(percentage) pct from attempts a where a.exam_id = e.id group by a.student_id) b) st on true
     where (coalesce(p->>'term', '') in ('', 'ALL') or e.term = p->>'term')
       and (coalesce(p->>'grade', '') = '' or e.grade_num = (p->>'grade')::int)
       and (coalesce(p->>'track', '') in ('', 'ALL') or e.track = p->>'track')
@@ -504,7 +515,7 @@ begin
   return jsonb_build_object('active_term', v_term, 'exams', coalesce((
     select jsonb_agg(x order by x->>'subject', x->>'created_at' desc) from (
       select jsonb_build_object('id', e.id, 'title', e.title, 'subject', e.subject, 'teacher_name', case when guest then '' else e.teacher_name end, 'term', e.term,
-        'q_count', jsonb_array_length(e.questions), 'total_marks', _total(e.questions),
+        'q_count', e.q_count, 'total_marks', e.total_marks,
         'duration_minutes', (e.config->>'durationMinutes')::numeric, 'calculator_allowed', coalesce((e.config->>'calculatorAllowed')::boolean, false),
         'my_attempts', case when guest
             then (select count(*) from visitor_attempts v where v.exam_id = e.id and v.grade_num = (s->>'grade_num')::int and v.track = s->>'track' and v.name_key = s->>'name_key')
@@ -518,8 +529,9 @@ begin
           select score_gained, percentage, passed, time_spent_seconds, submitted_at from visitor_attempts v
             where guest and v.exam_id = e.id and v.grade_num = (s->>'grade_num')::int and v.track = s->>'track' and v.name_key = s->>'name_key') z
         order by percentage desc, time_spent_seconds, submitted_at limit 1) b on true
-      where case when guest then _guest_visible(e, (s->>'grade_num')::int, s->>'track')
-                 else e.is_published and e.term = v_term and _visible(e, (s->>'grade_num')::int, s->>'track', s->>'section') end) y), '[]'));
+      where e.grade_num = (s->>'grade_num')::int and (e.track = 'All' or e.track = s->>'track') and e.is_published and e.term = v_term
+        and case when guest then true
+                 else (e.target_sections ? 'ALL' or e.target_sections ? (s->>'section')) end) y), '[]'));
 end $$;
 
 create or replace function public.api_my_attempts(p_token text, p jsonb) returns jsonb
@@ -625,7 +637,7 @@ begin
     'students', coalesce((select jsonb_agg(to_jsonb(s)) from students s), '[]'),
     'exams', coalesce((select jsonb_agg(jsonb_build_object('id', e.id, 'title', e.title, 'subject', e.subject, 'grade_num', e.grade_num, 'track', e.track,
               'term', e.term, 'target_sections', e.target_sections, 'teacher_name', e.teacher_name, 'is_published', case when e.is_published then 1 else 0 end,
-              'total_marks', _total(e.questions), 'created_at', e.created_at)) from exams e), '[]'),
+              'total_marks', e.total_marks, 'created_at', e.created_at)) from exams e), '[]'),
     'attempts', coalesce((select jsonb_agg((to_jsonb(a) - 'answers' - 'passed') || jsonb_build_object('passed', case when a.passed then 1 else 0 end)) from attempts a), '[]'));
 end $$;
 
