@@ -13,7 +13,7 @@ const listeners = [];
 add({
   en: {
     app_name: 'Exam Training Platform', school: 'Zayed Educational Complex – Suhaila', year: 'Academic Year 2026–2027', motto: 'With the Charter, we reach the horizons',
-    role_admin: 'Administrator', role_teacher: 'Teacher', role_student: 'Student', role_guest: 'Guest',
+    role_admin: 'Administrator', role_teacher: 'Teacher', role_student: 'Student', role_guest: 'Other school',
     logout: 'Logout', back: 'Back', cancel: 'Cancel', confirm: 'Confirm', close: 'Close', save: 'Save', delete: 'Delete', edit: 'Edit', preview: 'Preview', search: 'Search', export_xlsx: 'Export to Excel (.xlsx)',
     all: 'All', all_grades: 'All grades', all_tracks: 'All tracks', all_sections: 'All sections', all_subjects: 'All subjects', all_exams: 'All exams', all_terms: 'All Terms',
     grade: 'Grade', track: 'Track', section: 'Section', sections: 'Sections', subject: 'Subject', exam: 'Exam', teacher: 'Teacher', term: 'Term', student_id: 'Student ID', students: 'Students', questions: 'Questions', marks: 'Marks', total_marks: 'Total marks', status: 'Status', date: 'Date', actions: 'Actions', attempts: 'Attempts', duration: 'Duration', minutes: 'min', no_limit: 'No limit',
@@ -29,7 +29,7 @@ add({
   },
   ar: {
     app_name: 'منصة التدريب على الاختبارات', school: 'مجمع زايد التعليمي - سهيلة', year: 'العام الدراسي 2026–2027', motto: 'بالميثاق نبلغ الآفاق',
-    role_admin: 'الإدارة', role_teacher: 'المعلم', role_student: 'الطالب', role_guest: 'زائر',
+    role_admin: 'الإدارة', role_teacher: 'المعلم', role_student: 'الطالب', role_guest: 'طالب من مدرسة أخرى',
     logout: 'تسجيل الخروج', back: 'رجوع', cancel: 'إلغاء', confirm: 'تأكيد', close: 'إغلاق', save: 'حفظ', delete: 'حذف', edit: 'تعديل', preview: 'معاينة', search: 'بحث', export_xlsx: 'تصدير إلى Excel ‏(.xlsx)',
     all: 'الكل', all_grades: 'جميع الصفوف', all_tracks: 'جميع المسارات', all_sections: 'جميع الشعب', all_subjects: 'جميع المواد', all_exams: 'جميع الاختبارات', all_terms: 'جميع الفصول',
     grade: 'الصف', track: 'المسار', section: 'الشعبة', sections: 'الشعب', subject: 'المادة', exam: 'الاختبار', teacher: 'المعلم', term: 'الفصل الدراسي', student_id: 'رقم الطالب', students: 'الطلبة', questions: 'الأسئلة', marks: 'الدرجات', total_marks: 'الدرجة الكلية', status: 'الحالة', date: 'التاريخ', actions: 'إجراءات', attempts: 'المحاولات', duration: 'المدة', minutes: 'دقيقة', no_limit: 'بدون حد',

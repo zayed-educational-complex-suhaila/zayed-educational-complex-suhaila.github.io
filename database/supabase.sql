@@ -87,6 +87,26 @@ create table if not exists public.sessions (
 );
 create table if not exists public.login_guard (key text primary key, fails int not null default 0, locked_until timestamptz);
 
+-- Visitors (guest codes) save their practice here, under the NAME they type + their class code. Kept apart from the
+-- school's `attempts`: no staff function reads this table, so it never appears in results, reports or participation.
+-- Anyone typing the same name with the same class code shares that history (by design: name only, no PIN).
+create table if not exists public.visitor_attempts (
+  id                 uuid primary key default gen_random_uuid(),
+  exam_id            uuid not null references public.exams(id) on delete cascade,
+  grade_num          int  not null,
+  track              text not null,
+  name_key           text not null,          -- lower-case, single-spaced name (the lookup key)
+  visitor_name       text not null,          -- name as typed
+  attempt_number     int  not null,
+  score_gained       numeric not null,
+  total_marks        numeric not null,
+  percentage         numeric not null,
+  passed             boolean not null,
+  time_spent_seconds int  not null,
+  submitted_at       timestamptz not null default now()
+);
+create index if not exists idx_visitor_attempts_who on public.visitor_attempts (grade_num, track, name_key, exam_id);
+
 insert into public.settings (key, value) values
   ('active_term', 'Term 1'),
   ('guest_enabled', 'true'),     -- guest practice codes (5g … 12a) on/off; admin switch
@@ -96,7 +116,7 @@ on conflict (key) do nothing;
 
 -- lock every table: no direct access from the browser
 do $$ declare t text; begin
-  foreach t in array array['students','teacher_assignments','exams','attempts','settings','sessions','login_guard'] loop
+  foreach t in array array['students','teacher_assignments','exams','attempts','settings','sessions','login_guard','visitor_attempts'] loop
     execute format('alter table public.%I enable row level security', t);
     execute format('revoke all on public.%I from anon, authenticated', t);
   end loop;
@@ -202,10 +222,12 @@ begin
   return jsonb_build_object('guest_enabled', on_);
 end $$;
 
--- scores a guest's answers from the stored key and returns the result + key; INSERTS NOTHING
+-- scores a visitor's answers from the stored key, saves the result in visitor_attempts (under their name + class),
+-- and returns the result + key. Nothing goes into the school's attempts table.
 create or replace function public.api_guest_submit(p_token text, p jsonb) returns jsonb
-language plpgsql stable security definer set search_path = public as $$
+language plpgsql security definer set search_path = public as $$
 declare s jsonb := _sess(p_token, array['guest']); e exams; got numeric := 0; tot numeric; pct numeric; q jsonb; i int; ans jsonb;
+  n int; v visitor_attempts; pass numeric;
 begin
   select * into e from exams where id = (p->>'exam_id')::uuid;
   if e is null then perform _err('not_found', 'Exam not found'); end if;
@@ -218,8 +240,16 @@ begin
   end loop;
   tot := _total(e.questions);
   pct := case when tot > 0 then round(got / tot * 100, 2) else 0 end;
-  return jsonb_build_object('guest', true, 'exam_id', e.id, 'score_gained', got, 'total_marks', tot, 'percentage', pct,
-    'passed', case when pct >= coalesce((e.config->>'passingPercent')::numeric, 50) then 1 else 0 end,
+  pass := coalesce((e.config->>'passingPercent')::numeric, 50);
+  perform pg_advisory_xact_lock(hashtext('v:' || (s->>'name_key') || (s->>'grade_num') || (s->>'track') || e.id::text));
+  select count(*) + 1 into n from visitor_attempts
+    where exam_id = e.id and grade_num = (s->>'grade_num')::int and track = s->>'track' and name_key = s->>'name_key';
+  insert into visitor_attempts (exam_id, grade_num, track, name_key, visitor_name, attempt_number, score_gained, total_marks, percentage, passed, time_spent_seconds)
+  values (e.id, (s->>'grade_num')::int, s->>'track', s->>'name_key', s->>'name', n, got, tot, pct, pct >= pass,
+          greatest(0, least(coalesce((p->>'time_spent_seconds')::int, 0), 86400)))
+  returning * into v;
+  return jsonb_build_object('guest', true, 'id', v.id, 'exam_id', e.id, 'attempt_number', n, 'score_gained', got, 'total_marks', tot, 'percentage', pct,
+    'passed', case when v.passed then 1 else 0 end,
     'key', (select jsonb_agg(jsonb_build_object('correct', (x->>'correct')::int, 'feedback', coalesce(x->>'feedback', '')) order by o)
             from jsonb_array_elements(e.questions) with ordinality t(x, o)));
 end $$;
@@ -232,13 +262,17 @@ declare
   v_data jsonb; tok text; nm text;
 begin
   if coalesce(r, '') not in ('admin', 'teacher', 'student', 'guest') then return jsonb_build_object('error', 'bad_role'); end if;
-  if r = 'guest' then   -- guest codes are not secret, so no lock-out; they only open practice (nothing is saved)
+  if r = 'guest' then   -- guest codes are not secret, so no lock-out; visitors save only into visitor_attempts (their name + class)
     if coalesce((select value from settings where key = 'guest_enabled'), 'true') <> 'true' then
       return jsonb_build_object('error', 'guest_disabled', 'message', 'Guest practice is switched off');
     end if;
     v_data := _guest_class(p->>'code');
     if v_data is null then return jsonb_build_object('error', 'bad_guest_code', 'message', 'Unknown guest code'); end if;
-    v_data := v_data || jsonb_build_object('name', 'Guest');
+    nm := regexp_replace(trim(coalesce(p->>'name', '')), '\s+', ' ', 'g');
+    if char_length(nm) < 2 or char_length(nm) > 40 or nm ~ '[<>]' then
+      return jsonb_build_object('error', 'guest_name_required', 'message', 'Please type your name (2–40 letters)');
+    end if;
+    v_data := v_data || jsonb_build_object('name', nm, 'name_key', lower(nm));
     delete from sessions where expires_at < now();
     tok := encode(gen_random_bytes(32), 'hex');
     insert into sessions (token, role, data, expires_at) values (tok, 'guest', v_data, now() + interval '12 hours');
@@ -472,19 +506,34 @@ begin
       select jsonb_build_object('id', e.id, 'title', e.title, 'subject', e.subject, 'teacher_name', case when guest then '' else e.teacher_name end, 'term', e.term,
         'q_count', jsonb_array_length(e.questions), 'total_marks', _total(e.questions),
         'duration_minutes', (e.config->>'durationMinutes')::numeric, 'calculator_allowed', coalesce((e.config->>'calculatorAllowed')::boolean, false),
-        'my_attempts', (select count(*) from attempts a where a.exam_id = e.id and a.student_id = s->>'student_id'),
+        'my_attempts', case when guest
+            then (select count(*) from visitor_attempts v where v.exam_id = e.id and v.grade_num = (s->>'grade_num')::int and v.track = s->>'track' and v.name_key = s->>'name_key')
+            else (select count(*) from attempts a where a.exam_id = e.id and a.student_id = s->>'student_id') end,
         'my_best_score', b.score_gained, 'my_best_pct', b.percentage, 'my_best_passed', b.passed, 'created_at', e.created_at) x
       from exams e
-      left join lateral (select score_gained, percentage, passed from attempts a where a.exam_id = e.id and a.student_id = s->>'student_id'
-                         order by percentage desc, time_spent_seconds, submitted_at limit 1) b on true
+      left join lateral (select * from (
+          select score_gained, percentage, passed, time_spent_seconds, submitted_at from attempts a
+            where not guest and a.exam_id = e.id and a.student_id = s->>'student_id'
+          union all
+          select score_gained, percentage, passed, time_spent_seconds, submitted_at from visitor_attempts v
+            where guest and v.exam_id = e.id and v.grade_num = (s->>'grade_num')::int and v.track = s->>'track' and v.name_key = s->>'name_key') z
+        order by percentage desc, time_spent_seconds, submitted_at limit 1) b on true
       where case when guest then _guest_visible(e, (s->>'grade_num')::int, s->>'track')
                  else e.is_published and e.term = v_term and _visible(e, (s->>'grade_num')::int, s->>'track', s->>'section') end) y), '[]'));
 end $$;
 
 create or replace function public.api_my_attempts(p_token text, p jsonb) returns jsonb
 language plpgsql stable security definer set search_path = public as $$
-declare s jsonb := _sess(p_token, array['student']);
+declare s jsonb := _sess(p_token, array['student', 'guest']);
 begin
+  if s->>'role' = 'guest' then   -- a visitor's own history (name + class code)
+    return coalesce((select jsonb_agg(jsonb_build_object('id', v.id, 'exam_id', v.exam_id, 'attempt_number', v.attempt_number,
+        'score_gained', v.score_gained, 'total_marks', v.total_marks, 'percentage', v.percentage, 'passed', case when v.passed then 1 else 0 end,
+        'time_spent_seconds', v.time_spent_seconds, 'submitted_at', v.submitted_at, 'exam_title', e.title, 'subject', e.subject, 'term', e.term) order by v.submitted_at desc)
+      from visitor_attempts v join exams e on e.id = v.exam_id
+      where v.grade_num = (s->>'grade_num')::int and v.track = s->>'track' and v.name_key = s->>'name_key'
+        and (coalesce(p->>'term', '') in ('', 'ALL') or e.term = p->>'term')), '[]');
+  end if;
   return coalesce((select jsonb_agg(_attempt_row(a) order by a.submitted_at desc) from attempts a join exams e on e.id = a.exam_id
     where a.student_id = s->>'student_id' and (coalesce(p->>'term', '') in ('', 'ALL') or e.term = p->>'term')), '[]');
 end $$;

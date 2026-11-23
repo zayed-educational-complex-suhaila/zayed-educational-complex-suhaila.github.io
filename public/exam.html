@@ -349,11 +349,11 @@ const T = {
  r_time:"الوقت المستغرق",r_score:"الدرجة",r_res:"النتيجة",passed:"ناجح",failed:"راسب",r_qt:"عنوان السؤال",r_mark:"الدرجة",r_tot:"الدرجة الكلية",r_result:"النتيجة",r_pass:"درجة النجاح",r_gained:"النقاط المكتسبة",r_missed:"النقاط الفائتة",r_topics:"الأداء حسب الموضوع",r_review:"مراجعة الإجابات التفصيلية",r_unans:"بدون إجابة",r_sol:"الحل",pdf:"تصدير PDF",xls:"تصدير Excel",print:"طباعة",retake:"العودة إلى امتحاناتي",
  c_main:"رئيسية",c_abc:"abc",c_func:"دوال",c_clear:"مسح الكل",c_proj:"وضع العرض",c_braille:"وضع برايل",c_off:"إيقاف",c_rc:"عكس التباين",c_hint:"تظهر إجاباتك في هذا الجانب.",c_frac:"تحويل إلى كسر"}
 };
-Object.assign(T.en,{saving:"Saving and scoring your attempt…",guest_label:"Guest",guest_nosave:"Practice result — not saved (guest).",questions:"questions",i_term:"Term",i_track:"Track",i_section:"Section",i_id:"Student ID",preview_banner:"PREVIEW MODE — this attempt will NOT be saved",
+Object.assign(T.en,{saving:"Saving and scoring your attempt…",guest_label:"Guest",guest_saved:"Saved under your name — attempt #{n} (only you can see it).",questions:"questions",i_term:"Term",i_track:"Track",i_section:"Section",i_id:"Student ID",preview_banner:"PREVIEW MODE — this attempt will NOT be saved",
  r_parts:"Performance by part",try_again:"Try Again",back_exams:"Back to My Exams",back_portal:"Back to Portal",logout:"Logout",saved_ok:"Your attempt was saved (attempt #{n}).",save_err:"Your attempt could not be saved: {m}",retry:"Retry",
  preview_nosave:"Preview mode: results are not saved.",load_err:"This exam could not be loaded.",go_back:"Go back",signin_needed:"Please sign in first.",general:"General",advanced:"Advanced",all:"All",
  Mathematics:"Mathematics",Science:"Science",English:"English",Arabic:"Arabic","Islamic Education":"Islamic Education","Social Studies":"Social Studies",Physics:"Physics",Chemistry:"Chemistry",Biology:"Biology","Computer Science":"Computer Science",Other:"Other"});
-Object.assign(T.ar,{saving:"جارٍ حفظ محاولتك وتصحيحها…",guest_label:"زائر",guest_nosave:"نتيجة تدريبية — لا تُحفظ (زائر).",questions:"أسئلة",i_term:"الفصل الدراسي",i_track:"المسار",i_section:"الشعبة",i_id:"رقم الطالب",preview_banner:"وضع المعاينة — لن يتم حفظ هذه المحاولة",
+Object.assign(T.ar,{saving:"جارٍ حفظ محاولتك وتصحيحها…",guest_label:"زائر",guest_saved:"حُفظت باسمك — المحاولة رقم {n} (لا يراها أحد غيرك).",questions:"أسئلة",i_term:"الفصل الدراسي",i_track:"المسار",i_section:"الشعبة",i_id:"رقم الطالب",preview_banner:"وضع المعاينة — لن يتم حفظ هذه المحاولة",
  r_parts:"الأداء حسب الجزء",try_again:"حاول مجدداً",back_exams:"العودة إلى اختباراتي",back_portal:"العودة إلى البوابة",logout:"تسجيل الخروج",saved_ok:"تم حفظ محاولتك (المحاولة رقم {n}).",save_err:"تعذر حفظ محاولتك: {m}",retry:"إعادة المحاولة",
  preview_nosave:"وضع المعاينة: لا يتم حفظ النتائج.",load_err:"تعذر تحميل هذا الاختبار.",go_back:"رجوع",signin_needed:"الرجاء تسجيل الدخول أولاً.",general:"عام",advanced:"متقدم",all:"الكل",
  Mathematics:"الرياضيات",Science:"العلوم",English:"اللغة الإنجليزية",Arabic:"اللغة العربية","Islamic Education":"التربية الإسلامية","Social Studies":"الدراسات الاجتماعية",Physics:"الفيزياء",Chemistry:"الكيمياء",Biology:"الأحياء","Computer Science":"علوم الحاسوب",Other:"أخرى"});
@@ -524,7 +524,7 @@ async function boot(){
   PASS_MARK = Math.ceil(TOTAL_MARKS*C.passingPercent/100);
   EXAM_TITLE = EXAM.title || `Grade ${C.grade} - ${C.subject} - ${C.term}`;
   document.title = EXAM_TITLE;
-  st.user = ME.role==='student' ? ME.student_id : ME.role==='guest' ? t('guest_label') : (ME.name || 'Preview');
+  st.user = ME.role==='student' ? ME.student_id : ME.role==='guest' ? (ME.name || t('guest_label')) : (ME.name || 'Preview');
   if(PREVIEW){ const b=document.createElement('div'); b.className='prev-banner'; b.id='prevBanner'; $('#examScreen').prepend(b); }
   applyA(); applyLang(); startExam();
 }
@@ -681,7 +681,7 @@ function buildPayload(){
 async function saveAttempt(){
   if(PREVIEW) return;
   st.saveErr=null;
-  try{ if(ME.role==='guest'){ st.saved = await API.guestSubmit(st.payload); if(st.saved&&st.saved.key) applyKey(st.saved.key); }   // guest: marked, NOT saved
+  try{ if(ME.role==='guest'){ st.saved = await API.guestSubmit(st.payload); if(st.saved&&st.saved.key) applyKey(st.saved.key); toast('success',t('guest_saved',{n:st.saved.attempt_number})); }   // visitor: saved only in their own history
        else { st.saved = await API.submitAttempt(st.payload); if(st.saved&&st.saved.key) applyKey(st.saved.key); toast('success',t('saved_ok',{n:st.saved.attempt_number})); } }
   catch(e){ st.saveErr=e.message||String(e); toast('error',t('save_err',{m:st.saveErr})); }
   showResults();
@@ -719,7 +719,7 @@ function showResults(){
      <div class="stem">${r.q.en?`<div dir="ltr">${keepHtml(r.q.en)}</div>`:''}${r.q.ar?`<div dir="rtl" class="ar-text">${keepHtml(r.q.ar)}</div>`:''}${r.q.image_url?`<img class="q-img" src="${esc(r.q.image_url)}" alt="">`:''}</div>
      <div class="opts ${arOnly?'rtl':''}">${r.q.options.map((o,k)=>`<div class="opt ${k===r.q.correct?'good':k===r.pk?'bad':''}" style="grid-template-columns:34px 1fr 30px"><span class="l">${String.fromCharCode(97+k)}.</span><span class="ot" dir="auto">${optHtml(r.q,k)}</span><span></span></div>`).join('')}</div>
      ${r.q.feedback?`<div class="fb" dir="auto"><b>${t('r_sol')}:</b> ${keepHtml(r.q.feedback)}</div>`:''}</div>`; }).join('')}</div>`:'';
-  const saveState = PREVIEW ? `<div class="save-state pv">${t('preview_nosave')}</div>` : st.saveErr ? `<div class="save-state err">${esc(t('save_err',{m:st.saveErr}))}<button onclick="saveAttempt()">${t('retry')}</button></div>` : st.saved && st.saved.guest ? `<div class="save-state pv">${t('guest_nosave')}</div>` : st.saved ? `<div class="save-state ok">${t('saved_ok',{n:st.saved.attempt_number})}</div>` : '';
+  const saveState = PREVIEW ? `<div class="save-state pv">${t('preview_nosave')}</div>` : st.saveErr ? `<div class="save-state err">${esc(t('save_err',{m:st.saveErr}))}<button onclick="saveAttempt()">${t('retry')}</button></div>` : st.saved && st.saved.guest ? `<div class="save-state ok">${t('guest_saved',{n:st.saved.attempt_number})}</div>` : st.saved ? `<div class="save-state ok">${t('saved_ok',{n:st.saved.attempt_number})}</div>` : '';
   const backLbl = ME && (ME.role==='student'||ME.role==='guest') ? t('back_exams') : t('back_portal');
   $('#resultScreen').innerHTML=`<div class="res-top"><h2 dir="auto">${esc(EXAM_TITLE)} <small style="font-weight:400;opacity:.8">· ${esc(C.term)}</small></h2><div style="display:flex;gap:8px;flex-wrap:wrap">
     <button class="rbtn" onclick="retake()">${ico.again}${t('try_again')}</button><button class="rbtn" onclick="backHome()">${ico.home}${backLbl}</button><button class="rbtn" onclick="logout()" title="${t('logout')}">${ico.out}</button></div></div>

@@ -153,6 +153,7 @@ function demoApi() {
     }
     if (!(await get('exams'))) await put('exams', []);
     if (!(await get('attempts'))) await put('attempts', []);
+    if (!(await get('visitor_attempts'))) await put('visitor_attempts', []);
   })());
 
   // session (12 h) — localStorage so preview tabs share it
@@ -178,6 +179,8 @@ function demoApi() {
       avg_best_pct: bests.length ? bests.reduce((a, b) => a + b, 0) / bests.length : null,
     };
   };
+  // a visitor's own history = same name (case-insensitive) + same class code
+  const visitorMatch = (v, s) => v.name_key === s.name_key && v.grade_num === Number(s.grade_num) && v.track === s.track;
   // guests: published, active term, same grade, track All or theirs (sections don't apply)
   const guestVisible = (e, s, term) => !!e.is_published && e.grade_num === Number(s.grade_num) && (e.track === 'All' || e.track === s.track) && e.term === term;
   const subjMatch = (s, f) => !f || f === 'ALL' || s === f || (f === 'Science' && window.Catalog && window.Catalog.departmentOf(s) === 'Science');
@@ -194,7 +197,7 @@ function demoApi() {
       if (!on) { const cur = getSession(); if (cur && cur.role === 'guest') localStorage.removeItem(SKEY); }
       return { guest_enabled: !!on };
     },
-    // guests: nothing is saved — score from the key and hand the key back for the review
+    // visitors: saved ONLY in their own history (name + class), never in the school's attempts
     async guestSubmit(p) {
       await init(); const s = need('guest');
       const e = (await get('exams')).find(x => x.id === p.exam_id);
@@ -203,7 +206,13 @@ function demoApi() {
       let got = 0; const answers = p.answers || {};
       e.questions.forEach((q, i) => { const a = answers[i]; if (a && a.picked === q.correct) got += Number(q.marks) || 0; });
       const total = totalMarks(e.questions), pct = total ? Math.round(got / total * 10000) / 100 : 0;
-      return { guest: true, exam_id: e.id, score_gained: got, total_marks: total, percentage: pct, passed: pct >= (Number(e.config.passingPercent) || 50) ? 1 : 0,
+      const va = (await get('visitor_attempts')) || [];
+      const n = va.filter(v => visitorMatch(v, s) && v.exam_id === e.id).length + 1;
+      const row = { id: uuid(), exam_id: e.id, grade_num: s.grade_num, track: s.track, name_key: s.name_key, visitor_name: s.name, attempt_number: n,
+        score_gained: got, total_marks: total, percentage: pct, passed: pct >= (Number(e.config.passingPercent) || 50) ? 1 : 0,
+        time_spent_seconds: Math.max(0, p.time_spent_seconds | 0), submitted_at: nowIso() };
+      va.push(row); await put('visitor_attempts', va);
+      return { guest: true, id: row.id, exam_id: e.id, attempt_number: n, score_gained: got, total_marks: total, percentage: pct, passed: row.passed,
         key: e.questions.map(q => ({ correct: q.correct, feedback: q.feedback || '' })) };
     },
     async setActiveTerm(term) { await init(); need('admin'); if (!TERMS.includes(term)) throw new ApiError('bad_term'); const s = await get('settings'); s.active_term = term; await put('settings', s); return { active_term: term }; },
@@ -222,7 +231,9 @@ function demoApi() {
       if (role === 'guest') {
         if (s.guest_enabled === false) throw new ApiError('guest_disabled', 'Guest practice is switched off', 403);
         const cls = parseGuestCode(p.code); if (!cls) throw new ApiError('bad_guest_code', 'Unknown guest code', 400);
-        return setSession({ role: 'guest', name: 'Guest', ...cls });
+        const nm = String(p.name || '').trim().replace(/\s+/g, ' ');
+        if (nm.length < 2 || nm.length > 40 || /[<>]/.test(nm)) throw new ApiError('guest_name_required', 'Please type your name (2–40 letters)', 400);
+        return setSession({ role: 'guest', name: nm, name_key: nm.toLowerCase(), ...cls });
       }
       if (role === 'student') {
         const id = normalizeId(p.student_id);
@@ -299,13 +310,14 @@ function demoApi() {
       if (e && s.role === 'teacher' && e.teacher_name !== s.name) throw new ApiError('not_owner', 'Only the teacher who uploaded this exam (or the administrator) can change or delete it.', 403);
       await put('exams', (await get('exams')).filter(x => x.id !== id));
       await put('attempts', (await get('attempts')).filter(a => a.exam_id !== id)); // ON DELETE CASCADE
+      await put('visitor_attempts', ((await get('visitor_attempts')) || []).filter(a => a.exam_id !== id));
       return { ok: true };
     },
 
     async studentExams() {
       await init(); const s = need('student', 'guest'); const term = (await get('settings')).active_term; const guest = s.role === 'guest';
-      const [exams, attempts] = await Promise.all([get('exams'), get('attempts')]);
-      const mine = guest ? [] : attempts.filter(a => a.student_id === s.student_id);
+      const [exams, attempts, visitors] = await Promise.all([get('exams'), get('attempts'), get('visitor_attempts')]);
+      const mine = guest ? (visitors || []).filter(v => visitorMatch(v, s)) : attempts.filter(a => a.student_id === s.student_id);
       const list = exams.filter(e => guest ? guestVisible(e, s, term) : (e.is_published && e.term === term && Reports.examVisibleTo(e, s))).map(e => {
         const at = mine.filter(a => a.exam_id === e.id); const b = at.length ? at.reduce((x, y) => (y.percentage > x.percentage ? y : x)) : null;
         return { id: e.id, title: e.title, subject: e.subject, teacher_name: guest ? '' : e.teacher_name, term: e.term, q_count: e.questions.length, total_marks: totalMarks(e.questions),
@@ -315,8 +327,9 @@ function demoApi() {
       return { active_term: term, exams: list };
     },
     async myAttempts(term) {
-      await init(); const s = need('student'); const exams = await get('exams');
-      return (await get('attempts')).filter(a => a.student_id === s.student_id).map(a => enrichAttempt(a, exams))
+      await init(); const s = need('student', 'guest'); const exams = await get('exams');
+      const rows = s.role === 'guest' ? ((await get('visitor_attempts')) || []).filter(v => visitorMatch(v, s)) : (await get('attempts')).filter(a => a.student_id === s.student_id);
+      return rows.map(a => enrichAttempt(a, exams))
         .filter(a => !term || term === 'ALL' || a.term === term).sort((a, b) => String(b.submitted_at).localeCompare(a.submitted_at));
     },
     async submitAttempt(p) {

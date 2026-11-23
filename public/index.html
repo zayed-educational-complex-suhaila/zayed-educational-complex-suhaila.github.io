@@ -46,6 +46,13 @@
   .form-panel { display: none; } .form-panel.on { display: block; animation: fade .2s; }
   .form-panel .grid { gap: 12px; }
   .msg { margin-top: 12px; }
+  /* students page: our students at the top, other schools in their own box further down */
+  .who-head { display: flex; gap: 12px; align-items: flex-start; margin-bottom: 14px; }
+  .who-head img { width: 48px; height: 48px; flex: none; }
+  .who-head h2 { font-size: 24px; } .who-head h3 { font-size: 19px; font-weight: 800; color: var(--navy); }
+  .who-head .sub { margin: 4px 0 0; }
+  .visitor-box { margin-top: 56px; padding: 18px 18px 6px; border: 1.5px dashed var(--line); border-radius: 14px; background: var(--sky-2); }
+  .visitor-box .who-head img { width: 40px; height: 40px; opacity: .85; }
   @media (max-width: 900px) { .gate { grid-template-columns: 1fr; } .gate-art { padding: 22px 16px 16px; } .gate-art h1 { font-size: 24px; } .title-frame { margin: 18px 0 14px; } .title-block { margin: 0 -12px; padding: 26px 18px; } .gate-art .orn { display: none; } .gate-art .logo-card { width: 140px; padding: 12px; } .gate-art .facts { display: none; } .gate-art .motto { height: 56px; max-width: 100%; } .gate-form { padding: 18px 16px 30px; } }
   @media (max-width: 420px) { .roles { gap: 8px; } .role img { width: 40px; height: 40px; } .role small { display: none; } }
 </style>
@@ -66,29 +73,31 @@
       <div class="lang-switch" role="group" aria-label="Language"><button data-lang="ar">عربي</button><button data-lang="en">English</button></div></div>
 
     <div class="gate-card">
-      <h2 data-i18n="signin_students"></h2>
-      <p class="sub" data-i18n="choose_students"></p>
-      <div class="roles">
-        <button class="role" data-role="student"><img src="assets/ornaments/learning.svg" alt=""><b data-i18n="role_student"></b><small data-i18n="r_student_s"></small></button>
-        <button class="role" data-role="guest"><img src="assets/ornaments/idea-box.svg" alt=""><b data-i18n="role_guest"></b><small data-i18n="r_guest_s"></small></button>
-      </div>
-
-      <form class="form-panel" id="f-student" autocomplete="off" novalidate>
+      <!-- Suhaila Complex students (Student ID) -->
+      <div class="who-head"><img src="assets/ornaments/learning.svg" alt=""><div><h2 data-i18n="our_students"></h2><p class="sub" data-i18n="our_students_s"></p></div></div>
+      <form class="form-panel on" id="f-student" autocomplete="off" novalidate>
         <label class="field"><span data-i18n="student_id"></span>
           <input class="input big" id="stuId" type="text" inputmode="text" autocapitalize="characters" spellcheck="false" data-i18n-ph="ph_student" required></label>
         <p class="small muted" data-i18n="stu_hint"></p>
         <button class="btn btn-primary btn-block" type="submit" data-i18n="enter"></button>
+        <div class="msg" aria-live="polite"></div>
       </form>
 
-
-      <form class="form-panel" id="f-guest" autocomplete="off" novalidate>
-        <label class="field"><span data-i18n="guest_code"></span>
-          <input class="input big" id="gCode" type="text" inputmode="text" autocapitalize="none" spellcheck="false" maxlength="4" data-i18n-ph="ph_guest" required></label>
-        <p class="small muted" data-i18n="guest_hint"></p>
-        <button class="btn btn-primary btn-block" type="submit" data-i18n="enter"></button>
-      </form>
-
-
+      <!-- Students from other schools (visitors) — kept apart, further down -->
+      <section class="visitor-box">
+        <div class="who-head"><img src="assets/ornaments/idea-box.svg" alt=""><div><h3 data-i18n="other_students"></h3><p class="sub" data-i18n="other_students_s"></p></div></div>
+        <form class="form-panel on" id="f-guest" autocomplete="off" novalidate>
+          <div class="grid g2">
+            <label class="field"><span data-i18n="guest_name"></span>
+              <input class="input" id="gName" type="text" maxlength="40" autocomplete="name" spellcheck="false" data-i18n-ph="ph_guest_name" required></label>
+            <label class="field"><span data-i18n="guest_code"></span>
+              <input class="input" id="gCode" type="text" inputmode="text" autocapitalize="none" spellcheck="false" maxlength="4" data-i18n-ph="ph_guest" required></label>
+          </div>
+          <p class="small muted" data-i18n="guest_hint"></p>
+          <button class="btn btn-ghost btn-block" type="submit" data-i18n="enter"></button>
+          <div class="msg" aria-live="polite"></div>
+        </form>
+      </section>
       <div class="msg" id="msg" aria-live="polite"></div>
     </div>
   </section>

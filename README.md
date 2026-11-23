@@ -21,11 +21,13 @@ Bilingual (عربي / English) practice-exam website in the SwiftAssess exam sty
 4. Open the site, sign in as Admin with the default PIN, and **change both PINs immediately** (Admin → Security).
    The defaults are written in this public repository.
 
-### Guest practice (visitors from outside the school)
-On the sign-in page visitors choose **Guest** and type their class code: `5g` … `8g`, then `9g`/`9a` … `12g`/`12a`
-(g = General, a = Advanced; Arabic digits and ع/م also work). They see every published exam of that grade and track
-in the active term and get the result + review at the end. **Nothing is saved**: no attempts, not counted in results
-or reports, no teacher names shown. Admin → Security → "Guest codes on" switches it off (current guests are signed out).
+### Students from other schools (طلاب مدارس أخرى)
+On the main sign-in page, below the box for Suhaila Complex students, students from other schools type **their name and
+their class code**: `5g` … `8g`, then `9g`/`9a` … `12g`/`12a` (g = General, a = Advanced; Arabic digits and ع/م also work).
+They see every published exam of that grade and track in the active term (no teacher names). Their results are saved in
+`visitor_attempts` under **name + class code, for them only**: typing the same name and code shows their history again
+(same name = same history, by design). Staff never see these results and they are not counted in school results or
+reports. Admin → Security → "Guest codes on" switches it off (current visitors are signed out).
 
 Student data is never committed: `.gitignore` excludes the roster, every student list, the seed with Student IDs,
 `public/data/` and exported reports.
