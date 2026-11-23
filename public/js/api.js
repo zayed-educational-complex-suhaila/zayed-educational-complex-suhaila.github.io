@@ -113,6 +113,7 @@ function supabaseApi() {
     submitAttempt: payload => T('api_submit_attempt', { p: payload }),
     guestSubmit: payload => T('api_guest_submit', { p: payload }),
     setGuestEnabled: on => T('api_set_guest', { p: { enabled: !!on } }),
+    visitorStats: () => T('api_visitor_stats'),
     attempts: f => T('api_attempts', { p: f || {} }),
     attempt: id => T('api_attempt', { p_id: id }),
     examItemStats: (id, f) => T('api_item_stats', { p_id: id, p: f || {} }),
@@ -198,6 +199,16 @@ function demoApi() {
       return { guest_enabled: !!on };
     },
     // visitors: saved ONLY in their own history (name + class), never in the school's attempts
+    async visitorStats() {
+      await init(); need('admin');
+      const vv = (await get('visitor_visits')) || [], va = (await get('visitor_attempts')) || [];
+      const key = v => v.grade_num + '|' + v.track + '|' + v.name_key, day = d => new Date(d).toLocaleDateString('en-CA', { timeZone: 'Asia/Dubai' });
+      const who = new Map([...vv, ...va].map(v => [key(v), v])), today = day(Date.now()), weekAgo = Date.now() - 7 * 864e5;
+      const by = {}; who.forEach(v => { const k = v.grade_num + '|' + v.track; by[k] = by[k] || { grade_num: v.grade_num, track: v.track, n: 0 }; by[k].n++; });
+      return { visitors: who.size, visits: vv.length, today: new Set(vv.filter(v => day(v.visited_at) === today).map(key)).size,
+        week: new Set(vv.filter(v => new Date(v.visited_at) > weekAgo).map(key)).size, practice: va.length,
+        by_class: Object.values(by).sort((a, b) => a.grade_num - b.grade_num || a.track.localeCompare(b.track)) };
+    },
     async guestSubmit(p) {
       await init(); const s = need('guest');
       const e = (await get('exams')).find(x => x.id === p.exam_id);
@@ -233,6 +244,7 @@ function demoApi() {
         const cls = parseGuestCode(p.code); if (!cls) throw new ApiError('bad_guest_code', 'Unknown guest code', 400);
         const nm = String(p.name || '').trim().replace(/\s+/g, ' ');
         if (nm.length < 2 || nm.length > 40 || /[<>]/.test(nm)) throw new ApiError('guest_name_required', 'Please type your name (2–40 letters)', 400);
+        const vv = (await get('visitor_visits')) || []; vv.push({ grade_num: cls.grade_num, track: cls.track, name_key: nm.toLowerCase(), visited_at: nowIso() }); await put('visitor_visits', vv);
         return setSession({ role: 'guest', name: nm, name_key: nm.toLowerCase(), ...cls });
       }
       if (role === 'student') {

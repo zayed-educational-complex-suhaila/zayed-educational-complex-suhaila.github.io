@@ -10,7 +10,7 @@
 <link rel="stylesheet" href="vendor/katex/katex.min.css">
 <script defer src="vendor/katex/katex.min.js"></script>
 <script defer src="vendor/katex/auto-render.min.js"></script>
-<link rel="stylesheet" href="css/portal.css?v=20261123f">
+<link rel="stylesheet" href="css/portal.css?v=20261123g">
 <style>
   .control { display: grid; grid-template-columns: minmax(0, 340px) minmax(0, 1fr); gap: 16px; margin-bottom: 18px; }
   .term-switch { display: flex; gap: 6px; background: var(--sky-2); border: 1px solid var(--line); padding: 5px; border-radius: 12px; }
@@ -35,6 +35,12 @@
   .sd-row { display: grid; grid-template-columns: minmax(110px, auto) 1fr; gap: 8px; padding: 5px 6px; border-top: 1px dashed var(--line); }
   .sd-row.ok b { color: var(--ok); } .sd-row.bad b, .sd-row.bad span { color: var(--bad); }
   .cls .subjs .y { background: var(--ok-bg); color: var(--ok); } .cls .subjs .n { background: var(--bad-bg); color: var(--bad); }
+  .control > .card:first-child { display: flex; flex-direction: column; } .control > .card:first-child .card-b { flex: 1; display: flex; flex-direction: column; }
+  .vis { margin-top: auto; padding-top: 16px; } .vis-box { border: 1px solid var(--line); border-radius: 14px; background: linear-gradient(180deg, #fff, var(--sky-2)); padding: 14px 16px; }
+  .vis-h { display: flex; align-items: center; gap: 10px; font-weight: 800; color: var(--navy); font-size: 15px; } .vis-h img { width: 34px; height: 34px; }
+  .vis-big { display: flex; align-items: baseline; gap: 8px; margin: 8px 0 10px; } .vis-big b { font-size: 40px; line-height: 1; color: var(--navy); font-weight: 800; } .vis-big span { color: var(--muted); font-weight: 700; }
+  .vis-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; } .vis-grid div { background: #fff; border: 1px solid var(--line); border-radius: 10px; padding: 7px 10px; font-size: 12px; color: var(--muted); font-weight: 700; } .vis-grid b { display: block; font-size: 19px; color: var(--navy); }
+  .vis-cls { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 10px; } .vis-cls span { font-size: 11.5px; font-weight: 800; background: var(--sky); color: var(--navy); border-radius: 999px; padding: 2px 9px; }
   .pin-card { max-width: 420px; }
   @media (max-width: 900px) { .control { grid-template-columns: 1fr; } }
 </style>
@@ -45,7 +51,8 @@
   <div class="control">
     <section class="card">
       <div class="card-h"><img class="ill" src="assets/ornaments/calendar.svg" alt=""><div><h2 data-i18n="term_ctl"></h2><div class="sub" data-i18n="term_ctl_s"></div></div></div>
-      <div class="card-b"><div class="term-switch" id="termSwitch"></div><p class="small muted" style="margin:10px 0 0" data-i18n="term_note"></p></div>
+      <div class="card-b"><div class="term-switch" id="termSwitch"></div><p class="small muted" style="margin:10px 0 0" data-i18n="term_note"></p>
+        <div class="vis" id="visitors"></div></div>
     </section>
     <section class="card">
       <div class="card-h"><img class="ill" src="assets/ornaments/reports.svg" alt=""><div><h2 data-i18n="exp_title"></h2><div class="sub" data-i18n="exp_sub"></div></div></div>
@@ -108,15 +115,15 @@
 
 <script src="vendor/exceljs.min.js"></script>
 <script src="vendor/jszip.min.js"></script>
-<script src="js/config.js?v=20261123f"></script>
-<script src="js/i18n.js?v=20261123f"></script>
-<script src="js/shared/teachers-data.js?v=20261123f"></script>
-<script src="js/shared/catalog.js?v=20261123f"></script>
-<script src="js/shared/reports.js?v=20261123f"></script>
-<script src="js/shared/roster-parser.js?v=20261123f"></script>
-<script src="js/api.js?v=20261123f"></script>
-<script src="js/ui.js?v=20261123f"></script>
-<script src="js/panels.js?v=20261123f"></script>
+<script src="js/config.js?v=20261123g"></script>
+<script src="js/i18n.js?v=20261123g"></script>
+<script src="js/shared/teachers-data.js?v=20261123g"></script>
+<script src="js/shared/catalog.js?v=20261123g"></script>
+<script src="js/shared/reports.js?v=20261123g"></script>
+<script src="js/shared/roster-parser.js?v=20261123g"></script>
+<script src="js/api.js?v=20261123g"></script>
+<script src="js/ui.js?v=20261123g"></script>
+<script src="js/panels.js?v=20261123g"></script>
 <script>
 I18N.add({
   en: { portal: 'Administrator Control Panel', portal_sub: 'All grades 5–12, every section, every upload and every result in one place.',
@@ -135,6 +142,7 @@ I18N.add({
     search_id: 'Search Student ID…', count: 'Students', more_rows: 'Showing first {n} — refine the search to see more.',
     pin_admin: 'Administrator PIN', pin_teacher: 'Teacher PIN', pin_s: 'Used to open this control panel.', pin_s2: 'Shared by all teachers to open the Teacher Portal.',
     new_pin: 'New 4-digit PIN', confirm_pin: 'Confirm new PIN', pin_mismatch: 'The two PINs do not match.', pin_bad: 'The PIN must be exactly 4 digits.', pin_ok: 'PIN updated.', exporting: 'Preparing workbook…',
+    vis_t: 'Visitors from other schools', vis_total: 'visitors so far', vis_today: 'Today', vis_week: 'Last 7 days', vis_visits: 'Sign-ins', vis_practice: 'Exams taken', vis_none: 'No visitors yet',
     guest_t: 'Students from other schools (class codes)', guest_s: 'On the main sign-in page, students from other schools type their name and class code. They see every published exam of that grade and track in the active term. Their results are saved under their name for them only — staff never see them and they are not counted in school results or reports.',
     guest_on: 'Guest codes on', guest_how: 'g = General, a = Advanced. Switching off signs current guests out immediately.', guest_ok_on: 'Guest codes are ON.', guest_ok_off: 'Guest codes are OFF.' },
   ar: { portal: 'لوحة تحكم الإدارة', portal_sub: 'جميع الصفوف 5–12 وكل الشعب والاختبارات المرفوعة والنتائج في مكان واحد.',
@@ -153,6 +161,7 @@ I18N.add({
     search_id: 'ابحث برقم الطالب…', count: 'الطلبة', more_rows: 'عرض أول {n} — حدّد البحث لرؤية المزيد.',
     pin_admin: 'رمز الإدارة', pin_teacher: 'رمز المعلمين', pin_s: 'يُستخدم لفتح لوحة التحكم هذه.', pin_s2: 'رمز مشترك لجميع المعلمين لفتح بوابة المعلم.',
     new_pin: 'الرمز الجديد (4 أرقام)', confirm_pin: 'تأكيد الرمز الجديد', pin_mismatch: 'الرمزان غير متطابقين.', pin_bad: 'يجب أن يتكون الرمز من 4 أرقام.', pin_ok: 'تم تحديث الرمز.', exporting: 'جارٍ تجهيز الملف…',
+    vis_t: 'زوار من مدارس أخرى', vis_total: 'زائراً حتى الآن', vis_today: 'اليوم', vis_week: 'آخر 7 أيام', vis_visits: 'مرات الدخول', vis_practice: 'اختبارات منجزة', vis_none: 'لا يوجد زوار بعد',
     guest_t: 'طلاب مدارس أخرى (رموز الصفوف)', guest_s: 'في صفحة الدخول الرئيسية يكتب طلاب المدارس الأخرى اسمهم ورمز صفهم، فيرون جميع الاختبارات المنشورة لذلك الصف والمسار في الفصل الحالي. تُحفظ نتائجهم بأسمائهم ولهم فقط — لا يراها الموظفون ولا تُحتسب في نتائج المدرسة أو تقاريرها.',
     guest_on: 'تفعيل رموز الزوار', guest_how: 'g = عام، a = متقدم. عند الإيقاف يُسجَّل خروج الزوار الحاليين فوراً.', guest_ok_on: 'رموز الزوار مفعّلة.', guest_ok_off: 'رموز الزوار متوقفة.' },
 });
@@ -294,6 +303,17 @@ $('#guestOn').onchange = async e => {
 };
 
 /* ---------- boot ---------- */
+/* ---------- outside-visitor counter ---------- */
+async function drawVisitors() {
+  const box = $('#visitors'); if (!box || !API.visitorStats) return;
+  let v; try { v = await API.visitorStats(); } catch (e) { box.innerHTML = ''; return; }
+  box.innerHTML = `<div class="vis-box"><div class="vis-h"><img src="assets/ornaments/idea-box.svg" alt=""><span>${t('vis_t')}</span></div>
+    <div class="vis-big"><b class="num">${v.visitors}</b><span>${t('vis_total')}</span></div>
+    <div class="vis-grid"><div><b class="num">${v.today}</b>${t('vis_today')}</div><div><b class="num">${v.week}</b>${t('vis_week')}</div>
+      <div><b class="num">${v.visits}</b>${t('vis_visits')}</div><div><b class="num">${v.practice}</b>${t('vis_practice')}</div></div>
+    ${v.by_class && v.by_class.length ? `<div class="vis-cls">${v.by_class.map(c => `<span>${esc(UI.gradeTrackLabel(c.grade_num, c.track))} · <span class="num">${c.n}</span></span>`).join('')}</div>` : `<div class="small muted" style="margin-top:8px">${t('vis_none')}</div>`}</div>`;
+}
+
 (async () => {
   try { S = await UI.requireRole('admin'); } catch (_) { return; }
   ACTIVE = await UI.header({ session: S, title: t('portal'), subtitle: t('portal_sub'), ornament: 'admin-settings' });
@@ -303,8 +323,8 @@ $('#guestOn').onchange = async e => {
   UI.tabs($('main'));
   examsMgr = Panels.examsManager($('#examsHost'), { term: ACTIVE, onChange: () => { drawClasses(); live(); } });
   resultsPanel = Panels.results($('#resultsHost'), { term: ACTIVE });
-  drawClasses().catch(UI.handle); drawRoster().catch(UI.handle); live(); drawGuest();
-  I18N.onChange(() => { UI.setHero(t('portal'), t('portal_sub')); drawTermSwitch(); fillExport(); drawClasses(); drawRoster(); live(); drawGuest(); });
+  drawClasses().catch(UI.handle); drawRoster().catch(UI.handle); live(); drawGuest(); drawVisitors();
+  I18N.onChange(() => { UI.setHero(t('portal'), t('portal_sub')); drawTermSwitch(); fillExport(); drawClasses(); drawRoster(); live(); drawGuest(); drawVisitors(); });
 })();
 </script>
 </body>

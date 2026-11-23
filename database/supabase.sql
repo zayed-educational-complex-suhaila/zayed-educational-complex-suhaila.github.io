@@ -107,6 +107,16 @@ create table if not exists public.visitor_attempts (
 );
 create index if not exists idx_visitor_attempts_who on public.visitor_attempts (grade_num, track, name_key, exam_id);
 
+-- one row per visitor sign-in (class + name key only), for the admin visitor counter
+create table if not exists public.visitor_visits (
+  id         bigserial primary key,
+  grade_num  int  not null,
+  track      text not null,
+  name_key   text not null,
+  visited_at timestamptz not null default now()
+);
+create index if not exists idx_visitor_visits_at on public.visitor_visits (visited_at);
+
 insert into public.settings (key, value) values
   ('active_term', 'Term 1'),
   ('guest_enabled', 'true'),     -- guest practice codes (5g … 12a) on/off; admin switch
@@ -116,7 +126,7 @@ on conflict (key) do nothing;
 
 -- lock every table: no direct access from the browser
 do $$ declare t text; begin
-  foreach t in array array['students','teacher_assignments','exams','attempts','settings','sessions','login_guard','visitor_attempts'] loop
+  foreach t in array array['students','teacher_assignments','exams','attempts','settings','sessions','login_guard','visitor_attempts','visitor_visits'] loop
     execute format('alter table public.%I enable row level security', t);
     execute format('revoke all on public.%I from anon, authenticated', t);
   end loop;
@@ -224,6 +234,23 @@ end $$;
 
 -- scores a visitor's answers from the stored key, saves the result in visitor_attempts (under their name + class),
 -- and returns the result + key. Nothing goes into the school's attempts table.
+-- admin: outside-visitor counter (numbers only, no names)
+create or replace function public.api_visitor_stats(p_token text) returns jsonb
+language plpgsql stable security definer set search_path = public as $$
+declare today date := (now() at time zone 'Asia/Dubai')::date;
+begin
+  perform _sess(p_token, array['admin']);
+  return (with who as (select grade_num, track, name_key from visitor_visits union select grade_num, track, name_key from visitor_attempts)
+    select jsonb_build_object(
+      'visitors', (select count(*) from who),
+      'visits',   (select count(*) from visitor_visits),
+      'today',    (select count(distinct (grade_num, track, name_key)) from visitor_visits where (visited_at at time zone 'Asia/Dubai')::date = today),
+      'week',     (select count(distinct (grade_num, track, name_key)) from visitor_visits where (visited_at at time zone 'Asia/Dubai')::date > today - 7),
+      'practice', (select count(*) from visitor_attempts),
+      'by_class', coalesce((select jsonb_agg(jsonb_build_object('grade_num', grade_num, 'track', track, 'n', n) order by grade_num, track)
+                            from (select grade_num, track, count(*) n from who group by 1, 2) x), '[]')));
+end $$;
+
 create or replace function public.api_guest_submit(p_token text, p jsonb) returns jsonb
 language plpgsql security definer set search_path = public as $$
 declare s jsonb := _sess(p_token, array['guest']); e exams; got numeric := 0; tot numeric; pct numeric; q jsonb; i int; ans jsonb;
@@ -276,6 +303,7 @@ begin
     delete from sessions where expires_at < now();
     tok := encode(gen_random_bytes(32), 'hex');
     insert into sessions (token, role, data, expires_at) values (tok, 'guest', v_data, now() + interval '12 hours');
+    insert into visitor_visits (grade_num, track, name_key) values ((v_data->>'grade_num')::int, v_data->>'track', v_data->>'name_key');
     return v_data || jsonb_build_object('role', 'guest', 'token', tok);
   end if;
   select * into g from login_guard where key = k;
