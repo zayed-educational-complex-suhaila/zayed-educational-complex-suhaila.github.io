@@ -12,8 +12,8 @@
 //  and each one checks the PIN / Student ID session itself.
 // ============================================================================
 (function () {
-  var SUPABASE_URL = '';        // e.g. 'https://abcdefghijkl.supabase.co'
-  var SUPABASE_ANON_KEY = '';   // Supabase → Project Settings → API → "anon public" key
+  var SUPABASE_URL = 'https://uxjmcufeaeziztaqqctl.supabase.co';
+  var SUPABASE_ANON_KEY = 'sb_publishable_FUG2YLpvPl0KKh1BO5g2Ag_9XZ8QToM';   // Supabase → Settings → API Keys → Publishable key (public by design)
   var onWeb = /^https?:$/.test(location.protocol) && !/^(localhost|127\.0\.0\.1|\[::1\])$/.test(location.hostname);
   window.APP_CONFIG = {
     mode: SUPABASE_URL && onWeb ? 'supabase' : 'demo',
