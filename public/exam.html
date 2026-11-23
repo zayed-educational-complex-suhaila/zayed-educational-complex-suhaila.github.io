@@ -737,7 +737,7 @@ function showResults(){
 }
 function retake(){ $('#passage').dataset.key=''; startExam(); }
 function backHome(){ location.href = portalUrl(); }
-async function logout(){ try{ await API.logout(); }catch(_){} location.href='index.html'; }
+async function logout(){ const staff = ME && (ME.role==='teacher'||ME.role==='admin'); try{ await API.logout(); }catch(_){} location.href = staff ? 'staff.html' : 'index.html'; }
 async function exportPDF(){
   try{ const {jsPDF}=window.jspdf, el=$('#resBody'); const bars=$$('.expbar'); bars.forEach(b=>b.style.visibility='hidden');
     const cv=await html2canvas(el,{scale:1.4,backgroundColor:'#eef0f2'}); bars.forEach(b=>b.style.visibility='');

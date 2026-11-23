@@ -3,7 +3,8 @@
 Bilingual (عربي / English) practice-exam website in the SwiftAssess exam style.
 
 ## Live site: GitHub Pages + Supabase
-**https://zayed-educational-complex-suhaila.github.io**
+- Students & visitors: **https://zayed-educational-complex-suhaila.github.io** (Student ID or guest code)
+- Teachers & administration: **https://zayed-educational-complex-suhaila.github.io/staff.html** (PIN)
 
 - **GitHub Pages** serves the static website (`public/`), deployed by `.github/workflows/pages.yml` on every push to `main`.
 - **Supabase** (PostgreSQL) holds students, exams, attempts, the active term and the PINs. The browser can only call the

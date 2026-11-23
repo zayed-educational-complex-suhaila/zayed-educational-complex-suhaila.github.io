@@ -62,12 +62,16 @@ function errMsg(e) {
   if (e instanceof TypeError) return t('err_network');
   return I18N.t('err_' + e.code) !== 'err_' + e.code ? I18N.t('err_' + e.code, { s: e.message }) : (e.message || t('error'));
 }
-function handle(e) { console.error(e); toast(errMsg(e), 'err', 5200); if (e && e.code === 'unauthorized') setTimeout(() => location.replace('index.html'), 1200); }
+// Two sign-in pages: index.html (students & visitors) and staff.html (teachers & administration).
+const STAFF = ['teacher', 'admin'];
+const signInPageFor = roleOrRoles => ([].concat(roleOrRoles || []).some(r => STAFF.includes(r)) ? 'staff.html' : 'index.html');
+const signInPageHere = () => (/\/(teacher|admin)\.html$/.test(location.pathname) ? 'staff.html' : 'index.html');
+function handle(e) { console.error(e); toast(errMsg(e), 'err', 5200); if (e && e.code === 'unauthorized') setTimeout(() => location.replace(signInPageHere()), 1200); }
 
 // ---------- auth guard ----------
 async function requireRole(...roles) {
   const s = await API.me();
-  if (!s || !roles.includes(s.role)) { location.replace('index.html'); throw new Error('redirect'); }
+  if (!s || !roles.includes(s.role)) { location.replace(roles.every(r => STAFF.includes(r)) ? 'staff.html' : 'index.html'); throw new Error('redirect'); }
   return s;
 }
 
@@ -92,7 +96,7 @@ async function header({ session, title, subtitle, ornament }) {
     <img class="motto" src="assets/motto-banner.jpg" alt="${esc(t('motto'))}">
   </div></section>`;
   $$('.lang-switch button', host).forEach(b => b.onclick = () => I18N.setLang(b.dataset.lang));
-  const lo = $('#hdrLogout'); if (lo) lo.onclick = async () => { await API.logout(); location.href = 'index.html'; };
+  const lo = $('#hdrLogout'); if (lo) lo.onclick = async () => { await API.logout(); location.href = signInPageFor(session && session.role); };
   I18N.onChange(() => { const ht = $('#hdrTerm'); if (ht) ht.textContent = t(term); });
   I18N.apply(host);
   return term;

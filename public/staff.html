@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Staff Sign In · Exam Training Platform</title>
+<link rel="icon" href="assets/complex-logo.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/portal.css">
+<style>
+  body { min-height: 100vh; display: flex; flex-direction: column; background: var(--bg); }
+  .gate { flex: 1; display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr); min-height: 100vh; }
+  /* Cover-slide look: pale lime page, grey frame behind a dark-olive title block with thin white rules */
+  .gate-art { background: var(--olive-pale); color: var(--olive); padding: 36px 44px 22px; display: flex; flex-direction: column; align-items: center; position: relative; overflow: hidden; text-align: center; }
+  .gate-art::before, .gate-art::after { content: ""; position: absolute; border-radius: 50%; background: #fff; opacity: .75; }
+  .gate-art::before { width: 170px; height: 170px; inset-inline-start: -70px; bottom: 70px; }
+  .gate-art::after { width: 120px; height: 120px; inset-inline-end: -40px; top: -30px; }
+  .gate-art .logo-card { background: #fff; border-radius: 18px; padding: 14px; width: 170px; box-shadow: 0 10px 30px rgba(46,26,14,.18); position: relative; z-index: 1; }
+  .gate-art .logo-card img { display: block; width: 100%; }
+  .title-frame { position: relative; z-index: 1; width: 100%; max-width: 600px; margin: 30px 0 22px; background: var(--frame); padding: 22px 0; }
+  .title-block { background: var(--olive); margin: 0 -22px; padding: 30px 30px; position: relative; }
+  .title-block::before, .title-block::after { content: ""; position: absolute; inset-inline: 0; height: 1.5px; background: #e6e6e6; }
+  .title-block::before { top: 16px; } .title-block::after { bottom: 16px; }
+  .gate-art h1 { color: #FCF3ED; font-size: 34px; font-weight: 800; margin: 0 0 8px; }
+  .gate-art .lead { color: #F6DCCA; font-size: 15px; margin: 0 auto; max-width: 480px; }
+  .gate-art .motto { height: 70px; width: auto; border-radius: 10px; box-shadow: 0 6px 18px rgba(46,26,14,.18); position: relative; z-index: 1; }
+  .gate-art .orn { position: absolute; width: 120px; opacity: .55; }
+  .gate-art .o1 { inset-inline-start: 26px; top: 30px; } .gate-art .o2 { inset-inline-end: 26px; bottom: 120px; width: 105px; } .gate-art .o3 { inset-inline-end: 30px; top: 150px; width: 95px; }
+  .gate-art .facts { display: flex; gap: 28px; margin-top: auto; padding-top: 26px; flex-wrap: wrap; justify-content: center; position: relative; z-index: 1; }
+  .gate-art .facts div { font-size: 13px; color: var(--olive-2); font-weight: 700; } .gate-art .facts b { display: block; color: var(--olive); font-size: 26px; font-weight: 800; }
+  .gate-art .slide-foot { width: 100%; display: flex; justify-content: space-between; gap: 10px; color: var(--olive-2); font-size: 11.5px; font-weight: 700; margin-top: 18px; position: relative; z-index: 1; flex-wrap: wrap; }
+  .gate-form { padding: 28px 40px 40px; display: flex; flex-direction: column; }
+  .gate-top { display: flex; align-items: center; gap: 12px; }
+  .gate-top img { height: 44px; }
+  .gate-top .spacer { flex: 1; }
+  .gate-card { margin: auto 0; max-width: 520px; width: 100%; align-self: center; padding-top: 24px; }
+  .gate-card h2 { font-size: 26px; font-weight: 800; }
+  .gate-card .sub { color: var(--muted); margin: 6px 0 20px; }
+  .roles { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-bottom: 20px; }
+  .role { border: 2px solid var(--line); background: #fff; border-radius: 14px; padding: 14px 10px 12px; cursor: pointer; text-align: center; transition: border-color .15s, box-shadow .15s, transform .1s; }
+  .role:hover { border-color: var(--lime-2); transform: translateY(-1px); }
+  .role.on { border-color: var(--blue); box-shadow: 0 0 0 4px rgba(137,25,30,.18); background: var(--sky-2); }
+  .role img { width: 54px; height: 54px; display: block; margin: 0 auto 6px; }
+  .role b { display: block; color: var(--navy); font-size: 15px; } .role small { color: var(--muted); font-size: 11.5px; }
+  .form-panel { display: none; } .form-panel.on { display: block; animation: fade .2s; }
+  .form-panel .grid { gap: 12px; }
+  .msg { margin-top: 12px; }
+  @media (max-width: 900px) { .gate { grid-template-columns: 1fr; } .gate-art { padding: 22px 16px 16px; } .gate-art h1 { font-size: 24px; } .title-frame { margin: 18px 0 14px; } .title-block { margin: 0 -12px; padding: 26px 18px; } .gate-art .orn { display: none; } .gate-art .logo-card { width: 140px; padding: 12px; } .gate-art .facts { display: none; } .gate-art .motto { height: 56px; max-width: 100%; } .gate-form { padding: 18px 16px 30px; } }
+  @media (max-width: 420px) { .roles { gap: 8px; } .role img { width: 40px; height: 40px; } .role small { display: none; } }
+</style>
+</head>
+<body>
+<div id="demoRibbon"></div>
+<main class="gate">
+  <section class="gate-art" aria-hidden="false">
+    <img class="orn o1" src="assets/ornaments/laptop-shield.svg" alt=""><img class="orn o2" src="assets/ornaments/analytics.svg" alt=""><img class="orn o3" src="assets/ornaments/idea-gear.svg" alt="">
+    <div class="logo-card"><img src="assets/complex-logo.png" alt="Zayed Educational Complex – Suhaila"></div>
+    <div class="title-frame"><div class="title-block"><h1 data-i18n="app_name"></h1><p class="lead" data-i18n="gate_lead"></p></div></div>
+    <img class="motto" src="assets/motto-banner.jpg" alt="بالميثاق نبلغ الآفاق – العام الدراسي 2026-2027">
+    <div class="slide-foot" style="margin-top:auto"><span>Zayed Educational Complex – Suhaila</span><span>مجمع زايد التعليمي - سهيلة</span></div>
+  </section>
+
+  <section class="gate-form">
+    <div class="gate-top"><img src="assets/school-logo.png" alt="" style="max-width:60%"><span class="spacer"></span>
+      <div class="lang-switch" role="group" aria-label="Language"><button data-lang="ar">عربي</button><button data-lang="en">English</button></div></div>
+
+    <div class="gate-card">
+      <h2 data-i18n="signin_staff"></h2>
+      <p class="sub" data-i18n="choose_staff"></p>
+      <div class="roles">
+        <button class="role" data-role="teacher"><img src="assets/ornaments/presentation.svg" alt=""><b data-i18n="role_teacher"></b><small data-i18n="r_teacher_s"></small></button>
+        <button class="role" data-role="admin"><img src="assets/ornaments/admin-settings.svg" alt=""><b data-i18n="role_admin"></b><small data-i18n="r_admin_s"></small></button>
+      </div>
+
+
+      <form class="form-panel" id="f-teacher" autocomplete="off" novalidate>
+        <div class="grid g2">
+          <label class="field"><span data-i18n="teacher_pin"></span><input class="input pin-input" id="tPin" type="password" inputmode="numeric" maxlength="4" autocomplete="off" required></label>
+          <label class="field"><span data-i18n="subject"></span><select class="input" id="tDept"></select></label>
+          <label class="field" style="grid-column:1/-1"><span data-i18n="teacher_name"></span><select class="input" id="tName"></select></label>
+          <label class="field"><span data-i18n="grade"></span><select class="input" id="tGrade"></select></label>
+          <label class="field"><span data-i18n="track"></span><select class="input" id="tTrack"></select></label>
+          <label class="field" style="grid-column:1/-1" hidden><span data-i18n="science_branch"></span><select class="input" id="tSubject"></select></label>
+        </div>
+        <div style="height:14px"></div>
+        <button class="btn btn-primary btn-block" type="submit" data-i18n="enter"></button>
+      </form>
+
+
+      <form class="form-panel" id="f-admin" autocomplete="off" novalidate>
+        <label class="field"><span data-i18n="admin_pin"></span><input class="input pin-input" id="aPin" type="password" inputmode="numeric" maxlength="4" autocomplete="off" required></label>
+        <div style="height:14px"></div>
+        <button class="btn btn-navy btn-block" type="submit" data-i18n="enter"></button>
+      </form>
+
+      <div class="msg" id="msg" aria-live="polite"></div>
+    </div>
+  </section>
+</main>
+
+<script src="vendor/exceljs.min.js" defer></script>
+<script src="js/config.js"></script>
+<script src="js/i18n.js"></script>
+<script src="js/shared/teachers-data.js"></script>
+<script src="js/shared/catalog.js"></script>
+<script src="js/shared/reports.js"></script>
+<script src="js/api.js"></script>
+<script src="js/ui.js"></script>
+<script src="js/gate.js"></script>
+</body>
+</html>
