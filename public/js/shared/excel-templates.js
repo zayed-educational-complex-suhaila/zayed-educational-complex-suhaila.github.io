@@ -54,6 +54,7 @@ function examInfoRows(fam, o) {
   if (fam === 'stem' && ['Science', 'Physics', 'Chemistry', 'Biology'].includes(d.Subject)) d.Calculator_Allowed = 'Yes';
   const bp = o.blueprint || null; // official electronic-part blueprint (Catalog.blueprint)
   if (bp) d.Calculator_Allowed = bp.calculator ? 'Yes' : 'No';
+  if (fam === 'stem' && o.track === 'General') d.Default_Language = 'ar';   // General track sees Arabic only (Maths & Science)
   return [
     ['Exam_Title', o.title || '', 'Title shown to students, e.g. "End of Term 1 Practice – Version A"', 'عنوان الاختبار كما يظهر للطلبة'],
     ['Subject', d.Subject, 'One of: ' + SUBJECTS.join(', '), 'المادة الدراسية'],
@@ -157,7 +158,7 @@ function instructions(fam) {
       ['', ''], ['MATH & SCIENCE', ''],
       ['12. Write math between dollar signs: $x^2$, $\\frac{3}{4}$, $\\sqrt{2}$, $3\\times10^{8}$ m/s. Use $$…$$ for a centred display equation.', '12. اكتب الرموز الرياضية بين علامتي الدولار: $x^2$ و $\\frac{3}{4}$. استخدم $$…$$ للمعادلة في سطر مستقل.'],
       ['13. Fill both Question_EN and Question_AR for bilingual display. If one is empty, only the other language is shown.', '13. املأ Question_EN و Question_AR معًا للعرض ثنائي اللغة، وإذا تُرك أحدهما فارغًا يظهر الآخر فقط.'],
-      ['13b. ARABIC ANSWERS: Option_A_AR … Option_D_AR hold the Arabic text of each answer (needed for General-track classes). Fill them alongside Option_A … Option_D and the exam shows each answer in English and Arabic. Leave them empty when the answer is the same in both languages (e.g. only numbers or $x = 5$).', '13b. الإجابات بالعربية: الأعمدة Option_A_AR … Option_D_AR للنص العربي لكل خيار (مطلوبة لصفوف المسار العام). املأها مع Option_A … Option_D فيظهر كل خيار بالإنجليزية والعربية. اتركها فارغة إذا كان الخيار نفسه في اللغتين (أرقام فقط أو $x = 5$).'],
+      ['13b. LANGUAGE BY TRACK: GENERAL classes see ARABIC ONLY – fill Question_AR, Option_A_AR … Option_D_AR and Passage_AR. ADVANCED classes see ENGLISH ONLY – fill Question_EN, Option_A … Option_D and Passage_EN. An exam for track "All" needs both languages. If a cell of the needed language is empty, the other language is shown instead.', '13b. اللغة حسب المسار: صفوف المسار العام ترى العربية فقط – املأ Question_AR و Option_A_AR … Option_D_AR و Passage_AR. صفوف المسار المتقدم ترى الإنجليزية فقط – املأ Question_EN و Option_A … Option_D و Passage_EN. الاختبار المخصص للمسارين (All) يحتاج اللغتين. إذا تُركت خلية اللغة المطلوبة فارغة تظهر اللغة الأخرى بدلاً منها.'],
       ['14. The Image column is wide on purpose: place graphs, tables and diagrams there.', '14. عمود Image عريض لوضع الرسوم البيانية والجداول والأشكال.'],
       ['15. To write a real dollar sign (money) type \\$ e.g. \\$4.50', '15. لكتابة رمز الدولار كعملة اكتب \\$ مثل \\$4.50'],
     ],

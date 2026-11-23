@@ -151,6 +151,7 @@ I18N.add({
     err_invalid_exam: 'The exam is missing a title, subject, grade or questions.', err_subject_not_taught: 'This subject is not taught in the selected grade/track.',
     opts_word: 'options', bp_title: 'Official electronic part · {s} · {g}', bp_sub: 'From the Ministry exam structure — only the electronic (multiple-choice) part is practised here.',
     bp_q: 'Questions', bp_marks: 'Total marks', bp_each: 'per question: {m}', bp_time: 'Electronic time', bp_day: 'Official exam day', bp_paper: 'Paper / other part', bp_source: 'Source',
+    lang_miss_ar: '{n} question(s) have no Arabic text for the question or an answer — General-track students see ARABIC ONLY, so they will see English there: {q}', lang_miss_en: '{n} question(s) have no English text for the question or an answer — Advanced-track students see ENGLISH ONLY, so they will see Arabic there: {q}',
     bp_mm_title: 'This file differs from the official electronic part (you can still publish a shorter practice):', bp_mm_q: '{a} questions (official: {b})', bp_mm_m: '{a} marks (official: {b})',
     bp_mm_c: 'calculator setting differs (official: {b})', bp_match: 'Matches the official electronic part ({q} questions).', pick_teacher: 'Choose the teacher name from the list first.', excel_not_mine: 'The Excel grade/subject is not one of this teacher’s classes — kept your Step 1 choice.' },
   ar: { portal: 'بوابة المعلم', portal_sub: 'ارفع الاختبارات التدريبية وأدِرها وتابع نتائج جميع الطلبة.',
@@ -171,6 +172,7 @@ I18N.add({
     err_invalid_exam: 'الاختبار ينقصه العنوان أو المادة أو الصف أو الأسئلة.', err_subject_not_taught: 'هذه المادة لا تُدرَّس في الصف أو المسار المختار.',
     opts_word: 'خيارات', bp_title: 'الجزء الإلكتروني الرسمي · {s} · {g}', bp_sub: 'وفق هيكل الاختبار الوزاري — يتم التدريب هنا على الجزء الإلكتروني (الاختيار من متعدد) فقط.',
     bp_q: 'عدد الأسئلة', bp_marks: 'الدرجة الكلية', bp_each: 'لكل سؤال: {m}', bp_time: 'مدة الجزء الإلكتروني', bp_day: 'موعد الاختبار الرسمي', bp_paper: 'الجزء الورقي / الآخر', bp_source: 'المصدر',
+    lang_miss_ar: '{n} سؤال بلا نص عربي للسؤال أو لأحد الخيارات — طلبة المسار العام يرون العربية فقط، لذلك ستظهر لهم الإنجليزية هنا: {q}', lang_miss_en: '{n} سؤال بلا نص إنجليزي للسؤال أو لأحد الخيارات — طلبة المسار المتقدم يرون الإنجليزية فقط، لذلك ستظهر لهم العربية هنا: {q}',
     bp_mm_title: 'هذا الملف يختلف عن الجزء الإلكتروني الرسمي (يمكنك نشر تدريب أقصر):', bp_mm_q: '{a} سؤالاً (الرسمي: {b})', bp_mm_m: '{a} درجة (الرسمي: {b})',
     bp_mm_c: 'إعداد الآلة الحاسبة مختلف (الرسمي: {b})', bp_match: 'مطابق للجزء الإلكتروني الرسمي ({q} سؤالاً).', pick_teacher: 'اختر اسم المعلم من القائمة أولاً.', excel_not_mine: 'صف أو مادة ملف Excel ليست ضمن صفوف هذا المعلم — تم الإبقاء على اختيار الخطوة 1.' },
 });
@@ -320,6 +322,18 @@ function render() {
   if (r.config && r.config.calculatorAllowed !== b.calculator) mism.push(t('bp_mm_c', { b: b.calculator ? t('yes') : t('no') }));
   head.push(mism.length ? `<div class="notice warn"><div><b>${t('bp_mm_title')}</b><div class="small">${mism.map(esc).join(' · ')}</div></div></div>`
     : `<div class="notice ok">${t('bp_match', { q: b.questions })}</div>`);
+  }
+  // language rule (Maths & Science): General sees Arabic only, Advanced English only, "All" needs both — warn about missing text
+  const tg0 = target();
+  if (r.questions.length && ['Mathematics', 'Science', 'Physics', 'Chemistry', 'Biology', 'Computer Science'].includes(tg0.subject)) {
+    // an answer "has words" when it contains letters outside $…$ maths (pure numbers / formulas are the same in both languages)
+    const words = s => /[A-Za-z؀-ۿ]{2,}/.test(String(s || '').replace(/\$[^$]*\$/g, '').replace(/<[^>]*>/g, ''));
+    const missAr = q => !String(q.ar || '').trim() || q.options.some((o, k) => words(o) && !String((q.options_ar || [])[k] || '').trim());
+    const missEn = q => !String(q.en || '').trim() || (q.options_ar || []).some((a, k) => words(a) && !String(q.options[k] || '').trim());
+    const list = f => r.questions.filter(f).map(q => 'Q' + q.q_num);
+    const show = (key, l) => { if (l.length) head.push(`<div class="notice warn"><div>${esc(t(key, { n: l.length, q: l.slice(0, 15).join(', ') + (l.length > 15 ? ' …' : '') }))}</div></div>`); };
+    if (tg0.track !== 'Advanced') show('lang_miss_ar', list(missAr));
+    if (tg0.track !== 'General') show('lang_miss_en', list(missEn));
   }
   const issues = r.errors.map(e => ({ ...e, k: 'err' })).concat(r.warnings.map(w => ({ ...w, k: 'warn' })));
   const issueTable = issues.length ? `<div class="table-wrap" style="max-height:260px"><table class="data report-table"><thead><tr><th></th><th>${t('v_sheet')}</th><th class="c">${t('v_row')}</th><th>${t('v_msg')}</th></tr></thead><tbody>${issues.map(i => `<tr><td>${i.k === 'err' ? '<span class="badge b-bad">✗</span>' : '<span class="badge b-warn">!</span>'}</td><td>${esc(i.sheet)}</td><td class="c num">${i.row ?? '—'}</td><td dir="auto">${esc(I18N.lang === 'ar' ? (i.message_ar || i.message) : i.message)}</td></tr>`).join('')}</tbody></table></div>` : '';

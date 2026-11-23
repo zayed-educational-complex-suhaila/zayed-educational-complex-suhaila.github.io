@@ -141,6 +141,31 @@ $$('[data-lang]').forEach(b=>b.onclick=toggleLang);
 function portalUrl(){ if(!ME) return 'index.html'; return ME.role==='student'?'student.html':ME.role==='admin'?'admin.html':'teacher.html'; }
 function loadFail(msg){ $('#loadScreen').innerHTML=`<div class="lerr">${esc(t('load_err'))}<br><small>${esc(msg||'')}</small></div><button class="lbtn" onclick="location.href=portalUrl()">${t('go_back')}</button>`; }
 const plainTxt = h => String(h||'').replace(/<[^>]+>/g,'').replace(/\$+([^$]*)\$+/g,'$1').replace(/\\[a-zA-Z]+/g,' ').replace(/[{}]/g,'').replace(/\s+/g,' ').trim();
+// ---------------------------------------------------------------------------
+// Which language the exam CONTENT is shown in (school rule):
+//   Maths & Science branches: General track -> Arabic only, Advanced track -> English only
+//     (an exam for track "All" follows the student's own track; staff previewing it see both)
+//   Arabic, Islamic Education, Social Studies -> Arabic for everyone;  English -> English for everyone.
+// If the chosen language is missing for a question/answer/passage, the other language is shown instead of a blank.
+// ---------------------------------------------------------------------------
+const STEM_SUBJ=['Mathematics','Science','Physics','Chemistry','Biology','Computer Science'], AR_SUBJ=['Arabic','Islamic Education','Social Studies'];
+let CONTENT_LANG=null;
+function contentLang(){ const s=EXAM.subject; if(AR_SUBJ.includes(s)) return 'ar'; if(s==='English') return 'en';
+  if(!STEM_SUBJ.includes(s)) return null;
+  const tr = EXAM.track!=='All' ? EXAM.track : (ME && ME.role==='student' ? ME.track : null);
+  return tr==='General' ? 'ar' : tr==='Advanced' ? 'en' : null; }
+const blankTxt=v=>!String(v??'').replace(/<[^>]*>/g,'').trim();
+function applyContentLang(){
+  CONTENT_LANG=contentLang(); if(!CONTENT_LANG) return;
+  const ar=CONTENT_LANG==='ar';
+  SOURCE_QUESTIONS.forEach(q=>{
+    if(ar){ if(!blankTxt(q.ar)) q.en=''; } else { if(!blankTxt(q.en)) q.ar=''; }
+    q.options=q.options.map((o,k)=>{ const a=q.options_ar[k]; return ar ? (blankTxt(a)?o:a) : (blankTxt(o)?a:o); });
+    q.options_ar=q.options.map(()=>'');
+    if(q.passage){ const p={...q.passage}; if(ar){ if(!blankTxt(p.ar)) p.en=''; } else { if(!blankTxt(p.en)) p.ar=''; } q.passage=p; }
+    q.title=plainTxt(q.en||q.ar).slice(0,110);
+  });
+}
 async function boot(){
   try{ lang = localStorage.getItem('zec.lang') || ''; }catch(_){}
   ME = await API.me();
@@ -160,6 +185,7 @@ async function boot(){
     option_images:(q.options||[]).map((_,k)=>(q.option_images||[])[k]||''),
     options_ar:(q.options||[]).map((_,k)=>String((q.options_ar||[])[k]??'')),
     title: plainTxt(q.en||q.ar).slice(0,110), passage: q.passage_id && P[q.passage_id] ? { id:q.passage_id, ...P[q.passage_id] } : null }));
+  applyContentLang(); if(CONTENT_LANG) lang = CONTENT_LANG;   // school language rule (see contentLang)
   TOTAL_Q = SOURCE_QUESTIONS.length; TOTAL_MARKS = SOURCE_QUESTIONS.reduce((a,q)=>a+mk(q),0);
   PASS_MARK = Math.ceil(TOTAL_MARKS*C.passingPercent/100);
   EXAM_TITLE = EXAM.title || `Grade ${C.grade} - ${C.subject} - ${C.term}`;

@@ -28,6 +28,23 @@ function ctx(fam, o) {
 }
 const list = a => a.join(' | ');
 
+// Language of Maths / Science exams follows the class track (school rule; the exam screen enforces it too):
+//   General -> Arabic only, Advanced -> English only, "All" -> both languages.
+function stemRuleEn(c) {
+  if (c.track === 'General') return `A. LANGUAGE: this is a GENERAL-track class, so students see ARABIC ONLY. Write every question in Question_AR and every answer in Option_A_AR–Option_D_AR (accurate Modern Standard Arabic using UAE MoE terminology; keep the maths in KaTeX). Leave Question_EN and Option_A–Option_D EMPTY.
+   Shared texts go in Passage_AR (leave Passage_EN empty). Feedback and Hint in Arabic.`;
+  if (c.track === 'Advanced') return `A. LANGUAGE: this is an ADVANCED-track class, so students see ENGLISH ONLY. Write every question in Question_EN and every answer in Option_A–Option_D. Leave Question_AR and Option_A_AR–Option_D_AR EMPTY.
+   Shared texts go in Passage_EN (leave Passage_AR empty). Feedback and Hint in English.`;
+  return `A. LANGUAGE: this exam is for BOTH tracks (General students see Arabic, Advanced students see English), so fill BOTH languages: Question_EN and Question_AR, English answers in Option_A–Option_D and their Arabic translation in Option_A_AR–Option_D_AR (same order, same maths), and both Passage_EN and Passage_AR.`;
+}
+function stemRuleAr(c) {
+  if (c.track === 'General') return `أ. اللغة: هذا صف من المسار العام، لذلك يرى الطلبة العربية فقط. اكتب كل سؤال في Question_AR وكل خيار في Option_A_AR إلى Option_D_AR (بالعربية الفصحى وبمصطلحات الوزارة، مع إبقاء الرياضيات بصيغة KaTeX)، واترك Question_EN و Option_A إلى Option_D فارغة.
+   النصوص المشتركة في Passage_AR (واترك Passage_EN فارغاً)، والتغذية الراجعة والتلميح بالعربية.`;
+  if (c.track === 'Advanced') return `أ. اللغة: هذا صف من المسار المتقدم، لذلك يرى الطلبة الإنجليزية فقط. اكتب كل سؤال في Question_EN وكل خيار في Option_A إلى Option_D، واترك Question_AR و Option_A_AR إلى Option_D_AR فارغة.
+   النصوص المشتركة في Passage_EN (واترك Passage_AR فارغاً)، والتغذية الراجعة والتلميح بالإنجليزية.`;
+  return `أ. اللغة: هذا الاختبار للمسارين معاً (طلبة العام يرون العربية وطلبة المتقدم يرون الإنجليزية)، لذلك املأ اللغتين: Question_EN و Question_AR، والخيارات بالإنجليزية في Option_A إلى Option_D وترجمتها العربية في Option_A_AR إلى Option_D_AR بالترتيب نفسه، و Passage_EN و Passage_AR.`;
+}
+
 // ======================================================================= ENGLISH-LANGUAGE INSTRUCTIONS
 function en(fam, o) {
   const c = ctx(fam, o), b = c.b;
@@ -56,7 +73,7 @@ HOW TO FILL THE WORKBOOK (it has 4 sheets — keep their names exactly)
    Exam_Title = a clear title (e.g. "${c.subject} – Grade ${c.grade} – ${c.term} Practice") · Subject = ${c.subject} · Grade = ${c.grade} · Track = ${c.track} · Term = ${c.term}
    Teacher_Name = ${c.teacher} · Exam_Code = A · Duration_Minutes = ${c.duration} · Passing_Percent = 50 · Calculator_Allowed = ${c.calc}
    Allow_Backtrack = Yes · Shuffle_Questions = ${fam === 'english' ? 'No' : 'No'} · Shuffle_Options = Yes · Require_Seen_All = Yes · Show_Review_After_Submit = Yes
-   Default_Language = ${DEFAULT_LANG[fam]} · Extra_Instructions = short instructions for students, or leave empty.
+   Default_Language = ${fam === 'stem' && c.track === 'General' ? 'ar' : DEFAULT_LANG[fam]} · Extra_Instructions = short instructions for students, or leave empty.
 4. Sheet "Passages" — columns: ${list(PHEAD[fam])}
    One row per shared text (a reading text, cloze paragraph, scenario, data table described in words, poem…). Passage_ID = P1, P2, P3 …
 5. Sheet "Questions" — columns: ${list(HEAD[fam])}
@@ -91,11 +108,11 @@ E. The Writing section is done on paper (or as a separate task) — do not inclu
 ` + finish;
   if (fam === 'stem') return base + `
 MATH & SCIENCE RULES
-A. Fill BOTH Question_EN and Question_AR (accurate Modern Standard Arabic using UAE MoE terminology). Write every answer in BOTH languages too: English in Option_A–Option_D and its Arabic translation in Option_A_AR–Option_D_AR (same order, same maths). Leave an Option_X_AR cell empty only when that answer is identical in both languages (a number, a symbol or a pure expression such as $x = 5$).
+${stemRuleEn(c)}
 B. Write EVERY mathematical or scientific expression in KaTeX between dollar signs: inline $...$, display $$...$$ — e.g. $\\frac{3}{4}$, $x^2-5x+6=0$, $\\sqrt{72}$, $3.0\\times10^{8}\\ \\text{m/s}$, $H_2O$, $\\Delta v$. This applies to options, feedback and passages too.
 C. Money: write \\$4.50 (backslash before the dollar sign) so it is not read as maths.
 D. Section_Part groups questions by unit or lesson, e.g. "Part 1: Functions", "Part 2: Equations".
-E. Shared data (a scenario, experiment, or a table written out in words) goes in "Passages" with Passage_EN and Passage_AR.
+E. Shared data (a scenario, experiment, or a table written out in words) goes in "Passages" (language as in rule A).
 F. Graphs, diagrams and tables that must be seen as pictures: follow step 6 (insert the picture in the "Image" cell, or list the row).
 ` + finish;
   return base + `
@@ -138,7 +155,7 @@ ${target}
    Exam_Title = عنوان واضح · Subject = ${c.subject} · Grade = ${c.grade} · Track = ${c.track} · Term = ${c.term}
    Teacher_Name = ${c.teacher} · Exam_Code = A · Duration_Minutes = ${c.duration} · Passing_Percent = 50 · Calculator_Allowed = ${calcAr}
    Allow_Backtrack = Yes · Shuffle_Questions = No · Shuffle_Options = Yes · Require_Seen_All = Yes · Show_Review_After_Submit = Yes
-   Default_Language = ${DEFAULT_LANG[fam]} · Extra_Instructions = تعليمات قصيرة للطلبة أو اتركها فارغة.
+   Default_Language = ${fam === 'stem' && c.track === 'General' ? 'ar' : DEFAULT_LANG[fam]} · Extra_Instructions = تعليمات قصيرة للطلبة أو اتركها فارغة.
 4. ورقة "Passages" — الأعمدة: ${list(PHEAD[fam])}
    صف لكل نص مشترك (نص قراءة، فقرة فراغات، موقف، قصيدة، آية أو حديث…)، و Passage_ID = P1، P2، P3 …
 5. ورقة "Questions" — الأعمدة: ${list(HEAD[fam])}
@@ -173,11 +190,11 @@ ${target}
 ` + finish;
   if (fam === 'stem') return base + `
 قواعد الرياضيات والعلوم
-أ. املأ Question_EN و Question_AR معاً (بالعربية الفصحى وبمصطلحات الوزارة)، واكتب كل خيار باللغتين أيضاً: الإنجليزية في Option_A إلى Option_D وترجمتها العربية في Option_A_AR إلى Option_D_AR بالترتيب نفسه وبالرموز الرياضية نفسها. اترك خلية Option_X_AR فارغة فقط إذا كان الخيار متطابقاً في اللغتين (رقم أو رمز أو تعبير رياضي فقط مثل $x = 5$).
+${stemRuleAr(c)}
 ب. اكتب كل تعبير رياضي أو علمي بصيغة KaTeX بين علامتي الدولار: ‏$...$ داخل السطر و $$...$$ في سطر مستقل، مثل $\\frac{3}{4}$ و $x^2-5x+6=0$ و $H_2O$، ويشمل ذلك الخيارات والتغذية الراجعة والنصوص.
 ج. للعملة اكتب \\$4.50 (شرطة مائلة قبل علامة الدولار).
 د. ‏Section_Part لتجميع الأسئلة حسب الوحدة أو الدرس مثل "Part 1: Functions".
-هـ. البيانات المشتركة (موقف أو تجربة أو جدول مكتوب بالكلمات) توضع في "Passages" بالعمودين Passage_EN و Passage_AR.
+هـ. البيانات المشتركة (موقف أو تجربة أو جدول مكتوب بالكلمات) توضع في "Passages" باللغة المذكورة في القاعدة أ.
 و. الرسوم والأشكال والجداول التي يجب أن تظهر كصور: اتبع الخطوة 6.
 ` + finish;
   return base + `
