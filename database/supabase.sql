@@ -354,13 +354,21 @@ begin
   return jsonb_build_object('id', new_id);
 end $$;
 
+-- teachers may change / delete only the exams they uploaded; the administrator may change any exam
+create or replace function public._check_owner(s jsonb, e public.exams) returns void language plpgsql as $$
+begin
+  if s->>'role' = 'teacher' and e.teacher_name is distinct from s->>'name' then
+    perform _err('not_owner', 'Only the teacher who uploaded this exam (or the administrator) can change or delete it.');
+  end if;
+end $$;
+
 create or replace function public.api_update_exam(p_token text, p_id uuid, p jsonb) returns jsonb
 language plpgsql security definer set search_path = public as $$
-declare e exams;
+declare e exams; s jsonb := _sess(p_token, array['admin', 'teacher']);
 begin
-  perform _sess(p_token, array['admin', 'teacher']);
   select * into e from exams where id = p_id;
   if e is null then perform _err('not_found'); end if;
+  perform _check_owner(s, e);
   if (p ? 'subject' or p ? 'grade_num' or p ? 'track') and not _taught(coalesce(p->>'subject', e.subject), coalesce((p->>'grade_num')::int, e.grade_num), coalesce(p->>'track', e.track)) then
     perform _err('subject_not_taught', 'This subject is not taught in the selected grade/track');
   end if;
@@ -378,8 +386,11 @@ end $$;
 
 create or replace function public.api_delete_exam(p_token text, p_id uuid) returns jsonb
 language plpgsql security definer set search_path = public as $$
+declare e exams; s jsonb := _sess(p_token, array['admin', 'teacher']);
 begin
-  perform _sess(p_token, array['admin', 'teacher']);
+  select * into e from exams where id = p_id;
+  if e is null then perform _err('not_found', 'Exam not found'); end if;
+  perform _check_owner(s, e);
   delete from exams where id = p_id;   -- attempts cascade
   return jsonb_build_object('ok', true);
 end $$;

@@ -11,6 +11,8 @@ I18N.add({
     m_publish: 'Publish', m_unpublish: 'Hide', m_reassign: 'Edit / reassign', m_del_q: 'Delete “{x}”? All its student attempts will also be deleted. This cannot be undone.',
     m_none: 'No exams match these filters.', m_teacher_ph: 'Teacher name…', all_sections_word: 'All sections', m_saved: 'Exam updated.', m_deleted: 'Exam deleted.',
     m_pub_ok: 'Exam is now visible to students.', m_hide_ok: 'Exam hidden from students.', m_status_any: 'Any status',
+    m_try: 'Try exam', m_try_t: 'Open the exam exactly as students see it. Nothing is saved.', m_mine: 'Only my exams', m_not_mine: 'Uploaded by another teacher',
+    err_not_owner: 'Only the teacher who uploaded this exam (or the administrator) can change or delete it.',
     r_mode_best: 'Best score per student', r_mode_all: 'All attempts', r_passfail: 'Pass / Fail', r_search_id: 'Student ID…',
     r_part: 'Participation', r_part_s: '{a} / {b} students attempted', r_avg: 'Average best %', r_pass: 'Pass rate', r_total: 'Total attempts',
     r_best: 'Best score', r_bestp: 'Best %', r_result: 'Result', r_btime: 'Best time', r_last: 'Last attempt', r_attempt: 'Attempt #{n}', r_score: 'Score', r_time: 'Time',
@@ -23,6 +25,8 @@ I18N.add({
     m_publish: 'نشر', m_unpublish: 'إخفاء', m_reassign: 'تعديل / إعادة تعيين', m_del_q: 'حذف "{x}"؟ سيتم حذف جميع محاولات الطلبة المرتبطة به ولا يمكن التراجع.',
     m_none: 'لا توجد اختبارات مطابقة.', m_teacher_ph: 'اسم المعلم…', all_sections_word: 'جميع الشعب', m_saved: 'تم تحديث الاختبار.', m_deleted: 'تم حذف الاختبار.',
     m_pub_ok: 'أصبح الاختبار ظاهراً للطلبة.', m_hide_ok: 'تم إخفاء الاختبار عن الطلبة.', m_status_any: 'أي حالة',
+    m_try: 'جرّب الاختبار', m_try_t: 'افتح الاختبار كما يراه الطلبة تماماً، ولا يتم حفظ أي شيء.', m_mine: 'اختباراتي فقط', m_not_mine: 'رفعه معلم آخر',
+    err_not_owner: 'لا يمكن تعديل هذا الاختبار أو حذفه إلا من المعلم الذي رفعه أو من الإدارة.',
     r_mode_best: 'أفضل نتيجة لكل طالب', r_mode_all: 'جميع المحاولات', r_passfail: 'ناجح / لم يجتز', r_search_id: 'رقم الطالب…',
     r_part: 'المشاركة', r_part_s: '{a} / {b} طالباً شاركوا', r_avg: 'متوسط أفضل نسبة', r_pass: 'نسبة النجاح', r_total: 'إجمالي المحاولات',
     r_best: 'أفضل درجة', r_bestp: 'أفضل نسبة', r_result: 'النتيجة', r_btime: 'وقت أفضل محاولة', r_last: 'آخر محاولة', r_attempt: 'المحاولة رقم {n}', r_score: 'الدرجة', r_time: 'الوقت',
@@ -45,9 +49,13 @@ let SECTIONS = null; const sections = async () => SECTIONS || (SECTIONS = await 
 const sectionsLabel = arr => (!arr || !arr.length || arr.includes('ALL')) ? t('all_sections_word') : arr.join('، ');
 
 // ============================================================ EXAMS MANAGER
+// opts.me = the signed-in session: a teacher may change / delete only the exams they uploaded (the server enforces it too);
+// "Only my exams" is on by default for teachers. Admins (or no opts.me) manage every exam.
 function examsManager(host, opts = {}) {
-  const st = { term: opts.term || 'ALL', grade: opts.grade || '', track: opts.track || '', subject: opts.subject || '', teacher: '', status: '' };
-  host.innerHTML = `<div class="filters">
+  const me = opts.me && opts.me.role === 'teacher' ? opts.me : null;
+  const st = { term: opts.term || 'ALL', grade: opts.grade || '', track: opts.track || '', subject: opts.subject || '', teacher: '', status: '', mine: !!me };
+  const owns = e => !me || e.teacher_name === me.name;
+  host.innerHTML = `${me ? `<label class="check" style="margin-bottom:10px;font-weight:800"><input type="checkbox" data-mine ${st.mine ? 'checked' : ''}> <span data-i18n="m_mine"></span></label>` : ''}<div class="filters">
       <label class="field"><span data-i18n="term"></span><select class="input" data-f="term"></select></label>
       <label class="field"><span data-i18n="grade"></span><select class="input" data-f="grade"></select></label>
       <label class="field"><span data-i18n="track"></span><select class="input" data-f="track"></select></label>
@@ -65,31 +73,35 @@ function examsManager(host, opts = {}) {
   };
   fillFilters();
   $$('[data-f]', host).forEach(el => el.addEventListener(el.tagName === 'INPUT' ? 'input' : 'change', UI.debounce(() => { st[el.dataset.f] = el.value; load(); }, el.tagName === 'INPUT' ? 300 : 0)));
+  const mineBox = $('[data-mine]', host); if (mineBox) mineBox.onchange = () => { st.mine = mineBox.checked; load(); };
   let rows = [];
   async function load() {
     const out = $('[data-out]', host);
     try {
       rows = await API.exams({ term: st.term, grade: st.grade, track: st.track, subject: st.subject, teacher: st.teacher, published: st.status === '' ? undefined : st.status === '1' });
+      if (st.mine && me) rows = rows.filter(e => e.teacher_name === me.name);
       render();
     } catch (e) { UI.handle(e); out.innerHTML = `<div class="empty">${esc(UI.errMsg(e))}</div>`; }
   }
   function render() {
     const out = $('[data-out]', host);
     if (!rows.length) { out.innerHTML = `<div class="empty"><img src="${UI.ORN('checklist')}" alt="">${t('m_none')}</div>`; return; }
-    out.innerHTML = `<table class="data"><thead><tr><th>${t('m_title')}</th><th>${t('subject')}</th><th>${t('grade')} · ${t('track')}</th><th>${t('m_sections')}</th><th>${t('term')}</th><th>${t('teacher')}</th>
-      <th class="c">${t('m_q')}</th><th class="c">${t('total_marks')}</th><th class="c">${t('status')}</th><th class="c">${t('m_students')}</th><th class="c">${t('m_attempts')}</th><th class="c">${t('m_avg')}</th><th>${t('m_created')}</th><th>${t('actions')}</th></tr></thead><tbody>
+    // actions come FIRST (visible without scrolling the wide table), each with a text label
+    out.innerHTML = `<table class="data"><thead><tr><th>${t('actions')}</th><th>${t('m_title')}</th><th>${t('subject')}</th><th>${t('grade')} · ${t('track')}</th><th>${t('m_sections')}</th><th>${t('term')}</th><th>${t('teacher')}</th>
+      <th class="c">${t('m_q')}</th><th class="c">${t('total_marks')}</th><th class="c">${t('status')}</th><th class="c">${t('m_students')}</th><th class="c">${t('m_attempts')}</th><th class="c">${t('m_avg')}</th><th>${t('m_created')}</th></tr></thead><tbody>
       ${rows.map(e => `<tr data-id="${e.id}">
-        <td><b dir="auto">${esc(e.title)}</b></td><td>${esc(t(e.subject))}</td><td>${esc(UI.gradeTrackLabel(e.grade_num, e.track))}</td>
+        <td><div class="row" style="flex-wrap:nowrap;gap:6px">
+          <a class="btn btn-primary btn-sm" href="exam.html?id=${encodeURIComponent(e.id)}&preview=1" target="_blank" rel="noopener" title="${esc(t('m_try_t'))}">${UI.ICONS.play}<span>${t('m_try')}</span></a>
+          ${owns(e) ? `<button class="btn btn-ghost btn-sm" data-act="pub">${e.is_published ? t('m_unpublish') : t('m_publish')}</button>
+          <button class="btn btn-ghost btn-sm" data-act="edit" title="${t('m_reassign')}">${UI.ICONS.edit}<span>${t('edit')}</span></button>
+          <button class="btn btn-danger btn-sm" data-act="del">${UI.ICONS.trash}<span>${t('delete')}</span></button>`
+          : `<span class="small muted" style="white-space:nowrap">${t('m_not_mine')}</span>`}</div></td>
+        <td style="min-width:200px"><b dir="auto">${esc(e.title)}</b></td><td>${esc(t(e.subject))}</td><td style="white-space:nowrap">${esc(UI.gradeTrackLabel(e.grade_num, e.track))}</td>
         <td class="small" dir="auto">${esc(sectionsLabel(e.target_sections))}</td><td><span class="badge b-olive">${esc(t(e.term))}</span></td><td dir="auto">${esc(e.teacher_name)}</td>
         <td class="c num">${e.q_count}</td><td class="c num">${I18N.num(e.total_marks)}</td>
         <td class="c">${e.is_published ? `<span class="badge b-ok">${t('published')}</span>` : `<span class="badge b-gray">${t('hidden')}</span>`}</td>
         <td class="c num">${e.unique_students} / ${e.class_total}</td><td class="c num">${e.attempts_count}</td><td class="c num">${I18N.pct(e.avg_best_pct)}</td>
-        <td class="small num">${I18N.date(e.created_at, false)}</td>
-        <td><div class="row" style="flex-wrap:nowrap;gap:6px">
-          <a class="btn btn-ghost btn-sm" href="exam.html?id=${encodeURIComponent(e.id)}&preview=1" target="_blank" rel="noopener" title="${t('preview')}">${UI.ICONS.eye}</a>
-          <button class="btn btn-ghost btn-sm" data-act="pub">${e.is_published ? t('m_unpublish') : t('m_publish')}</button>
-          <button class="btn btn-ghost btn-sm" data-act="edit" title="${t('m_reassign')}">${UI.ICONS.edit}</button>
-          <button class="btn btn-danger btn-sm" data-act="del" title="${t('delete')}">${UI.ICONS.trash}</button></div></td></tr>`).join('')}</tbody></table>`;
+        <td class="small num">${I18N.date(e.created_at, false)}</td></tr>`).join('')}</tbody></table>`;
     $$('[data-act]', out).forEach(b => b.onclick = () => act(b.dataset.act, rows.find(r => r.id === b.closest('tr').dataset.id)));
   }
   async function act(kind, e) {

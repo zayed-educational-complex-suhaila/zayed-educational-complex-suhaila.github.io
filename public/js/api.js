@@ -247,14 +247,17 @@ function demoApi() {
       const exams = await get('exams'); exams.push(e); await put('exams', exams); return { id: e.id };
     },
     async updateExam(id, patch) {
-      await init(); need('admin', 'teacher'); const exams = await get('exams'); const e = exams.find(x => x.id === id);
+      await init(); const s = need('admin', 'teacher'); const exams = await get('exams'); const e = exams.find(x => x.id === id);
       if (!e) throw new ApiError('not_found');
+      if (s.role === 'teacher' && e.teacher_name !== s.name) throw new ApiError('not_owner', 'Only the teacher who uploaded this exam (or the administrator) can change or delete it.', 403);
       if (window.Catalog && (patch.subject || patch.grade_num || patch.track) && !window.Catalog.isTaught(patch.subject || e.subject, patch.grade_num || e.grade_num, patch.track || e.track)) throw new ApiError('subject_not_taught', 'This subject is not taught in the selected grade/track', 400);
       ['title', 'subject', 'grade_num', 'track', 'term', 'target_sections', 'teacher_name', 'is_published'].forEach(k => { if (patch[k] !== undefined) e[k] = k === 'grade_num' ? Number(patch[k]) : patch[k]; });
       e.updated_at = nowIso(); await put('exams', exams); return { ok: true };
     },
     async deleteExam(id) {
-      await init(); need('admin', 'teacher');
+      await init(); const s = need('admin', 'teacher');
+      const e = (await get('exams')).find(x => x.id === id);
+      if (e && s.role === 'teacher' && e.teacher_name !== s.name) throw new ApiError('not_owner', 'Only the teacher who uploaded this exam (or the administrator) can change or delete it.', 403);
       await put('exams', (await get('exams')).filter(x => x.id !== id));
       await put('attempts', (await get('attempts')).filter(a => a.exam_id !== id)); // ON DELETE CASCADE
       return { ok: true };

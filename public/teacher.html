@@ -134,7 +134,7 @@
 <script>
 I18N.add({
   en: { portal: 'Teacher Portal', portal_sub: 'Upload practice exams, manage them and follow every student’s results.',
-    t_upload: 'Upload Exam', t_manage: 'Manage Uploaded Exams', t_results: 'Student Results', manage_sub: 'Preview, publish / hide, reassign or delete exams.', results_sub: 'Best score per student by default — open a row to see every attempt. Visible to all teachers.',
+    t_upload: 'Upload Exam', t_manage: 'Manage Uploaded Exams', t_results: 'Student Results', manage_sub: 'Try any exam as a student would. Publish / hide, edit or delete the exams you uploaded.', results_sub: 'Best score per student by default — open a row to see every attempt. Visible to all teachers.',
     s1_title: 'Choose the target class & subject', s1_sub: 'These choices decide exactly which students will see the exam.', teacher_name: 'Teacher name', target_sections: 'Sections',
     s2_title: 'Upload the Excel file & check the preview', s2_sub: 'Questions, passages and pictures are read automatically. Fix any red rows in Excel and upload again.',
     s3_title: 'Publish', s3_sub: 'Save the exam so students can start practising.',
@@ -155,7 +155,7 @@ I18N.add({
     bp_mm_title: 'This file differs from the official electronic part (you can still publish a shorter practice):', bp_mm_q: '{a} questions (official: {b})', bp_mm_m: '{a} marks (official: {b})',
     bp_mm_c: 'calculator setting differs (official: {b})', bp_match: 'Matches the official electronic part ({q} questions).', pick_teacher: 'Choose the teacher name from the list first.', excel_not_mine: 'The Excel grade/subject is not one of this teacher’s classes — kept your Step 1 choice.' },
   ar: { portal: 'بوابة المعلم', portal_sub: 'ارفع الاختبارات التدريبية وأدِرها وتابع نتائج جميع الطلبة.',
-    t_upload: 'رفع اختبار', t_manage: 'إدارة الاختبارات المرفوعة', t_results: 'نتائج الطلبة', manage_sub: 'معاينة الاختبارات ونشرها أو إخفاؤها وإعادة تعيينها أو حذفها.', results_sub: 'أفضل نتيجة لكل طالب افتراضياً — افتح الصف لعرض جميع المحاولات. متاحة لجميع المعلمين.',
+    t_upload: 'رفع اختبار', t_manage: 'إدارة الاختبارات المرفوعة', t_results: 'نتائج الطلبة', manage_sub: 'جرّب أي اختبار كما يراه الطلبة، وانشر أو أخفِ أو عدّل أو احذف الاختبارات التي رفعتها.', results_sub: 'أفضل نتيجة لكل طالب افتراضياً — افتح الصف لعرض جميع المحاولات. متاحة لجميع المعلمين.',
     s1_title: 'اختر الصف والمادة المستهدفة', s1_sub: 'تحدد هذه الاختيارات الطلبة الذين سيظهر لهم الاختبار.', teacher_name: 'اسم المعلم', target_sections: 'الشعب',
     s2_title: 'ارفع ملف Excel وراجع المعاينة', s2_sub: 'تُقرأ الأسئلة والنصوص والصور تلقائياً. صحّح الصفوف الحمراء في Excel ثم أعد الرفع.',
     s3_title: 'النشر', s3_sub: 'احفظ الاختبار ليبدأ الطلبة التدريب.',
@@ -458,7 +458,7 @@ let manage = null, results = null;
   fillStep1();
   I18N.apply();
   UI.tabs($('main'));
-  manage = Panels.examsManager($('#manageHost'), { term: ACTIVE_TERM, grade: S.grade || '', subject: '' });
+  manage = Panels.examsManager($('#manageHost'), { term: ACTIVE_TERM, grade: S.role === 'teacher' ? '' : (S.grade || ''), subject: '', me: S });
   results = Panels.results($('#resultsHost'), { term: ACTIVE_TERM, grade: S.grade || '' });
   I18N.onChange(() => { UI.setHero(t('portal'), t('portal_sub')); fillStep1(); if (parsed) render(); });
 })();
