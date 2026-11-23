@@ -54,7 +54,6 @@ function examInfoRows(fam, o) {
   if (fam === 'stem' && ['Science', 'Physics', 'Chemistry', 'Biology'].includes(d.Subject)) d.Calculator_Allowed = 'Yes';
   const bp = o.blueprint || null; // official electronic-part blueprint (Catalog.blueprint)
   if (bp) d.Calculator_Allowed = bp.calculator ? 'Yes' : 'No';
-  if (fam === 'stem' && o.track === 'General') d.Default_Language = 'ar';   // General track sees Arabic only (Maths & Science)
   return [
     ['Exam_Title', o.title || '', 'Title shown to students, e.g. "End of Term 1 Practice – Version A"', 'عنوان الاختبار كما يظهر للطلبة'],
     ['Subject', d.Subject, 'One of: ' + SUBJECTS.join(', '), 'المادة الدراسية'],
@@ -158,7 +157,7 @@ function instructions(fam) {
       ['', ''], ['MATH & SCIENCE', ''],
       ['12. Write math between dollar signs: $x^2$, $\\frac{3}{4}$, $\\sqrt{2}$, $3\\times10^{8}$ m/s. Use $$…$$ for a centred display equation.', '12. اكتب الرموز الرياضية بين علامتي الدولار: $x^2$ و $\\frac{3}{4}$. استخدم $$…$$ للمعادلة في سطر مستقل.'],
       ['13. Fill both Question_EN and Question_AR for bilingual display. If one is empty, only the other language is shown.', '13. املأ Question_EN و Question_AR معًا للعرض ثنائي اللغة، وإذا تُرك أحدهما فارغًا يظهر الآخر فقط.'],
-      ['13b. LANGUAGE BY TRACK: GENERAL classes see ARABIC ONLY – fill Question_AR, Option_A_AR … Option_D_AR and Passage_AR. ADVANCED classes see ENGLISH ONLY – fill Question_EN, Option_A … Option_D and Passage_EN. An exam for track "All" needs both languages. If a cell of the needed language is empty, the other language is shown instead.', '13b. اللغة حسب المسار: صفوف المسار العام ترى العربية فقط – املأ Question_AR و Option_A_AR … Option_D_AR و Passage_AR. صفوف المسار المتقدم ترى الإنجليزية فقط – املأ Question_EN و Option_A … Option_D و Passage_EN. الاختبار المخصص للمسارين (All) يحتاج اللغتين. إذا تُركت خلية اللغة المطلوبة فارغة تظهر اللغة الأخرى بدلاً منها.'],
+      ['13b. LANGUAGE: Maths, Science, Physics and Chemistry show every question and answer in ENGLISH and ARABIC (question side by side, answers Arabic above English) – fill Question_EN + Question_AR and Option_A … Option_D + Option_A_AR … Option_D_AR. BIOLOGY is English only – leave the _AR columns empty. Leave an Option_X_AR cell empty when the answer is the same in both languages (numbers or $x = 5$).', '13b. اللغة: الرياضيات والعلوم والفيزياء والكيمياء تعرض كل سؤال وخيار بالإنجليزية والعربية (السؤال جنباً إلى جنب، والخيار بالعربية فوق الإنجليزية) – املأ Question_EN و Question_AR و Option_A … Option_D و Option_A_AR … Option_D_AR. الأحياء بالإنجليزية فقط – اترك أعمدة _AR فارغة. اترك خلية Option_X_AR فارغة إذا كان الخيار نفسه في اللغتين (أرقام أو $x = 5$).'],
       ['14. The Image column is wide on purpose: place graphs, tables and diagrams there.', '14. عمود Image عريض لوضع الرسوم البيانية والجداول والأشكال.'],
       ['15. To write a real dollar sign (money) type \\$ e.g. \\$4.50', '15. لكتابة رمز الدولار كعملة اكتب \\$ مثل \\$4.50'],
     ],

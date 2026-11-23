@@ -44,6 +44,13 @@
 body.dark .qgroup{background:#0b1720}
 .stem-ar,.ar-text{font-family:'Noto Naskh Arabic','Amiri',Tahoma,Arial;font-weight:700}
 .stem.ar-only .stem-ar{border-top:0;margin-top:0;padding-top:0;font-size:calc(var(--stem) * 1.12);line-height:calc(var(--lh) + .35)}
+/* bilingual question & answers: English on the left, Arabic on the right (like the official paper); stacked on phones */
+.stem.bi{display:grid;grid-template-columns:1fr 1fr;column-gap:32px;direction:ltr;align-items:start}
+.stem.bi .stem-ar{border-top:0;margin-top:0;padding-top:0}
+.stem.bi > :not(.stem-en):not(.stem-ar){grid-column:1/-1}
+.ot .o-bi{display:flex;flex-direction:column;gap:4px;direction:ltr;text-align:left}   /* answer: Arabic line on top, English line under it */
+.ot .o-bi .o-ar{margin-top:0;text-align:left}
+@media(max-width:700px){.stem.bi{grid-template-columns:1fr}.stem.bi .stem-ar{margin-top:8px;padding-top:8px;border-top:1px dashed var(--line)}}
 .opts.rtl{direction:rtl}.opts.rtl .opt{font-family:'Noto Naskh Arabic','Amiri',Tahoma,Arial;font-size:calc(var(--opt) * 1.12)}
 .opts.rtl .opt.struck::before{left:0;right:0}
 .q-img{display:block;max-width:min(100%,560px);max-height:420px;margin:14px auto 4px;border:1px solid var(--line);border-radius:4px;background:#fff;object-fit:contain}
@@ -143,17 +150,14 @@ function loadFail(msg){ $('#loadScreen').innerHTML=`<div class="lerr">${esc(t('l
 const plainTxt = h => String(h||'').replace(/<[^>]+>/g,'').replace(/\$+([^$]*)\$+/g,'$1').replace(/\\[a-zA-Z]+/g,' ').replace(/[{}]/g,'').replace(/\s+/g,' ').trim();
 // ---------------------------------------------------------------------------
 // Which language the exam CONTENT is shown in (school rule):
-//   Maths & Science branches: General track -> Arabic only, Advanced track -> English only
-//     (an exam for track "All" follows the student's own track; staff previewing it see both)
-//   Arabic, Islamic Education, Social Studies -> Arabic for everyone;  English -> English for everyone.
+//   Maths, Science, Physics, Chemistry -> English AND Arabic side by side (English left, Arabic right), every track
+//   Biology -> English only;  Arabic, Islamic Education, Social Studies -> Arabic;  English -> English.
 // If the chosen language is missing for a question/answer/passage, the other language is shown instead of a blank.
 // ---------------------------------------------------------------------------
 const STEM_SUBJ=['Mathematics','Science','Physics','Chemistry','Biology','Computer Science'], AR_SUBJ=['Arabic','Islamic Education','Social Studies'];
 let CONTENT_LANG=null;
-function contentLang(){ const s=EXAM.subject; if(AR_SUBJ.includes(s)) return 'ar'; if(s==='English') return 'en';
-  if(!STEM_SUBJ.includes(s)) return null;
-  const tr = EXAM.track!=='All' ? EXAM.track : (ME && ME.role==='student' ? ME.track : null);
-  return tr==='General' ? 'ar' : tr==='Advanced' ? 'en' : null; }
+function contentLang(){ const s=EXAM.subject; if(AR_SUBJ.includes(s)) return 'ar'; if(s==='English' || s==='Biology') return 'en';
+  return null; }   // null = show both languages (side by side)
 const blankTxt=v=>!String(v??'').replace(/<[^>]*>/g,'').trim();
 function applyContentLang(){
   CONTENT_LANG=contentLang(); if(!CONTENT_LANG) return;
@@ -267,7 +271,7 @@ const keepHtml = s => String(s ?? '');   // teachers' content may contain KaTeX 
 // an answer = optional picture + optional text
 // an answer = optional picture + English text and/or Arabic text (Option_X_AR); both languages are stacked like the question stem
 const optHtml = (q,k) => { const im=(q.option_images||[])[k], en=String(q.options[k]??'').trim(), ar=String((q.options_ar||[])[k]??'').trim();
-  const tx = ar && ar!==en ? (en?`<span class="o-en" dir="ltr">${keepHtml(en)}</span>`:'')+`<span class="o-ar" dir="rtl">${keepHtml(ar)}</span>` : en;
+  const tx = ar && ar!==en ? (en ? `<span class="o-bi"><span class="o-ar" dir="rtl">${keepHtml(ar)}</span><span class="o-en" dir="ltr">${keepHtml(en)}</span></span>` : `<span class="o-ar" dir="rtl">${keepHtml(ar)}</span>`) : en;
   return (im?`<img class="o-img" src="${esc(im)}" alt="${String.fromCharCode(97+k)}">`:'') + (tx.trim()?(im?`<span class="o-txt">${keepHtml(tx)}</span>`:keepHtml(tx)):''); };
 const optPlain = (q,k) => { const tx=[plainTxt(q.options[k]||''), plainTxt((q.options_ar||[])[k]||'')].filter(Boolean).filter((x,i,a)=>a.indexOf(x)===i).join(' / '); return tx || ((q.option_images||[])[k] ? '[picture]' : ''); };
 function renderQ(){
@@ -280,7 +284,7 @@ function renderQ(){
   const img=q.image_url?`<img class="q-img" src="${esc(q.image_url)}" alt="">`:'';
   const pane=$('#qpane');
   pane.innerHTML=`${q.section_part?`<div class="part-badge ${arPart?'rtl':''}">${esc(q.section_part)}</div>`:''}
-   <div class="stem ${arOnly?'ar-only':''}" id="stem">${hasEn?`<div class="stem-en" dir="ltr">${keepHtml(q.en)}</div>`:''}${hasAr?`<div class="stem-ar" dir="rtl">${keepHtml(q.ar)}</div>`:''}${img}</div>
+   <div class="stem ${arOnly?'ar-only':''} ${hasEn&&hasAr?'bi':''}" id="stem">${hasEn?`<div class="stem-en" dir="ltr">${keepHtml(q.en)}</div>`:''}${hasAr?`<div class="stem-ar" dir="rtl">${keepHtml(q.ar)}</div>`:''}${img}</div>
    <div class="strike-row"><button class="strike-btn ${st.smode[i]?'on':''}" id="btnStrike" title="${t('t_strike')}">S</button></div>
    <div class="opts ${st.smode[i]?'sm':''} ${arOnly?'rtl':''}" id="opts">${q.options.map((o,k)=>`<div class="opt" data-k="${k}"><span class="l">${String.fromCharCode(97+k)}.</span><span class="ot" dir="auto">${optHtml(q,k)}</span><span class="x"></span><span class="r"></span></div>`).join('')}</div>
    <div class="hintbox" id="hintbox" dir="auto">${keepHtml(q.hint)}</div>`;

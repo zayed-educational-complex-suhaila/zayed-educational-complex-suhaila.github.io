@@ -28,21 +28,22 @@ function ctx(fam, o) {
 }
 const list = a => a.join(' | ');
 
-// Language of Maths / Science exams follows the class track (school rule; the exam screen enforces it too):
-//   General -> Arabic only, Advanced -> English only, "All" -> both languages.
+// Language of Maths / Science exams (school rule; the exam screen applies it too):
+//   Mathematics, Science, Physics, Chemistry -> BOTH languages, shown side by side (English left, Arabic right).
+//   Biology -> English only.
 function stemRuleEn(c) {
-  if (c.track === 'General') return `A. LANGUAGE: this is a GENERAL-track class, so students see ARABIC ONLY. Write every question in Question_AR and every answer in Option_A_AR–Option_D_AR (accurate Modern Standard Arabic using UAE MoE terminology; keep the maths in KaTeX). Leave Question_EN and Option_A–Option_D EMPTY.
-   Shared texts go in Passage_AR (leave Passage_EN empty). Feedback and Hint in Arabic.`;
-  if (c.track === 'Advanced') return `A. LANGUAGE: this is an ADVANCED-track class, so students see ENGLISH ONLY. Write every question in Question_EN and every answer in Option_A–Option_D. Leave Question_AR and Option_A_AR–Option_D_AR EMPTY.
+  if (c.subject === 'Biology') return `A. LANGUAGE: Biology exams are shown in ENGLISH ONLY. Write every question in Question_EN and every answer in Option_A–Option_D. Leave Question_AR and Option_A_AR–Option_D_AR EMPTY.
    Shared texts go in Passage_EN (leave Passage_AR empty). Feedback and Hint in English.`;
-  return `A. LANGUAGE: this exam is for BOTH tracks (General students see Arabic, Advanced students see English), so fill BOTH languages: Question_EN and Question_AR, English answers in Option_A–Option_D and their Arabic translation in Option_A_AR–Option_D_AR (same order, same maths), and both Passage_EN and Passage_AR.`;
+  return `A. LANGUAGE: students see every question and answer in ENGLISH and ARABIC side by side (English on the left, Arabic on the right), so fill BOTH languages:
+   Question_EN and Question_AR (accurate Modern Standard Arabic using UAE MoE terminology), English answers in Option_A–Option_D and their Arabic translation in Option_A_AR–Option_D_AR (same order, same maths), and both Passage_EN and Passage_AR.
+   Leave an Option_X_AR cell empty only when that answer is identical in both languages (a number, a symbol or a pure expression such as $x = 5$).`;
 }
 function stemRuleAr(c) {
-  if (c.track === 'General') return `أ. اللغة: هذا صف من المسار العام، لذلك يرى الطلبة العربية فقط. اكتب كل سؤال في Question_AR وكل خيار في Option_A_AR إلى Option_D_AR (بالعربية الفصحى وبمصطلحات الوزارة، مع إبقاء الرياضيات بصيغة KaTeX)، واترك Question_EN و Option_A إلى Option_D فارغة.
-   النصوص المشتركة في Passage_AR (واترك Passage_EN فارغاً)، والتغذية الراجعة والتلميح بالعربية.`;
-  if (c.track === 'Advanced') return `أ. اللغة: هذا صف من المسار المتقدم، لذلك يرى الطلبة الإنجليزية فقط. اكتب كل سؤال في Question_EN وكل خيار في Option_A إلى Option_D، واترك Question_AR و Option_A_AR إلى Option_D_AR فارغة.
+  if (c.subject === 'Biology') return `أ. اللغة: اختبارات الأحياء تُعرض بالإنجليزية فقط. اكتب كل سؤال في Question_EN وكل خيار في Option_A إلى Option_D، واترك Question_AR و Option_A_AR إلى Option_D_AR فارغة.
    النصوص المشتركة في Passage_EN (واترك Passage_AR فارغاً)، والتغذية الراجعة والتلميح بالإنجليزية.`;
-  return `أ. اللغة: هذا الاختبار للمسارين معاً (طلبة العام يرون العربية وطلبة المتقدم يرون الإنجليزية)، لذلك املأ اللغتين: Question_EN و Question_AR، والخيارات بالإنجليزية في Option_A إلى Option_D وترجمتها العربية في Option_A_AR إلى Option_D_AR بالترتيب نفسه، و Passage_EN و Passage_AR.`;
+  return `أ. اللغة: يرى الطلبة كل سؤال وكل خيار بالإنجليزية والعربية جنباً إلى جنب (الإنجليزية يساراً والعربية يميناً)، لذلك املأ اللغتين:
+   Question_EN و Question_AR (بالعربية الفصحى وبمصطلحات الوزارة)، والخيارات بالإنجليزية في Option_A إلى Option_D وترجمتها العربية في Option_A_AR إلى Option_D_AR بالترتيب نفسه وبالرموز الرياضية نفسها، و Passage_EN و Passage_AR.
+   اترك خلية Option_X_AR فارغة فقط إذا كان الخيار متطابقاً في اللغتين (رقم أو رمز أو تعبير رياضي فقط مثل $x = 5$).`;
 }
 
 // ======================================================================= ENGLISH-LANGUAGE INSTRUCTIONS
@@ -73,7 +74,7 @@ HOW TO FILL THE WORKBOOK (it has 4 sheets — keep their names exactly)
    Exam_Title = a clear title (e.g. "${c.subject} – Grade ${c.grade} – ${c.term} Practice") · Subject = ${c.subject} · Grade = ${c.grade} · Track = ${c.track} · Term = ${c.term}
    Teacher_Name = ${c.teacher} · Exam_Code = A · Duration_Minutes = ${c.duration} · Passing_Percent = 50 · Calculator_Allowed = ${c.calc}
    Allow_Backtrack = Yes · Shuffle_Questions = ${fam === 'english' ? 'No' : 'No'} · Shuffle_Options = Yes · Require_Seen_All = Yes · Show_Review_After_Submit = Yes
-   Default_Language = ${fam === 'stem' && c.track === 'General' ? 'ar' : DEFAULT_LANG[fam]} · Extra_Instructions = short instructions for students, or leave empty.
+   Default_Language = ${DEFAULT_LANG[fam]} · Extra_Instructions = short instructions for students, or leave empty.
 4. Sheet "Passages" — columns: ${list(PHEAD[fam])}
    One row per shared text (a reading text, cloze paragraph, scenario, data table described in words, poem…). Passage_ID = P1, P2, P3 …
 5. Sheet "Questions" — columns: ${list(HEAD[fam])}
@@ -155,7 +156,7 @@ ${target}
    Exam_Title = عنوان واضح · Subject = ${c.subject} · Grade = ${c.grade} · Track = ${c.track} · Term = ${c.term}
    Teacher_Name = ${c.teacher} · Exam_Code = A · Duration_Minutes = ${c.duration} · Passing_Percent = 50 · Calculator_Allowed = ${calcAr}
    Allow_Backtrack = Yes · Shuffle_Questions = No · Shuffle_Options = Yes · Require_Seen_All = Yes · Show_Review_After_Submit = Yes
-   Default_Language = ${fam === 'stem' && c.track === 'General' ? 'ar' : DEFAULT_LANG[fam]} · Extra_Instructions = تعليمات قصيرة للطلبة أو اتركها فارغة.
+   Default_Language = ${DEFAULT_LANG[fam]} · Extra_Instructions = تعليمات قصيرة للطلبة أو اتركها فارغة.
 4. ورقة "Passages" — الأعمدة: ${list(PHEAD[fam])}
    صف لكل نص مشترك (نص قراءة، فقرة فراغات، موقف، قصيدة، آية أو حديث…)، و Passage_ID = P1، P2، P3 …
 5. ورقة "Questions" — الأعمدة: ${list(HEAD[fam])}
