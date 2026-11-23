@@ -7,7 +7,7 @@
 <link rel="icon" href="assets/complex-logo.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/portal.css">
+<link rel="stylesheet" href="css/portal.css?v=20261123d">
 <style>
   body { min-height: 100vh; display: flex; flex-direction: column; background: var(--bg); }
   .gate { flex: 1; display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr); min-height: 100vh; }
@@ -46,13 +46,18 @@
   .form-panel { display: none; } .form-panel.on { display: block; animation: fade .2s; }
   .form-panel .grid { gap: 12px; }
   .msg { margin-top: 12px; }
-  /* students page: our students at the top, other schools in their own box further down */
-  .who-head { display: flex; gap: 12px; align-items: flex-start; margin-bottom: 14px; }
-  .who-head img { width: 48px; height: 48px; flex: none; }
-  .who-head h2 { font-size: 24px; } .who-head h3 { font-size: 19px; font-weight: 800; color: var(--navy); }
-  .who-head .sub { margin: 4px 0 0; }
-  .visitor-box { margin-top: 56px; padding: 18px 18px 6px; border: 1.5px dashed var(--line); border-radius: 14px; background: var(--sky-2); }
-  .visitor-box .who-head img { width: 40px; height: 40px; opacity: .85; }
+  /* students page: Suhaila Complex students = the main sign-in; other schools = a small link at the bottom */
+  .who-head { display: flex; gap: 14px; align-items: center; margin-bottom: 18px; }
+  .who-head img { width: 64px; height: 64px; flex: none; }
+  .who-head h2 { font-size: 30px; font-weight: 800; } .who-head .sub { margin: 4px 0 0; font-size: 15px; }
+  .visitor { align-self: center; max-width: 520px; width: 100%; margin-top: 28px; font-size: 13px; }
+  .visitor summary { list-style: none; cursor: pointer; color: var(--muted); display: inline-flex; align-items: center; gap: 8px; font-weight: 700; padding: 6px 0; }
+  .visitor summary::-webkit-details-marker { display: none; }
+  .visitor summary img { width: 22px; height: 22px; opacity: .7; }
+  .visitor summary:hover { color: var(--navy); } .visitor summary span { text-decoration: underline; text-underline-offset: 3px; }
+  .visitor-body { margin-top: 8px; padding: 14px 14px 4px; border: 1px dashed var(--line); border-radius: 12px; background: var(--sky-2); }
+  .visitor-body h3 { font-size: 15px; font-weight: 800; color: var(--navy); margin: 0 0 2px; }
+  .visitor-body .sub { margin: 0 0 10px; font-size: 12.5px; color: var(--muted); }
   @media (max-width: 900px) { .gate { grid-template-columns: 1fr; } .gate-art { padding: 22px 16px 16px; } .gate-art h1 { font-size: 24px; } .title-frame { margin: 18px 0 14px; } .title-block { margin: 0 -12px; padding: 26px 18px; } .gate-art .orn { display: none; } .gate-art .logo-card { width: 140px; padding: 12px; } .gate-art .facts { display: none; } .gate-art .motto { height: 56px; max-width: 100%; } .gate-form { padding: 18px 16px 30px; } }
   @media (max-width: 420px) { .roles { gap: 8px; } .role img { width: 40px; height: 40px; } .role small { display: none; } }
 </style>
@@ -82,10 +87,14 @@
         <button class="btn btn-primary btn-block" type="submit" data-i18n="enter"></button>
         <div class="msg" aria-live="polite"></div>
       </form>
+      <div class="msg" id="msg" aria-live="polite"></div>
+    </div>
 
-      <!-- Students from other schools (visitors) — kept apart, further down -->
-      <section class="visitor-box">
-        <div class="who-head"><img src="assets/ornaments/idea-box.svg" alt=""><div><h3 data-i18n="other_students"></h3><p class="sub" data-i18n="other_students_s"></p></div></div>
+    <!-- Students from other schools: a small link at the bottom, the form opens only when clicked -->
+    <details class="visitor" id="visitor">
+      <summary><img src="assets/ornaments/idea-box.svg" alt=""><span data-i18n="other_students_link"></span></summary>
+      <div class="visitor-body">
+        <h3 data-i18n="other_students"></h3><p class="sub" data-i18n="other_students_s"></p>
         <form class="form-panel on" id="f-guest" autocomplete="off" novalidate>
           <div class="grid g2">
             <label class="field"><span data-i18n="guest_name"></span>
@@ -97,20 +106,19 @@
           <button class="btn btn-ghost btn-block" type="submit" data-i18n="enter"></button>
           <div class="msg" aria-live="polite"></div>
         </form>
-      </section>
-      <div class="msg" id="msg" aria-live="polite"></div>
-    </div>
+      </div>
+    </details>
   </section>
 </main>
 
 <script src="vendor/exceljs.min.js" defer></script>
-<script src="js/config.js"></script>
-<script src="js/i18n.js"></script>
-<script src="js/shared/teachers-data.js"></script>
-<script src="js/shared/catalog.js"></script>
-<script src="js/shared/reports.js"></script>
-<script src="js/api.js"></script>
-<script src="js/ui.js"></script>
-<script src="js/gate.js"></script>
+<script src="js/config.js?v=20261123d"></script>
+<script src="js/i18n.js?v=20261123d"></script>
+<script src="js/shared/teachers-data.js?v=20261123d"></script>
+<script src="js/shared/catalog.js?v=20261123d"></script>
+<script src="js/shared/reports.js?v=20261123d"></script>
+<script src="js/api.js?v=20261123d"></script>
+<script src="js/ui.js?v=20261123d"></script>
+<script src="js/gate.js?v=20261123d"></script>
 </body>
 </html>
