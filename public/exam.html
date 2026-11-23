@@ -228,6 +228,12 @@ body.dark .qgroup{background:#0b1720}
 .stem.bi > :not(.stem-en):not(.stem-ar){grid-column:1/-1}
 .ot .o-bi{display:flex;flex-direction:column;gap:4px;direction:ltr;text-align:left}   /* answer: Arabic line on top, English line under it */
 .ot .o-bi .o-ar{margin-top:0;text-align:left}
+/* answer letter INSIDE the circle (no separate "a." column); picked answer = filled circle with a white letter */
+#opts .opt{grid-template-columns:1fr auto 34px}
+#opts .opt .l{display:none}
+#opts .opt .r{width:30px;height:30px;font-size:14px;font-weight:800;color:var(--ink);line-height:1;background:#fff}
+#opts .opt.sel .r{background:var(--ink);color:#fff}
+#opts .opt.sel .r::after{display:none}
 @media(max-width:700px){.stem.bi{grid-template-columns:1fr}.stem.bi .stem-ar{margin-top:8px;padding-top:8px;border-top:1px dashed var(--line)}}
 .opts.rtl{direction:rtl}.opts.rtl .opt{font-family:'Noto Naskh Arabic','Amiri',Tahoma,Arial;font-size:calc(var(--opt) * 1.12)}
 .opts.rtl .opt.struck::before{left:0;right:0}
@@ -572,7 +578,7 @@ function renderQ(){
   pane.innerHTML=`${q.section_part?`<div class="part-badge ${arPart?'rtl':''}">${esc(q.section_part)}</div>`:''}
    <div class="stem ${arOnly?'ar-only':''} ${hasEn&&hasAr?'bi':''}" id="stem">${hasEn?`<div class="stem-en" dir="ltr">${keepHtml(q.en)}</div>`:''}${hasAr?`<div class="stem-ar" dir="rtl">${keepHtml(q.ar)}</div>`:''}${img}</div>
    <div class="strike-row"><button class="strike-btn ${st.smode[i]?'on':''}" id="btnStrike" title="${t('t_strike')}">S</button></div>
-   <div class="opts ${st.smode[i]?'sm':''} ${arOnly?'rtl':''}" id="opts">${q.options.map((o,k)=>`<div class="opt" data-k="${k}"><span class="l">${String.fromCharCode(97+k)}.</span><span class="ot" dir="auto">${optHtml(q,k)}</span><span class="x"></span><span class="r"></span></div>`).join('')}</div>
+   <div class="opts ${st.smode[i]?'sm':''} ${arOnly?'rtl':''}" id="opts">${q.options.map((o,k)=>`<div class="opt" data-k="${k}"><span class="l">${String.fromCharCode(97+k)}.</span><span class="ot" dir="auto">${optHtml(q,k)}</span><span class="x"></span><span class="r">${String.fromCharCode(97+k)}</span></div>`).join('')}</div>
    <div class="hintbox" id="hintbox" dir="auto">${keepHtml(q.hint)}</div>`;
   if(st.hl[i]){ $('#stem').innerHTML=st.hl[i]; } else math($('#stem'));
   math($('#opts')); math($('#hintbox')); paintOpts();
