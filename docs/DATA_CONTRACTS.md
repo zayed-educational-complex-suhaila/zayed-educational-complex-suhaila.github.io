@@ -43,6 +43,7 @@ DB columns: `config_json`, `passages_json`, `questions_json`, `target_sections_j
   "feedback": "Worked solution shown after submitting", "hint": "Optional clue" }
 ```
 - `options`: 2–4 strings, in A, B, C, D order. `correct`: 0-based index into `options`.
+- `options_ar` (optional): Arabic text of each answer, parallel to `options` (`''` = none) — from the STEM template's `Option_A_AR`…`Option_D_AR` columns. The exam shows English and Arabic stacked.
 - `option_images` (optional): array parallel to `options`; each entry is a picture URL or `''`. An answer may be a picture only
   (`options[k] === ''` with `option_images[k]` set), text only, or both. Every answer must have text or a picture.
   In Excel these come from the `Image_A`…`Image_D` columns (a picture placed in `Option_X` is also accepted as that answer's picture).
@@ -60,7 +61,7 @@ Keyed by original question index; `picked` = original option index (shuffles alr
 | Family | File | For subjects | Question columns |
 |---|---|---|---|
 | English | `English_Exam_Template.xlsx` | English | `Q_Num, Section_Part, Topic, Outcome_Code, Outcome_Label, Passage_ID, Question_EN, Image, Option_A–D, Correct_Option, Marks, Feedback, Hint` |
-| STEM bilingual | `STEM_Exam_Template.xlsx` | Mathematics, Science, Physics, Chemistry, Biology, Computer Science, Other | same + `Question_AR` |
+| STEM bilingual | `STEM_Exam_Template.xlsx` | Mathematics, Science, Physics, Chemistry, Biology, Computer Science, Other | same + `Question_AR` and `Option_A_AR`–`Option_D_AR` |
 | Arabic & Humanities | `Arabic_Exam_Template.xlsx` | Arabic, Islamic Education, Social Studies | `Question_AR` instead of `Question_EN` |
 
 Sheets: `Exam_Info` (Field | Value), `Passages`, `Questions`, `Instructions_تعليمات`.

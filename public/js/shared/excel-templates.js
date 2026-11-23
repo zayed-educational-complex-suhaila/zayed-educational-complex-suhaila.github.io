@@ -36,7 +36,7 @@ const FAMILIES = {
     defaults: { Subject: 'Mathematics', Default_Language: 'en', Calculator_Allowed: 'No', Shuffle_Questions: 'No', Shuffle_Options: 'Yes' },
     passageCols: ['Passage_ID', 'Passage_Title', 'Passage_EN', 'Passage_AR'],
     questionCols: ['Q_Num', 'Section_Part', 'Topic', 'Outcome_Code', 'Outcome_Label', 'Passage_ID', 'Question_EN', 'Question_AR', 'Image',
-      'Option_A', 'Option_B', 'Option_C', 'Option_D', 'Image_A', 'Image_B', 'Image_C', 'Image_D', 'Correct_Option', 'Marks', 'Feedback', 'Hint'],
+      'Option_A', 'Option_B', 'Option_C', 'Option_D', 'Option_A_AR', 'Option_B_AR', 'Option_C_AR', 'Option_D_AR', 'Image_A', 'Image_B', 'Image_C', 'Image_D', 'Correct_Option', 'Marks', 'Feedback', 'Hint'],
   },
   arabic: {
     file: 'Arabic_Exam_Template.xlsx', label: 'Arabic & Humanities (Arabic / Islamic Education / Social Studies)',
@@ -87,6 +87,7 @@ const exampleFill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFFFF
 const COL_WIDTH = {
   Q_Num: 7, Section_Part: 20, Topic: 22, Outcome_Code: 13, Outcome_Label: 32, Passage_ID: 11,
   Question_EN: 55, Question_AR: 55, Image: 30, Option_A: 24, Option_B: 24, Option_C: 24, Option_D: 24,
+  Option_A_AR: 24, Option_B_AR: 24, Option_C_AR: 24, Option_D_AR: 24,
   Image_A: 18, Image_B: 18, Image_C: 18, Image_D: 18,
   Correct_Option: 11, Marks: 8, Feedback: 40, Hint: 30, Passage_Title: 28, Passage_EN: 90, Passage_AR: 90,
 };
@@ -120,7 +121,7 @@ function examples(fam) {
     ],
     questions: [
       { Q_Num: 1, Section_Part: 'Part 1: Algebra', Topic: 'Linear equations', Outcome_Code: 'M.A.1', Outcome_Label: 'Solve linear equations', Question_EN: 'Solve for $x$: $3x + 5 = 20$', Question_AR: 'أوجد قيمة $x$: $3x + 5 = 20$', Option_A: '$x = 5$', Option_B: '$x = 15$', Option_C: '$x = \\frac{25}{3}$', Option_D: '$x = 3$', Correct_Option: 'A', Marks: 3, Feedback: '$3x = 15 \\Rightarrow x = 5$', Hint: 'Subtract $5$ from both sides first.' },
-      { Q_Num: 2, Section_Part: 'Part 1: Algebra', Topic: 'Rates', Outcome_Code: 'M.A.2', Outcome_Label: 'Interpret rates of change', Passage_ID: 'P1', Question_EN: 'After how many minutes will the tank be empty?', Question_AR: 'بعد كم دقيقة يصبح الخزان فارغًا؟', Option_A: '$20$', Option_B: '$25$', Option_C: '$475$', Option_D: '$12.5$', Correct_Option: 'A', Marks: 3, Feedback: '$\\frac{500}{25} = 20$ minutes.' },
+      { Q_Num: 2, Section_Part: 'Part 1: Algebra', Topic: 'Rates', Outcome_Code: 'M.A.2', Outcome_Label: 'Interpret rates of change', Passage_ID: 'P1', Question_EN: 'After how many minutes will the tank be empty?', Question_AR: 'بعد كم دقيقة يصبح الخزان فارغًا؟', Option_A: '$20$ minutes', Option_B: '$25$ minutes', Option_C: '$475$ minutes', Option_D: '$12.5$ minutes', Option_A_AR: '$20$ دقيقة', Option_B_AR: '$25$ دقيقة', Option_C_AR: '$475$ دقيقة', Option_D_AR: '$12.5$ دقيقة', Correct_Option: 'A', Marks: 3, Feedback: '$\\frac{500}{25} = 20$ minutes.' },
     ],
   };
 }
@@ -156,6 +157,7 @@ function instructions(fam) {
       ['', ''], ['MATH & SCIENCE', ''],
       ['12. Write math between dollar signs: $x^2$, $\\frac{3}{4}$, $\\sqrt{2}$, $3\\times10^{8}$ m/s. Use $$…$$ for a centred display equation.', '12. اكتب الرموز الرياضية بين علامتي الدولار: $x^2$ و $\\frac{3}{4}$. استخدم $$…$$ للمعادلة في سطر مستقل.'],
       ['13. Fill both Question_EN and Question_AR for bilingual display. If one is empty, only the other language is shown.', '13. املأ Question_EN و Question_AR معًا للعرض ثنائي اللغة، وإذا تُرك أحدهما فارغًا يظهر الآخر فقط.'],
+      ['13b. ARABIC ANSWERS: Option_A_AR … Option_D_AR hold the Arabic text of each answer (needed for General-track classes). Fill them alongside Option_A … Option_D and the exam shows each answer in English and Arabic. Leave them empty when the answer is the same in both languages (e.g. only numbers or $x = 5$).', '13b. الإجابات بالعربية: الأعمدة Option_A_AR … Option_D_AR للنص العربي لكل خيار (مطلوبة لصفوف المسار العام). املأها مع Option_A … Option_D فيظهر كل خيار بالإنجليزية والعربية. اتركها فارغة إذا كان الخيار نفسه في اللغتين (أرقام فقط أو $x = 5$).'],
       ['14. The Image column is wide on purpose: place graphs, tables and diagrams there.', '14. عمود Image عريض لوضع الرسوم البيانية والجداول والأشكال.'],
       ['15. To write a real dollar sign (money) type \\$ e.g. \\$4.50', '15. لكتابة رمز الدولار كعملة اكتب \\$ مثل \\$4.50'],
     ],

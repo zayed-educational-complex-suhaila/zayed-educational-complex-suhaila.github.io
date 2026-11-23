@@ -241,6 +241,7 @@ body.magnify .stem img.q-img{transform:none;max-width:100%;max-height:none;width
 .rq img.q-img{max-height:300px}
 .ot img.o-img,.opt img.o-img{display:block;max-width:min(100%,260px);max-height:200px;border:1px solid var(--line);border-radius:4px;background:#fff;object-fit:contain;margin:2px 0}
 .ot .o-txt{display:block;margin-top:4px}
+.ot .o-en,.ot .o-ar{display:block}.ot .o-ar{font-family:"Noto Naskh Arabic","Segoe UI",Tahoma,sans-serif;text-align:right;margin-top:3px}
 .opt.struck img.o-img{opacity:.35}
 .rq .opt img.o-img{max-height:140px}
 .rq .ar-only{direction:rtl;text-align:right}
@@ -416,6 +417,7 @@ async function boot(){
   const P = EXAM.passages || {};
   SOURCE_QUESTIONS = EXAM.questions.map((q,i)=>({ ...q, oi:i, options:(q.options||[]).map(o=>o==null?'':String(o)),
     option_images:(q.options||[]).map((_,k)=>(q.option_images||[])[k]||''),
+    options_ar:(q.options||[]).map((_,k)=>String((q.options_ar||[])[k]??'')),
     title: plainTxt(q.en||q.ar).slice(0,110), passage: q.passage_id && P[q.passage_id] ? { id:q.passage_id, ...P[q.passage_id] } : null }));
   TOTAL_Q = SOURCE_QUESTIONS.length; TOTAL_MARKS = SOURCE_QUESTIONS.reduce((a,q)=>a+mk(q),0);
   PASS_MARK = Math.ceil(TOTAL_MARKS*C.passingPercent/100);
@@ -434,7 +436,7 @@ function startExam(){
     const parts=[]; q.forEach(x=>{ const k=x.section_part||''; let p=parts.find(y=>y.k===k); if(!p) parts.push(p={k,items:[]}); p.items.push(x); });
     q = parts.flatMap(p=>{ const blocks=[]; p.items.forEach(x=>{ const last=blocks[blocks.length-1]; if(x.passage_id && last && last[0].passage_id===x.passage_id) last.push(x); else blocks.push([x]); }); return shuffle(blocks).flat(); });
   }
-  q = q.map(x=>{ const idx=x.options.map((_,i)=>i); const o=C.shuffleOptions?shuffle(idx):idx; return {...x,omap:o,options:o.map(i=>x.options[i]),option_images:o.map(i=>x.option_images[i]),correct:o.indexOf(x.correct)}; });
+  q = q.map(x=>{ const idx=x.options.map((_,i)=>i); const o=C.shuffleOptions?shuffle(idx):idx; return {...x,omap:o,options:o.map(i=>x.options[i]),option_images:o.map(i=>x.option_images[i]),options_ar:o.map(i=>x.options_ar[i]),correct:o.indexOf(x.correct)}; });
   const n=q.length;
   Object.assign(st,{qs:q,answers:Array(n).fill(null),marked:Array(n).fill(false),seen:Array(n).fill(false),strike:q.map(()=>new Set()),smode:Array(n).fill(false),hl:Array(n).fill(null),cur:0,
     remaining:C.durationMinutes*60,startedAt:new Date(),endedAt:null,submitted:false,saved:null,saveErr:null,payload:null,passOpen:true});
@@ -496,9 +498,11 @@ function passageHtml(txt, cls, curGap){
 }
 const keepHtml = s => String(s ?? '');   // teachers' content may contain KaTeX and simple HTML
 // an answer = optional picture + optional text
-const optHtml = (q,k) => { const im=(q.option_images||[])[k], tx=String(q.options[k]??'');
+// an answer = optional picture + English text and/or Arabic text (Option_X_AR); both languages are stacked like the question stem
+const optHtml = (q,k) => { const im=(q.option_images||[])[k], en=String(q.options[k]??'').trim(), ar=String((q.options_ar||[])[k]??'').trim();
+  const tx = ar && ar!==en ? (en?`<span class="o-en" dir="ltr">${keepHtml(en)}</span>`:'')+`<span class="o-ar" dir="rtl">${keepHtml(ar)}</span>` : en;
   return (im?`<img class="o-img" src="${esc(im)}" alt="${String.fromCharCode(97+k)}">`:'') + (tx.trim()?(im?`<span class="o-txt">${keepHtml(tx)}</span>`:keepHtml(tx)):''); };
-const optPlain = (q,k) => { const tx=plainTxt(q.options[k]||''); return tx || ((q.option_images||[])[k] ? '[picture]' : ''); };
+const optPlain = (q,k) => { const tx=[plainTxt(q.options[k]||''), plainTxt((q.options_ar||[])[k]||'')].filter(Boolean).filter((x,i,a)=>a.indexOf(x)===i).join(' / '); return tx || ((q.option_images||[])[k] ? '[picture]' : ''); };
 function renderQ(){
   const i=st.cur, q=st.qs[i], n=st.qs.length, last=i===n-1;
   $('#pg').textContent=`${i+1} - ${n}`;

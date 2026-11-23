@@ -263,7 +263,7 @@ function results(host, opts = {}) {
   }
   // one answer for the answers table: letter + optional picture thumbnail + text
   const optCell = (q, k) => { const im = (q.option_images || [])[k];
-    return `${String.fromCharCode(65 + k)}. ${im ? `<img src="${esc(im)}" alt="" style="display:block;max-width:120px;max-height:90px;border:1px solid var(--line);border-radius:4px;margin:2px 0">` : ''}${q.options[k] || ''}`; };
+    return `${String.fromCharCode(65 + k)}. ${im ? `<img src="${esc(im)}" alt="" style="display:block;max-width:120px;max-height:90px;border:1px solid var(--line);border-radius:4px;margin:2px 0">` : ''}${q.options[k] || ''}${(q.options_ar || [])[k] ? `<div dir="rtl">${q.options_ar[k]}</div>` : ''}`; };
   async function viewAnswers(id) {
     try {
       const a = await API.attempt(id); const e = await API.exam(a.exam_id);

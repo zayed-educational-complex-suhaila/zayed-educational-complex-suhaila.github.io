@@ -9,7 +9,7 @@
 'use strict';
 const HEAD = {
   english: ['Q_Num', 'Section_Part', 'Topic', 'Outcome_Code', 'Outcome_Label', 'Passage_ID', 'Question_EN', 'Image', 'Option_A', 'Option_B', 'Option_C', 'Option_D', 'Image_A', 'Image_B', 'Image_C', 'Image_D', 'Correct_Option', 'Marks', 'Feedback', 'Hint'],
-  stem: ['Q_Num', 'Section_Part', 'Topic', 'Outcome_Code', 'Outcome_Label', 'Passage_ID', 'Question_EN', 'Question_AR', 'Image', 'Option_A', 'Option_B', 'Option_C', 'Option_D', 'Image_A', 'Image_B', 'Image_C', 'Image_D', 'Correct_Option', 'Marks', 'Feedback', 'Hint'],
+  stem: ['Q_Num', 'Section_Part', 'Topic', 'Outcome_Code', 'Outcome_Label', 'Passage_ID', 'Question_EN', 'Question_AR', 'Image', 'Option_A', 'Option_B', 'Option_C', 'Option_D', 'Option_A_AR', 'Option_B_AR', 'Option_C_AR', 'Option_D_AR', 'Image_A', 'Image_B', 'Image_C', 'Image_D', 'Correct_Option', 'Marks', 'Feedback', 'Hint'],
   arabic: ['Q_Num', 'Section_Part', 'Topic', 'Outcome_Code', 'Outcome_Label', 'Passage_ID', 'Question_AR', 'Image', 'Option_A', 'Option_B', 'Option_C', 'Option_D', 'Image_A', 'Image_B', 'Image_C', 'Image_D', 'Correct_Option', 'Marks', 'Feedback', 'Hint'],
 };
 const PHEAD = { english: ['Passage_ID', 'Passage_Title', 'Passage_EN'], stem: ['Passage_ID', 'Passage_Title', 'Passage_EN', 'Passage_AR'], arabic: ['Passage_ID', 'Passage_Title', 'Passage_AR'] };
@@ -91,7 +91,7 @@ E. The Writing section is done on paper (or as a separate task) — do not inclu
 ` + finish;
   if (fam === 'stem') return base + `
 MATH & SCIENCE RULES
-A. Fill BOTH Question_EN and Question_AR (accurate Modern Standard Arabic using UAE MoE terminology). Options may stay in English/symbols.
+A. Fill BOTH Question_EN and Question_AR (accurate Modern Standard Arabic using UAE MoE terminology). Write every answer in BOTH languages too: English in Option_A–Option_D and its Arabic translation in Option_A_AR–Option_D_AR (same order, same maths). Leave an Option_X_AR cell empty only when that answer is identical in both languages (a number, a symbol or a pure expression such as $x = 5$).
 B. Write EVERY mathematical or scientific expression in KaTeX between dollar signs: inline $...$, display $$...$$ — e.g. $\\frac{3}{4}$, $x^2-5x+6=0$, $\\sqrt{72}$, $3.0\\times10^{8}\\ \\text{m/s}$, $H_2O$, $\\Delta v$. This applies to options, feedback and passages too.
 C. Money: write \\$4.50 (backslash before the dollar sign) so it is not read as maths.
 D. Section_Part groups questions by unit or lesson, e.g. "Part 1: Functions", "Part 2: Equations".
@@ -173,7 +173,7 @@ ${target}
 ` + finish;
   if (fam === 'stem') return base + `
 قواعد الرياضيات والعلوم
-أ. املأ Question_EN و Question_AR معاً (بالعربية الفصحى وبمصطلحات الوزارة)، ويمكن أن تبقى الخيارات بالإنجليزية أو بالرموز.
+أ. املأ Question_EN و Question_AR معاً (بالعربية الفصحى وبمصطلحات الوزارة)، واكتب كل خيار باللغتين أيضاً: الإنجليزية في Option_A إلى Option_D وترجمتها العربية في Option_A_AR إلى Option_D_AR بالترتيب نفسه وبالرموز الرياضية نفسها. اترك خلية Option_X_AR فارغة فقط إذا كان الخيار متطابقاً في اللغتين (رقم أو رمز أو تعبير رياضي فقط مثل $x = 5$).
 ب. اكتب كل تعبير رياضي أو علمي بصيغة KaTeX بين علامتي الدولار: ‏$...$ داخل السطر و $$...$$ في سطر مستقل، مثل $\\frac{3}{4}$ و $x^2-5x+6=0$ و $H_2O$، ويشمل ذلك الخيارات والتغذية الراجعة والنصوص.
 ج. للعملة اكتب \\$4.50 (شرطة مائلة قبل علامة الدولار).
 د. ‏Section_Part لتجميع الأسئلة حسب الوحدة أو الدرس مثل "Part 1: Functions".

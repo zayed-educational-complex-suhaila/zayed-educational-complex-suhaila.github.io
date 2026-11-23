@@ -339,7 +339,7 @@ function render() {
       <div class="qb"><div class="mq">
         ${q.en ? `<div class="stem-en">${q.en}</div>` : ''}${q.ar ? `<div class="stem-ar">${q.ar}</div>` : ''}
         <ol class="opts" ${arOnly ? 'dir="rtl"' : ''}>${q.options.map((o, k) => { const oi = (q.option_images || [])[k];
-          return `<li class="${k === q.correct ? 'ok' : ''}"><span class="l">${String.fromCharCode(97 + k)}.</span><span class="ob">${oi ? `<img class="oimg" src="${esc(oi)}" alt="">` : ''}${o ? `<span dir="auto">${o}</span>` : ''}</span>
+          return `<li class="${k === q.correct ? 'ok' : ''}"><span class="l">${String.fromCharCode(97 + k)}.</span><span class="ob">${oi ? `<img class="oimg" src="${esc(oi)}" alt="">` : ''}${o ? `<span dir="auto">${o}</span>` : ''}${(q.options_ar || [])[k] ? `<span dir="rtl" style="display:block">${q.options_ar[k]}</span>` : ''}</span>
           <span class="otools">${k === q.correct ? `<span class="badge b-ok">✓ ${t('correct')}</span>` : ''}<button type="button" data-oimg="${k}" title="${esc(t('opt_img_t'))}">${t('opt_img_add')}</button>${oi ? `<button type="button" class="rm" data-ormimg="${k}" title="${esc(t('opt_img_rm'))}">✕</button>` : ''}</span></li>`; }).join('')}</ol>
         ${q.feedback ? `<div class="fb" dir="auto"><b>${t('feedback')}:</b> ${q.feedback}</div>` : ''}${q.hint ? `<div class="hint" dir="auto"><b>${t('hint')}:</b> ${q.hint}</div>` : ''}
       </div><div><div class="imgbox">${q.image_url ? `<img src="${esc(q.image_url)}" alt="">` : `<div class="none">${UI.ICONS.image.replace('<svg', '<svg style="width:32px;height:32px;fill:#D1C9C1;display:block;margin:0 auto 4px"')}${t('img_none')}</div>`}</div>

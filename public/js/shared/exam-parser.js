@@ -272,7 +272,7 @@ async function parseExamWorkbook(buffer, opts = {}) {
   // any other picture in the row belongs to the question.
   const cellImgs = qWsName ? await extractCellImages(zip, await sheetFileByName(zip, qWsName)) : [];
   const optCol = {};
-  LETTERS.forEach((L, k) => ['Image_' + L, 'Option_' + L].forEach(h => { if (qt.headers[norm(h)]) optCol[qt.headers[norm(h)]] = k; }));
+  LETTERS.forEach((L, k) => ['Image_' + L, 'Option_' + L, 'Option_' + L + '_AR'].forEach(h => { if (qt.headers[norm(h)]) optCol[qt.headers[norm(h)]] = k; }));
   const imgByRow = new Map(), optImgByRow = new Map();
   for (const im of cellImgs) {
     if (optCol[im.col] !== undefined) { const m = optImgByRow.get(im.row) || {}; if (!m[optCol[im.col]]) m[optCol[im.col]] = im; optImgByRow.set(im.row, m); }
@@ -283,6 +283,7 @@ async function parseExamWorkbook(buffer, opts = {}) {
     const en = row.get('Question_EN'), ar = row.get('Question_AR');
     const S = 'Questions', R = row.r;
     const opts = LETTERS.map(L => row.get('Option_' + L));
+    const optsAr = LETTERS.map(L => row.get('Option_' + L + '_AR'));   // optional Arabic text of each answer (bilingual exams)
     // option pictures: an embedded picture, or a link typed in Image_X
     const oPics = optImgByRow.get(R) || {};
     const optImg = LETTERS.map((L, k) => {
@@ -292,7 +293,7 @@ async function parseExamWorkbook(buffer, opts = {}) {
       if (txt) warn(S, R, `Image_${L} cell text "${txt.slice(0, 40)}" is not an image or link – ignored.`, `محتوى الخلية Image_${L} ليس صورة أو رابطًا وتم تجاهله.`);
       return null;
     });
-    const filled = opts.map((o, k) => !!(o || optImg[k]));
+    const filled = opts.map((o, k) => !!(o || optsAr[k] || optImg[k]));
     const imageCell = row.get('Image');
     const anything = en || ar || filled.some(Boolean) || row.get('Correct_Option');
     if (!anything && !imgByRow.has(row.r)) continue;
@@ -302,6 +303,7 @@ async function parseExamWorkbook(buffer, opts = {}) {
     if (gap !== -1) err(S, R, `Option_${LETTERS[gap]} is empty but a later option is filled – fill options in order A, B, C, D.`, `الخيار ${LETTERS[gap]} فارغ مع وجود خيار بعده – املأ الخيارات بالترتيب.`);
     const keep = LETTERS.map((_, k) => k).filter(k => filled[k]);
     const options = keep.map(k => opts[k]);
+    const options_ar = keep.map(k => optsAr[k] || '');
     const option_images = [], option_image_refs = [];
     keep.forEach(k => { const p = optImg[k];
       option_images.push(p && p.url ? p.url : '');
@@ -337,6 +339,7 @@ async function parseExamWorkbook(buffer, opts = {}) {
       outcome_code: row.get('Outcome_Code'), outcome_label: row.get('Outcome_Label'),
       passage_id: pid, en, ar, image_url, image_ref, options, correct,
       ...(option_images.some(Boolean) || option_image_refs.some(Boolean) ? { option_images, option_image_refs } : {}),
+      ...(options_ar.some(Boolean) ? { options_ar } : {}),
       marks: Number.isFinite(marks) && marks > 0 ? marks : 0,
       feedback: row.get('Feedback'), hint: row.get('Hint'),
     });

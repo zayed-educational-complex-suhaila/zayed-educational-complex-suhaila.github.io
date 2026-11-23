@@ -175,7 +175,7 @@ BEFORE YOU SEND THE FILE, CHECK
 • Every Passage_ID used in "Questions" exists in "Passages"; no leftover example rows; Marks are numbers.
 
 MATH & SCIENCE RULES
-A. Fill BOTH Question_EN and Question_AR (accurate Modern Standard Arabic using UAE MoE terminology). Options may stay in English/symbols.
+A. Fill BOTH Question_EN and Question_AR (accurate Modern Standard Arabic using UAE MoE terminology). Write every answer in BOTH languages too: English in Option_A–Option_D and its Arabic translation in Option_A_AR–Option_D_AR (same order, same maths). Leave an Option_X_AR cell empty only when that answer is identical in both languages (a number, a symbol or a pure expression such as $x = 5$).
 B. Write EVERY mathematical or scientific expression in KaTeX between dollar signs: inline $...$, display $$...$$ — e.g. $\frac{3}{4}$, $x^2-5x+6=0$, $\sqrt{72}$, $3.0\times10^{8}\ \text{m/s}$, $H_2O$, $\Delta v$. This applies to options, feedback and passages too.
 C. Money: write \$4.50 (backslash before the dollar sign) so it is not read as maths.
 D. Section_Part groups questions by unit or lesson, e.g. "Part 1: Functions", "Part 2: Equations".
@@ -233,7 +233,7 @@ Attach the completed "Mathematics_G9_Term1_Exam.xlsx". In the message write only
 • أن كل Passage_ID مستخدم موجود في "Passages"، وعدم بقاء صفوف الأمثلة، وأن Marks أرقام.
 
 قواعد الرياضيات والعلوم
-أ. املأ Question_EN و Question_AR معاً (بالعربية الفصحى وبمصطلحات الوزارة)، ويمكن أن تبقى الخيارات بالإنجليزية أو بالرموز.
+أ. املأ Question_EN و Question_AR معاً (بالعربية الفصحى وبمصطلحات الوزارة)، واكتب كل خيار باللغتين أيضاً: الإنجليزية في Option_A إلى Option_D وترجمتها العربية في Option_A_AR إلى Option_D_AR بالترتيب نفسه. اترك خلية Option_X_AR فارغة فقط إذا كان الخيار متطابقاً في اللغتين (رقم أو رمز أو تعبير رياضي فقط).
 ب. اكتب كل تعبير رياضي أو علمي بصيغة KaTeX بين علامتي الدولار: ‏$...$ داخل السطر و $$...$$ في سطر مستقل، مثل $\frac{3}{4}$ و $x^2-5x+6=0$ و $H_2O$، ويشمل ذلك الخيارات والتغذية الراجعة والنصوص.
 ج. للعملة اكتب \$4.50 (شرطة مائلة قبل علامة الدولار).
 د. ‏Section_Part لتجميع الأسئلة حسب الوحدة أو الدرس مثل "Part 1: Functions".
