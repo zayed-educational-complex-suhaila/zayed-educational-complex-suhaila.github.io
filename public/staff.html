@@ -30,10 +30,11 @@
   .gate-art .o1 { inset-inline-start: 26px; top: 30px; } .gate-art .o2 { inset-inline-end: 26px; bottom: 120px; width: 105px; } .gate-art .o3 { inset-inline-end: 30px; top: 150px; width: 95px; }
   .gate-art .facts { display: flex; gap: 28px; margin-top: auto; padding-top: 26px; flex-wrap: wrap; justify-content: center; position: relative; z-index: 1; }
   .gate-art .facts div { font-size: 13px; color: var(--olive-2); font-weight: 700; } .gate-art .facts b { display: block; color: var(--olive); font-size: 26px; font-weight: 800; }
-  .credits { position: relative; z-index: 1; margin-top: auto; padding-top: 26px; width: 100%; max-width: 600px; color: var(--navy); font-weight: 800; }
-  .credits .by { font-size: 22px; margin: 0 0 18px; }
-  .credits .heads { display: grid; grid-template-columns: 1fr 1fr; gap: 14px 24px; }
-  .credits .heads b { display: block; font-size: 20px; } .credits .heads span { display: block; font-size: 21px; margin-top: 8px; }
+  .credits { position: relative; z-index: 2; margin-top: auto; width: 100%; max-width: 540px; background: rgba(255,255,255,.82); border-radius: 16px; border-top: 4px solid var(--navy); box-shadow: 0 8px 24px rgba(46,26,14,.12); padding: 16px 22px 18px; color: var(--navy); }
+  .credits .by { margin: 0 0 14px; padding-bottom: 12px; border-bottom: 1px solid #EBD3C3; font-size: 19px; font-weight: 800; }
+  .credits .heads { display: grid; grid-template-columns: 1fr 1fr; }
+  .credits .heads > div { padding: 0 10px; } .credits .heads > div + div { border-inline-start: 1px solid #EBD3C3; }
+  .credits .heads b { display: block; font-size: 14px; font-weight: 700; color: var(--olive-2); } .credits .heads span { display: block; font-size: 18px; font-weight: 800; margin-top: 4px; }
   .gate-art .slide-foot { width: 100%; display: flex; justify-content: space-between; gap: 10px; color: var(--olive-2); font-size: 11.5px; font-weight: 700; margin-top: 18px; position: relative; z-index: 1; flex-wrap: wrap; }
   .gate-form { padding: 28px 40px 40px; display: flex; flex-direction: column; }
   .gate-top { display: flex; align-items: center; gap: 12px; }
@@ -51,7 +52,7 @@
   .form-panel { display: none; } .form-panel.on { display: block; animation: fade .2s; }
   .form-panel .grid { gap: 12px; }
   .msg { margin-top: 12px; }
-  @media (max-width: 900px) { .gate { grid-template-columns: 1fr; } .gate-art { padding: 22px 16px 16px; } .gate-art h1 { font-size: 24px; } .title-frame { margin: 18px 0 14px; } .title-block { margin: 0 -12px; padding: 26px 18px; } .gate-art .orn { display: none; } .gate-art .logo-card { width: 140px; padding: 12px; } .gate-art .facts { display: none; } .gate-art .motto { height: 56px; max-width: 100%; } .credits .by { font-size: 17px; } .credits .heads b { font-size: 15px; } .credits .heads span { font-size: 16px; } .gate-form { padding: 18px 16px 30px; } }
+  @media (max-width: 900px) { .gate { grid-template-columns: 1fr; } .gate-art { padding: 22px 16px 16px; } .gate-art h1 { font-size: 24px; } .title-frame { margin: 18px 0 14px; } .title-block { margin: 0 -12px; padding: 26px 18px; } .gate-art .orn { display: none; } .gate-art .logo-card { width: 140px; padding: 12px; } .gate-art .facts { display: none; } .gate-art .motto { height: 56px; max-width: 100%; } .credits { padding: 12px 12px 14px; } .credits .by { font-size: 16px; } .credits .heads b { font-size: 12.5px; } .credits .heads span { font-size: 15px; } .gate-form { padding: 18px 16px 30px; } }
   @media (max-width: 420px) { .roles { gap: 8px; } .role img { width: 40px; height: 40px; } .role small { display: none; } }
 </style>
 </head>
@@ -59,7 +60,7 @@
 <div id="demoRibbon"></div>
 <main class="gate">
   <section class="gate-art" aria-hidden="false">
-    <img class="orn o1" src="assets/ornaments/laptop-shield.svg" alt=""><img class="orn o2" src="assets/ornaments/analytics.svg" alt=""><img class="orn o3" src="assets/ornaments/idea-gear.svg" alt="">
+    <img class="orn o1" src="assets/ornaments/laptop-shield.svg" alt=""><img class="orn o3" src="assets/ornaments/idea-gear.svg" alt="">
     <div class="logo-card"><img src="assets/complex-logo.png" alt="Zayed Educational Complex – Suhaila"></div>
     <div class="title-frame"><div class="title-block"><h1 data-i18n="gate_title"></h1><p class="term" data-i18n="gate_term"></p><p class="lead" data-i18n="gate_lead"></p></div></div>
     <img class="motto" src="assets/motto-banner.jpg" alt="بالميثاق نبلغ الآفاق – العام الدراسي 2026-2027">
