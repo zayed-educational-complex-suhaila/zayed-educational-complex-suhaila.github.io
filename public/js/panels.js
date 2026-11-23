@@ -44,7 +44,32 @@ function protectDollars(root) {
       else { if (s[i] === '$') { inM = !inM; if (s[i + 1] === '$') { buf += '$'; i++; } } buf += s[i]; } }
     frag.append(buf); n.replaceWith(frag); });
 }
-const mathify = el => { protectDollars(el); if (window.renderMathInElement) renderMathInElement(el,{ delimiters: [{ left: '$$', right: '$$', display: true }, { left: '$', right: '$', display: false }], throwOnError: false }); };
+// Arabic text: move a sign that STARTS a $…$ maths part out of it (same rule as the exam screen)
+const AR_SIGN = { '=': '=', '<': '<', '>': '>', '≤': '≤', '≥': '≥', '≠': '≠', '≈': '≈', '\\le': '≤', '\\leq': '≤', '\\ge': '≥', '\\geq': '≥', '\\ne': '≠', '\\neq': '≠', '\\approx': '≈' };
+function fixArMath(s) {
+  s = String(s ?? '');
+  if (!/[؀-ۿ]/.test(s) || s.indexOf('$') < 0) return s;
+  let out = '', i = 0;
+  while (i < s.length) {
+    if (s[i] === '\\' && s[i + 1] === '$') { out += '\\$'; i += 2; continue; }        // escaped money sign
+    if (s[i] === '$' && s[i + 1] === '$') {                                             // $$display$$: copy unchanged
+      const j = s.indexOf('$$', i + 2); if (j < 0) { out += s.slice(i); break; }
+      out += s.slice(i, j + 2); i = j + 2; continue;
+    }
+    if (s[i] === '$') {                                                                 // inline $…$
+      let j = i + 1; while (j < s.length && !(s[j] === '$' && s[j - 1] !== '\\')) j++;
+      if (j >= s.length) { out += s.slice(i); break; }
+      const inner = s.slice(i + 1, j);
+      const m = inner.match(/^\s*(\\(?:leq?|geq?|neq?|approx)(?![a-zA-Z])|=|<|>|≤|≥|≠|≈)\s*([\s\S]+)$/);
+      out += m ? `${AR_SIGN[m[1]] || m[1]} $${m[2]}$` : s.slice(i, j + 1);
+      i = j + 1; continue;
+    }
+    out += s[i++];
+  }
+  return out;
+}
+function fixArabicTextNodes(root) { const w = document.createTreeWalker(root, NodeFilter.SHOW_TEXT), nodes = []; while (w.nextNode()) if (w.currentNode.data.includes('$')) nodes.push(w.currentNode); nodes.forEach(n => { const v = fixArMath(n.data); if (v !== n.data) n.data = v; }); }
+const mathify = el => { fixArabicTextNodes(el); protectDollars(el); if (window.renderMathInElement) renderMathInElement(el,{ delimiters: [{ left: '$$', right: '$$', display: true }, { left: '$', right: '$', display: false }], throwOnError: false }); };
 let SECTIONS = null; const sections = async () => SECTIONS || (SECTIONS = await API.sections());
 const sectionsLabel = arr => (!arr || !arr.length || arr.includes('ALL')) ? t('all_sections_word') : arr.join('، ');
 

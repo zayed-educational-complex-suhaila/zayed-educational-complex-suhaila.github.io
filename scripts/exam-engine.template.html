@@ -203,6 +203,37 @@ function splitCombined(){
     if(!String(q.ar||'').trim()){ const sp=splitBi(q.en); if(sp){ q.en=sp.en; q.ar=sp.ar; } }
   });
 }
+// In ARABIC text a maths part that STARTS with a sign ("المعامل الرئيس $= 4$") is drawn left-to-right, which puts the
+// sign on the far side ("= 4 المعامل الرئيس"). Move that leading sign out of the maths so it sits between the Arabic words and
+// the value ("4 = المعامل الرئيس"). Only Arabic text, only a sign at the START of a $…$ part; display maths ($$…$$) untouched.
+const AR_SIGN = { '=': '=', '<': '<', '>': '>', '≤': '≤', '≥': '≥', '≠': '≠', '≈': '≈', '\\le': '≤', '\\leq': '≤', '\\ge': '≥', '\\geq': '≥', '\\ne': '≠', '\\neq': '≠', '\\approx': '≈' };
+function fixArMath(s) {
+  s = String(s ?? '');
+  if (!/[؀-ۿ]/.test(s) || s.indexOf('$') < 0) return s;
+  let out = '', i = 0;
+  while (i < s.length) {
+    if (s[i] === '\\' && s[i + 1] === '$') { out += '\\$'; i += 2; continue; }        // escaped money sign
+    if (s[i] === '$' && s[i + 1] === '$') {                                             // $$display$$: copy unchanged
+      const j = s.indexOf('$$', i + 2); if (j < 0) { out += s.slice(i); break; }
+      out += s.slice(i, j + 2); i = j + 2; continue;
+    }
+    if (s[i] === '$') {                                                                 // inline $…$
+      let j = i + 1; while (j < s.length && !(s[j] === '$' && s[j - 1] !== '\\')) j++;
+      if (j >= s.length) { out += s.slice(i); break; }
+      const inner = s.slice(i + 1, j);
+      const m = inner.match(/^\s*(\\(?:leq?|geq?|neq?|approx)(?![a-zA-Z])|=|<|>|≤|≥|≠|≈)\s*([\s\S]+)$/);
+      out += m ? `${AR_SIGN[m[1]] || m[1]} $${m[2]}$` : s.slice(i, j + 1);
+      i = j + 1; continue;
+    }
+    out += s[i++];
+  }
+  return out;
+}
+function fixArabicMath(){
+  SOURCE_QUESTIONS.forEach(q=>{ q.ar=fixArMath(q.ar); q.options=q.options.map(fixArMath); q.options_ar=q.options_ar.map(fixArMath);
+    if(q.feedback) q.feedback=fixArMath(q.feedback); if(q.hint) q.hint=fixArMath(q.hint);
+    if(q.passage && q.passage.ar) q.passage={...q.passage, ar:fixArMath(q.passage.ar)}; });
+}
 async function boot(){
   try{ lang = localStorage.getItem('zec.lang') || ''; }catch(_){}
   ME = await API.me();
@@ -222,7 +253,7 @@ async function boot(){
     option_images:(q.options||[]).map((_,k)=>(q.option_images||[])[k]||''),
     options_ar:(q.options||[]).map((_,k)=>String((q.options_ar||[])[k]??'')),
     title: plainTxt(q.en||q.ar).slice(0,110), passage: q.passage_id && P[q.passage_id] ? { id:q.passage_id, ...P[q.passage_id] } : null }));
-  splitCombined(); applyContentLang(); if(CONTENT_LANG) lang = CONTENT_LANG;   // school language rule (see contentLang)
+  splitCombined(); applyContentLang(); fixArabicMath(); if(CONTENT_LANG) lang = CONTENT_LANG;   // school language rule (see contentLang)
   TOTAL_Q = SOURCE_QUESTIONS.length; TOTAL_MARKS = SOURCE_QUESTIONS.reduce((a,q)=>a+mk(q),0);
   PASS_MARK = Math.ceil(TOTAL_MARKS*C.passingPercent/100);
   EXAM_TITLE = EXAM.title || `Grade ${C.grade} - ${C.subject} - ${C.term}`;
