@@ -308,10 +308,7 @@ async function drawVisitors() {
   const box = $('#visitors'); if (!box || !API.visitorStats) return;
   let v; try { v = await API.visitorStats(); } catch (e) { box.innerHTML = ''; return; }
   box.innerHTML = `<div class="vis-box"><div class="vis-h"><img src="assets/ornaments/idea-box.svg" alt=""><span>${t('vis_t')}</span></div>
-    <div class="vis-big"><b class="num">${v.visitors}</b><span>${t('vis_total')}</span></div>
-    <div class="vis-grid"><div><b class="num">${v.today}</b>${t('vis_today')}</div><div><b class="num">${v.week}</b>${t('vis_week')}</div>
-      <div><b class="num">${v.visits}</b>${t('vis_visits')}</div><div><b class="num">${v.practice}</b>${t('vis_practice')}</div></div>
-    ${v.by_class && v.by_class.length ? `<div class="vis-cls">${v.by_class.map(c => `<span>${esc(UI.gradeTrackLabel(c.grade_num, c.track))} · <span class="num">${c.n}</span></span>`).join('')}</div>` : `<div class="small muted" style="margin-top:8px">${t('vis_none')}</div>`}</div>`;
+    <div class="vis-big"><b class="num">${v.visitors}</b><span>${t('vis_total')}</span></div></div>`;
 }
 
 (async () => {
