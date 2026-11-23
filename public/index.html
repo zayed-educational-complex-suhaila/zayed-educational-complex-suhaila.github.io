@@ -29,6 +29,10 @@
   .gate-art .o1 { inset-inline-start: 26px; top: 30px; } .gate-art .o2 { inset-inline-end: 26px; bottom: 120px; width: 105px; } .gate-art .o3 { inset-inline-end: 30px; top: 150px; width: 95px; }
   .gate-art .facts { display: flex; gap: 28px; margin-top: auto; padding-top: 26px; flex-wrap: wrap; justify-content: center; position: relative; z-index: 1; }
   .gate-art .facts div { font-size: 13px; color: var(--olive-2); font-weight: 700; } .gate-art .facts b { display: block; color: var(--olive); font-size: 26px; font-weight: 800; }
+  .credits { position: relative; z-index: 1; margin-top: auto; padding-top: 26px; width: 100%; max-width: 600px; color: var(--navy); font-weight: 800; }
+  .credits .by { font-size: 22px; margin: 0 0 18px; }
+  .credits .heads { display: grid; grid-template-columns: 1fr 1fr; gap: 14px 24px; }
+  .credits .heads b { display: block; font-size: 20px; } .credits .heads span { display: block; font-size: 21px; margin-top: 8px; }
   .gate-art .slide-foot { width: 100%; display: flex; justify-content: space-between; gap: 10px; color: var(--olive-2); font-size: 11.5px; font-weight: 700; margin-top: 18px; position: relative; z-index: 1; flex-wrap: wrap; }
   .gate-form { padding: 28px 40px 40px; display: flex; flex-direction: column; }
   .gate-top { display: flex; align-items: center; gap: 12px; }
@@ -60,7 +64,7 @@
   .visitor-body { margin-top: 8px; padding: 14px 14px 4px; border: 1px dashed var(--line); border-radius: 12px; background: var(--sky-2); }
   .visitor-body h3 { font-size: 15px; font-weight: 800; color: var(--navy); margin: 0 0 2px; }
   .visitor-body .sub { margin: 0 0 10px; font-size: 12.5px; color: var(--muted); }
-  @media (max-width: 900px) { .gate { grid-template-columns: 1fr; } .gate-art { padding: 22px 16px 16px; } .gate-art h1 { font-size: 24px; } .title-frame { margin: 18px 0 14px; } .title-block { margin: 0 -12px; padding: 26px 18px; } .gate-art .orn { display: none; } .gate-art .logo-card { width: 140px; padding: 12px; } .gate-art .facts { display: none; } .gate-art .motto { height: 56px; max-width: 100%; } .gate-form { padding: 18px 16px 30px; } }
+  @media (max-width: 900px) { .gate { grid-template-columns: 1fr; } .gate-art { padding: 22px 16px 16px; } .gate-art h1 { font-size: 24px; } .title-frame { margin: 18px 0 14px; } .title-block { margin: 0 -12px; padding: 26px 18px; } .gate-art .orn { display: none; } .gate-art .logo-card { width: 140px; padding: 12px; } .gate-art .facts { display: none; } .gate-art .motto { height: 56px; max-width: 100%; } .credits .by { font-size: 17px; } .credits .heads b { font-size: 15px; } .credits .heads span { font-size: 16px; } .gate-form { padding: 18px 16px 30px; } }
   @media (max-width: 420px) { .roles { gap: 8px; } .role img { width: 40px; height: 40px; } .role small { display: none; } }
 </style>
 </head>
@@ -72,7 +76,11 @@
     <div class="logo-card"><img src="assets/complex-logo.png" alt="Zayed Educational Complex – Suhaila"></div>
     <div class="title-frame"><div class="title-block"><h1 data-i18n="app_name"></h1><p class="lead" data-i18n="gate_lead"></p></div></div>
     <img class="motto" src="assets/motto-banner.jpg" alt="بالميثاق نبلغ الآفاق – العام الدراسي 2026-2027">
-    <div class="slide-foot" style="margin-top:auto"><span>Zayed Educational Complex – Suhaila</span><span>مجمع زايد التعليمي - سهيلة</span></div>
+    <div class="credits" lang="ar" dir="rtl">
+      <p class="by">تصميم أ. محمد تركماني</p>
+      <div class="heads"><div><b>مديرة نطاق 5.4</b><span>د. خلود محمد الزعابي</span></div><div><b>مديرة المجمع</b><span>أ. مريم سيف سعيد الغفلي</span></div></div>
+    </div>
+    <div class="slide-foot"><span>Zayed Educational Complex – Suhaila</span><span>مجمع زايد التعليمي - سهيلة</span></div>
   </section>
 
   <section class="gate-form">
