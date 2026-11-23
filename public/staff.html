@@ -7,7 +7,7 @@
 <link rel="icon" href="assets/complex-logo.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/portal.css?v=20261123e">
+<link rel="stylesheet" href="css/portal.css?v=20261123f">
 <style>
   body { min-height: 100vh; display: flex; flex-direction: column; background: var(--bg); }
   .gate { flex: 1; display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr); min-height: 100vh; }
@@ -22,7 +22,8 @@
   .title-block { background: var(--olive); margin: 0 -22px; padding: 30px 30px; position: relative; }
   .title-block::before, .title-block::after { content: ""; position: absolute; inset-inline: 0; height: 1.5px; background: #e6e6e6; }
   .title-block::before { top: 16px; } .title-block::after { bottom: 16px; }
-  .gate-art h1 { color: #FCF3ED; font-size: 34px; font-weight: 800; margin: 0 0 8px; }
+  .gate-art h1 { color: #FCF3ED; font-size: 29px; font-weight: 800; margin: 0 0 8px; }
+  .gate-art .term { display: inline-block; color: var(--olive); background: #FCF3ED; font-size: 18px; font-weight: 800; padding: 4px 18px; border-radius: 999px; margin: 0 0 12px; }
   .gate-art .lead { color: #F6DCCA; font-size: 15px; margin: 0 auto; max-width: 480px; }
   .gate-art .motto { height: 70px; width: auto; border-radius: 10px; box-shadow: 0 6px 18px rgba(46,26,14,.18); position: relative; z-index: 1; }
   .gate-art .orn { position: absolute; width: 120px; opacity: .55; }
@@ -60,7 +61,7 @@
   <section class="gate-art" aria-hidden="false">
     <img class="orn o1" src="assets/ornaments/laptop-shield.svg" alt=""><img class="orn o2" src="assets/ornaments/analytics.svg" alt=""><img class="orn o3" src="assets/ornaments/idea-gear.svg" alt="">
     <div class="logo-card"><img src="assets/complex-logo.png" alt="Zayed Educational Complex – Suhaila"></div>
-    <div class="title-frame"><div class="title-block"><h1 data-i18n="app_name"></h1><p class="lead" data-i18n="gate_lead"></p></div></div>
+    <div class="title-frame"><div class="title-block"><h1 data-i18n="gate_title"></h1><p class="term" data-i18n="gate_term"></p><p class="lead" data-i18n="gate_lead"></p></div></div>
     <img class="motto" src="assets/motto-banner.jpg" alt="بالميثاق نبلغ الآفاق – العام الدراسي 2026-2027">
     <div class="credits" lang="ar" dir="rtl">
       <p class="by">تصميم أ. محمد تركماني</p>
@@ -108,13 +109,13 @@
 </main>
 
 <script src="vendor/exceljs.min.js" defer></script>
-<script src="js/config.js?v=20261123e"></script>
-<script src="js/i18n.js?v=20261123e"></script>
-<script src="js/shared/teachers-data.js?v=20261123e"></script>
-<script src="js/shared/catalog.js?v=20261123e"></script>
-<script src="js/shared/reports.js?v=20261123e"></script>
-<script src="js/api.js?v=20261123e"></script>
-<script src="js/ui.js?v=20261123e"></script>
-<script src="js/gate.js?v=20261123e"></script>
+<script src="js/config.js?v=20261123f"></script>
+<script src="js/i18n.js?v=20261123f"></script>
+<script src="js/shared/teachers-data.js?v=20261123f"></script>
+<script src="js/shared/catalog.js?v=20261123f"></script>
+<script src="js/shared/reports.js?v=20261123f"></script>
+<script src="js/api.js?v=20261123f"></script>
+<script src="js/ui.js?v=20261123f"></script>
+<script src="js/gate.js?v=20261123f"></script>
 </body>
 </html>

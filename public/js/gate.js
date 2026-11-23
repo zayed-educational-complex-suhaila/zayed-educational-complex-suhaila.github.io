@@ -3,7 +3,7 @@
 I18N.add({
   en: { signin: 'Sign in', choose_role: 'Choose how you are signing in.',
     signin_students: 'Students & visitors', choose_students: 'School students sign in with their Student ID. Visitors from outside the school use a guest code.',
-    signin_staff: 'Teachers & administration', choose_staff: 'Staff sign-in. Students and visitors use the main page.', gate_lead: 'Practise end-of-term exams for Grades 5–12 in the same SwiftAssess environment used on exam day — in English and Arabic.',
+    signin_staff: 'Teachers & administration', choose_staff: 'Staff sign-in. Students and visitors use the main page.', gate_title: 'Electronic Exam Training Platform', gate_term: 'First Semester', gate_lead: 'Practise end-of-term exams for Grades 5–12 in the same SwiftAssess environment used on exam day — in English and Arabic.',
     f_grades: 'Grades', f_sections: 'Sections', f_students: 'Students',
     r_student_s: 'Student ID', r_teacher_s: 'Teacher PIN', r_admin_s: 'Admin PIN', r_guest_s: 'Visitors',
     our_students: 'Suhaila Complex students', our_students_s: 'Sign in with your Student ID.',
@@ -17,7 +17,7 @@ I18N.add({
     err_name_required: 'Please choose your name from the list.', err_unknown_teacher: 'This name is not on the school teacher list.', need_pin: 'Enter the 4-digit PIN.', need_id: 'Enter your Student ID.' },
   ar: { signin: 'تسجيل الدخول', choose_role: 'اختر طريقة الدخول.',
     signin_students: 'الطلبة والزوار', choose_students: 'يدخل طلبة المدرسة برقم الطالب، ويستخدم الزوار من خارج المدرسة رمز الزائر.',
-    signin_staff: 'المعلمون والإدارة', choose_staff: 'دخول الموظفين. يستخدم الطلبة والزوار الصفحة الرئيسية.', gate_lead: 'تدرّب على اختبارات نهاية الفصل للصفوف 5–12 في بيئة SwiftAssess نفسها المستخدمة يوم الاختبار — بالعربية والإنجليزية.',
+    signin_staff: 'المعلمون والإدارة', choose_staff: 'دخول الموظفين. يستخدم الطلبة والزوار الصفحة الرئيسية.', gate_title: 'منصة التدريب على الاختبارات الإلكترونية', gate_term: 'للفصل الدراسي الأول', gate_lead: 'تدرّب على اختبارات نهاية الفصل للصفوف 5–12 في بيئة SwiftAssess نفسها المستخدمة يوم الاختبار — بالعربية والإنجليزية.',
     f_grades: 'الصفوف', f_sections: 'شعبة', f_students: 'طالب',
     r_student_s: 'رقم الطالب', r_teacher_s: 'رمز المعلم', r_admin_s: 'رمز الإدارة', r_guest_s: 'للزوار',
     our_students: 'طلاب مجمع سهيلة', our_students_s: 'ادخل برقم الطالب.',
