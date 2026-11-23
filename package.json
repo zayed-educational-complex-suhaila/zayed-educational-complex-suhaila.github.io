@@ -1,0 +1,23 @@
+{
+  "name": "zec-suhaila-exam-training-platform",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Zayed Educational Complex – Suhaila · Bilingual exam training platform (Grades 5–12, 2026–2027) — frontend, data, templates and handoff package",
+  "scripts": {
+    "preview": "node scripts/static-server.js 5173",
+    "build:roster": "node scripts/build-roster.js",
+    "build:templates": "node scripts/build-templates-and-samples.js",
+    "build:exam": "node scripts/build-exam-engine.js",
+    "build": "npm run build:roster && npm run build:teachers && npm run build:catalog && npm run build:templates && npm run build:exam",
+    "build:teachers": "node scripts/build-teachers.js",
+    "build:catalog": "node scripts/build-catalog.js"
+  },
+  "dependencies": {
+    "exceljs": "^4.4.0",
+    "html2canvas": "^1.4.1",
+    "jspdf": "^2.5.1",
+    "jszip": "^3.10.2",
+    "katex": "^0.16.9",
+    "xlsx": "^0.18.5"
+  }
+}

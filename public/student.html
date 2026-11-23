@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>My Exams · Exam Training Platform</title>
+<link rel="icon" href="assets/complex-logo.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/portal.css">
+<style>
+  .me { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; margin-bottom: 18px; }
+  .me .kpi .v { font-size: 20px; }
+  .exam-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(290px, 1fr)); gap: 16px; }
+  .ecard { background: #fff; border: 1px solid var(--line); border-radius: 14px; box-shadow: var(--shadow); display: flex; flex-direction: column; overflow: hidden; transition: transform .12s, box-shadow .12s; }
+  .ecard:hover { transform: translateY(-2px); box-shadow: 0 10px 28px rgba(46,26,14,.14); }
+  .ecard .top { padding: 14px 16px 10px; display: flex; gap: 12px; align-items: flex-start; border-bottom: 1px solid var(--line-2); position: relative; }
+  .ecard .top::before { content: ""; position: absolute; inset: 0 0 auto 0; height: 4px; background: var(--subj, var(--blue)); }
+  .ecard .ico { width: 46px; height: 46px; flex: none; border-radius: 12px; background: var(--sky-2); display: flex; align-items: center; justify-content: center; }
+  .ecard .ico img { width: 36px; height: 36px; }
+  .ecard h3 { font-size: 16px; font-weight: 800; color: var(--navy); }
+  .ecard .subj { font-size: 12px; font-weight: 800; color: var(--muted); }
+  .ecard .meta { padding: 10px 16px; display: flex; gap: 6px; flex-wrap: wrap; }
+  .ecard .score { margin: 0 16px; padding: 10px 12px; background: var(--bg); border-radius: 10px; display: flex; align-items: center; gap: 12px; }
+  .ecard .score .ring { width: 48px; height: 48px; flex: none; }
+  .ecard .score b { display: block; color: var(--navy); font-size: 15px; } .ecard .score span { font-size: 12px; color: var(--muted); }
+  .ecard .act { padding: 12px 16px 16px; margin-top: auto; }
+  .hero-me { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 10px; }
+  .hero-me span { background: var(--navy); border: 1px solid var(--navy); color: #fff; padding: 4px 12px; border-radius: 999px; font-weight: 800; font-size: 13px; }
+  @media (max-width: 720px) { .me { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+</style>
+</head>
+<body>
+<div id="appHeader"></div>
+<main class="page">
+  <div class="me" id="meKpis"></div>
+
+  <section class="card" style="margin-bottom:18px">
+    <div class="card-h"><img class="ill" src="assets/ornaments/learning.svg" alt=""><div><h2 data-i18n="avail"></h2><div class="sub" id="availSub"></div></div></div>
+    <div class="card-b"><div class="pills" id="pills"></div><div class="exam-grid" id="grid"><div class="empty"><span class="spinner"></span></div></div></div>
+  </section>
+
+  <section class="card">
+    <div class="card-h"><img class="ill" src="assets/ornaments/calendar.svg" alt=""><div style="flex:1"><h2 data-i18n="history"></h2><div class="sub" data-i18n="history_sub"></div></div>
+      <label class="field" style="min-width:170px"><span data-i18n="term"></span><select class="input" id="hTerm"></select></label></div>
+    <div class="card-b"><div class="table-wrap" id="hist"></div></div>
+  </section>
+</main>
+<div id="appFooter"></div>
+
+<script src="js/config.js"></script>
+<script src="js/i18n.js"></script>
+<script src="js/shared/teachers-data.js"></script>
+<script src="js/shared/catalog.js"></script>
+<script src="js/shared/reports.js"></script>
+<script src="js/api.js"></script>
+<script src="js/ui.js"></script>
+<script>
+I18N.add({
+  en: { hello: 'Welcome, {id}', hello_sub: 'Choose an exam and practise as many times as you like — your best score is kept.', avail: 'Available training exams', avail_sub: '{n} exam(s) for {g} · {tr} · {s} · {term}',
+    history: 'My practice history', history_sub: 'Every attempt you have submitted.', all_subj: 'All subjects', start: 'Start Practice', again: 'Practice Again', my_attempts: 'My attempts', best: 'Best score',
+    none_yet: 'Not attempted yet', no_exams: 'No exams have been published for your class in this term yet. Check again soon!', no_hist: 'You have not submitted any attempts in this term yet.',
+    k_exams: 'Exams available', k_done: 'Exams practised', k_att: 'Total attempts', k_avg: 'Average best', att_n: 'Attempt #{n}', calc_ok: 'Calculator', q_n: '{n} questions', m_n: '{n} marks', by: 'By {x}', exam_day: 'Official exam day' },
+  ar: { hello: 'مرحباً، {id}', hello_sub: 'اختر اختباراً وتدرّب عليه بعدد غير محدود من المرات — نحتفظ بأفضل نتيجة لك.', avail: 'الاختبارات التدريبية المتاحة', avail_sub: '{n} اختبار لـ {g} · {tr} · {s} · {term}',
+    history: 'سجل تدريبي', history_sub: 'جميع المحاولات التي قمت بتسليمها.', all_subj: 'جميع المواد', start: 'ابدأ التدريب', again: 'تدرّب مجدداً', my_attempts: 'محاولاتي', best: 'أفضل نتيجة',
+    none_yet: 'لم تحاول بعد', no_exams: 'لم يتم نشر اختبارات لصفك في هذا الفصل بعد. تحقق لاحقاً!', no_hist: 'لم تسلّم أي محاولة في هذا الفصل بعد.',
+    k_exams: 'الاختبارات المتاحة', k_done: 'اختبارات تدرّبت عليها', k_att: 'إجمالي المحاولات', k_avg: 'متوسط أفضل نتيجة', att_n: 'المحاولة {n}', calc_ok: 'آلة حاسبة', q_n: '{n} سؤال', m_n: '{n} درجة', by: 'إعداد: {x}', exam_day: 'موعد الاختبار الرسمي' },
+});
+const { $, $$, esc } = UI; const t = (k, v) => I18N.t(k, v);
+const SUBJ_ICON = { Mathematics: 'analytics', Science: 'idea-gear', Physics: 'cycle', Chemistry: 'design-tools', Biology: 'idea-box', 'Computer Science': 'laptop-shield', English: 'mail', Arabic: 'easel', 'Islamic Education': 'archive', 'Social Studies': 'map', Other: 'checklist' };
+const SUBJ_COLOR = { Mathematics: '#89191E', Science: '#A35D25', Physics: '#89191E', Chemistry: '#E08A4F', Biology: '#2E7D5E', 'Computer Science': '#455961', English: '#E08A4F', Arabic: '#89191E', 'Islamic Education': '#A35D25', 'Social Studies': '#455961', Other: '#D1C9C1' };
+let S, DATA = { exams: [], active_term: 'Term 1' }, subj = '', hTerm = '';
+
+const ring = p => { const c = 2 * Math.PI * 19, g = p === null ? 0 : c * p / 100; return `<svg class="ring" viewBox="0 0 48 48"><circle cx="24" cy="24" r="19" fill="none" stroke="#EADFD3" stroke-width="7"/><circle cx="24" cy="24" r="19" fill="none" stroke="${p === null ? '#EADFD3' : p >= 50 ? '#2E7D5E' : '#E08A4F'}" stroke-width="7" stroke-dasharray="${g} ${c}" transform="rotate(-90 24 24)" stroke-linecap="round"/><text x="24" y="28" text-anchor="middle" font-size="11" font-weight="800" fill="#89191E">${p === null ? '—' : Math.round(p) + '%'}</text></svg>`; };
+
+function drawKpis() {
+  const ex = DATA.exams, done = ex.filter(e => e.my_attempts > 0);
+  const avg = done.length ? done.reduce((a, e) => a + e.my_best_pct, 0) / done.length : null;
+  $('#meKpis').innerHTML = `<div class="kpi"><div class="l">${t('k_exams')}</div><div class="v">${ex.length}</div></div>
+    <div class="kpi olive"><div class="l">${t('k_done')}</div><div class="v">${done.length} / ${ex.length}</div><div class="bar"><i style="width:${ex.length ? done.length / ex.length * 100 : 0}%"></i></div></div>
+    <div class="kpi gold"><div class="l">${t('k_att')}</div><div class="v">${ex.reduce((a, e) => a + e.my_attempts, 0)}</div></div>
+    <div class="kpi navy"><div class="l">${t('k_avg')}</div><div class="v">${I18N.pct(avg)}</div></div>`;
+}
+function drawExams() {
+  const dep = s => Catalog.departmentOf(s);
+  const subjects = Catalog.DEPARTMENTS.filter(d => DATA.exams.some(e => dep(e.subject) === d));
+  $('#pills').innerHTML = `<button class="pill ${!subj ? 'on' : ''}" data-s="">${t('all_subj')}<span class="n num">${DATA.exams.length}</span></button>` +
+    subjects.map(s => `<button class="pill ${subj === s ? 'on' : ''}" data-s="${esc(s)}">${esc(t(s))}<span class="n num">${DATA.exams.filter(e => dep(e.subject) === s).length}</span></button>`).join('');
+  $$('#pills .pill').forEach(b => b.onclick = () => { subj = b.dataset.s; drawExams(); });
+  $('#availSub').textContent = t('avail_sub', { n: DATA.exams.length, g: I18N.gradeLabel(S.grade_num), tr: t(S.track), s: S.section, term: t(DATA.active_term) });
+  const list = DATA.exams.filter(e => !subj || dep(e.subject) === subj);
+  if (!list.length) { $('#grid').innerHTML = `<div class="empty" style="grid-column:1/-1"><img src="${UI.ORN('clock')}" alt="">${t('no_exams')}</div>`; return; }
+  $('#grid').innerHTML = list.map(e => `<article class="ecard" style="--subj:${SUBJ_COLOR[e.subject] || '#A35D25'}">
+    <div class="top"><div class="ico"><img src="${UI.ORN(SUBJ_ICON[e.subject] || 'checklist')}" alt=""></div><div style="min-width:0"><div class="subj">${dep(e.subject) !== e.subject ? esc(t('Science')) + ' · ' : ''}${esc(t(e.subject))}</div><h3 dir="auto">${esc(e.title)}</h3><div class="small muted" dir="auto">${esc(t('by', { x: e.teacher_name }))}</div></div></div>
+    <div class="meta"><span class="badge b-blue num">${t('q_n', { n: e.q_count })}</span><span class="badge b-gold num">${t('m_n', { n: e.total_marks })}</span>
+      <span class="badge b-gray num">${UI.ICONS.clock.replace('<svg', '<svg style="width:13px;height:13px;fill:currentColor"')} ${e.duration_minutes ? e.duration_minutes + ' ' + t('minutes') : t('no_limit')}</span>
+      ${Catalog.SCHEDULE[e.subject] ? `<span class="badge b-gold num" title="${esc(t('exam_day'))}">📅 ${Catalog.SCHEDULE[e.subject].date}</span>` : ''}
+      ${e.calculator_allowed ? `<span class="badge b-olive">${UI.ICONS.calc.replace('<svg', '<svg style="width:13px;height:13px;fill:currentColor"')} ${t('calc_ok')}</span>` : ''}</div>
+    <div class="score">${ring(e.my_best_pct)}<div><b>${e.my_attempts ? `${I18N.num(e.my_best_score, 1)} / ${I18N.num(e.total_marks)}` : t('none_yet')}</b><span>${t('my_attempts')}: <span class="num">${e.my_attempts}</span>${e.my_attempts ? ` · ${e.my_best_passed ? `<span class="badge b-ok">${t('passed')}</span>` : `<span class="badge b-warn">${t('failed')}</span>`}` : ''}</span></div></div>
+    <div class="act"><a class="btn ${e.my_attempts ? 'btn-ghost' : 'btn-primary'} btn-block" href="exam.html?id=${encodeURIComponent(e.id)}">${UI.ICONS.play}<span>${e.my_attempts ? t('again') : t('start')}</span></a></div></article>`).join('');
+}
+async function drawHistory() {
+  UI.fillSelect('#hTerm', UI.termItems(true), hTerm || DATA.active_term);
+  try {
+    const rows = await API.myAttempts($('#hTerm').value);
+    $('#hist').innerHTML = rows.length ? `<table class="data"><thead><tr><th>${t('date')}</th><th>${t('subject')}</th><th>${t('exam')}</th><th>${t('term')}</th><th class="c">#</th><th class="c">${t('marks')}</th><th class="c">%</th><th class="c">${t('status')}</th><th class="c">${t('duration')}</th></tr></thead><tbody>
+      ${rows.map(a => `<tr><td class="num small">${I18N.date(a.submitted_at)}</td><td>${esc(t(a.subject))}</td><td dir="auto">${esc(a.exam_title || '—')}</td><td>${esc(t(a.term))}</td><td class="c num">${a.attempt_number}</td>
+        <td class="c num">${I18N.num(a.score_gained, 1)} / ${I18N.num(a.total_marks)}</td><td class="c num"><b>${I18N.pct(a.percentage)}</b></td><td class="c">${UI.statusBadge(a.passed ? 'Passed' : 'Failed')}</td><td class="c num">${I18N.dur(a.time_spent_seconds)}</td></tr>`).join('')}</tbody></table>`
+      : `<div class="empty"><img src="${UI.ORN('calendar')}" alt="">${t('no_hist')}</div>`;
+  } catch (e) { UI.handle(e); }
+}
+$('#hTerm').onchange = e => { hTerm = e.target.value; drawHistory(); };
+
+function heroText() {
+  UI.setHero(t('hello', { id: S.student_id }), t('hello_sub'));
+  const h = $('#heroSub'); if (h) h.insertAdjacentHTML('afterend', `<div class="hero-me" id="heroMe"><span class="num">${esc(S.student_id)}</span><span>${esc(I18N.gradeLabel(S.grade_num))}</span><span>${esc(t(S.track))}</span><span>${esc(S.section)}</span></div>`);
+  const old = $$('#heroMe'); if (old.length > 1) old.slice(1).forEach(x => x.remove());
+}
+(async () => {
+  try { S = await UI.requireRole('student'); } catch (_) { return; }
+  await UI.header({ session: S, title: '', subtitle: '', ornament: 'learning' });
+  UI.footer(); heroText(); I18N.apply();
+  try { DATA = await API.studentExams(); } catch (e) { UI.handle(e); }
+  drawKpis(); drawExams(); drawHistory();
+  I18N.onChange(() => { $$('#heroMe').forEach(x => x.remove()); heroText(); drawKpis(); drawExams(); drawHistory(); });
+})();
+</script>
+</body>
+</html>

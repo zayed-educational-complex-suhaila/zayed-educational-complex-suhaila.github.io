@@ -1,0 +1,2327 @@
+[
+ {
+  "grade_num": 5,
+  "track": "General",
+  "subject": "Mathematics",
+  "electronic_questions": 20,
+  "electronic_marks": null,
+  "marks_per_question": "2–4 (varies)",
+  "options": 4,
+  "parts": [
+   {
+    "label": "Multiple Choice",
+    "count": 20
+   }
+  ],
+  "electronic_minutes": 60,
+  "calculator": false,
+  "exam_date": "2026-11-25",
+  "electronic_time": "10:30–11:30",
+  "paper_part": "5 free-response questions on paper",
+  "source": "Mathematics structures: 20 MCQ (electronic) + free-response (paper) in every grade",
+  "teachers": [
+   "أحمد محمد عبدالمعبود مرسي",
+   "زينب مسعود البلتاجي"
+  ]
+ },
+ {
+  "grade_num": 5,
+  "track": "General",
+  "subject": "English",
+  "electronic_questions": 26,
+  "electronic_marks": 60,
+  "marks_per_question": "2–3",
+  "options": 3,
+  "parts": [
+   {
+    "label": "Part 1: Vocabulary",
+    "count": 5,
+    "marks": 2,
+    "options": 2
+   },
+   {
+    "label": "Part 2: Grammar",
+    "count": 5,
+    "marks": 2,
+    "options": 3
+   },
+   {
+    "label": "Part 3A: Reading",
+    "count": 8,
+    "marks": 3,
+    "options": 3
+   },
+   {
+    "label": "Part 3B: Reading",
+    "count": 8,
+    "marks": 2,
+    "options": 3
+   }
+  ],
+  "electronic_minutes": 60,
+  "calculator": false,
+  "exam_date": "2026-11-26",
+  "electronic_time": "10:30–11:30",
+  "paper_part": "Writing (40 marks) is on paper",
+  "source": "English EoT1 test specifications (Reading 60 / Writing 40)",
+  "teachers": [
+   "Christy Stanly Joseph",
+   "ماهر جمعة"
+  ]
+ },
+ {
+  "grade_num": 5,
+  "track": "General",
+  "subject": "Arabic",
+  "electronic_questions": 20,
+  "electronic_marks": 60,
+  "marks_per_question": "3",
+  "options": 4,
+  "parts": [
+   {
+    "label": "النص السردي",
+    "count": 10,
+    "marks": 3
+   },
+   {
+    "label": "النص المعلوماتي",
+    "count": 10,
+    "marks": 3
+   }
+  ],
+  "electronic_minutes": 60,
+  "calculator": false,
+  "exam_date": "2026-12-08",
+  "electronic_time": "10:30–11:30",
+  "paper_part": "Comprehension, language skills and writing (40 marks) on paper",
+  "source": "Arabic structure: 40 paper + 60 electronic (MCQ)",
+  "teachers": [
+   "إيمان سعد يحيى بدر"
+  ]
+ },
+ {
+  "grade_num": 5,
+  "track": "General",
+  "subject": "Islamic Education",
+  "electronic_questions": 27,
+  "electronic_marks": 100,
+  "marks_per_question": "2, 3 or 4",
+  "options": 4,
+  "parts": [
+   {
+    "label": "Multiple Choice",
+    "count": 27
+   }
+  ],
+  "electronic_minutes": 120,
+  "calculator": false,
+  "exam_date": "2026-12-09",
+  "electronic_time": "09:00–11:00",
+  "paper_part": "None — fully electronic",
+  "source": "Islamic Education structure: 27 questions, 120 min, electronic",
+  "teachers": [
+   "تامر المتولي إبراهيم",
+   "عزه رفعت حمادة"
+  ]
+ },
+ {
+  "grade_num": 5,
+  "track": "General",
+  "subject": "Social Studies",
+  "electronic_questions": 25,
+  "electronic_marks": 100,
+  "marks_per_question": "4",
+  "options": 4,
+  "parts": [
+   {
+    "label": "Multiple Choice",
+    "count": 25,
+    "marks": 4
+   }
+  ],
+  "electronic_minutes": 120,
+  "calculator": true,
+  "exam_date": "2026-12-10",
+  "electronic_time": "09:00–11:00",
+  "paper_part": "None — fully electronic",
+  "source": "Social Studies structure: 25 × 4 marks, 120 min, electronic",
+  "teachers": [
+   "عيسى محمد شفيق السوقي",
+   "ميره سالم المسافري"
+  ]
+ },
+ {
+  "grade_num": 5,
+  "track": "General",
+  "subject": "Science",
+  "electronic_questions": 20,
+  "electronic_marks": 60,
+  "marks_per_question": "3",
+  "options": 4,
+  "parts": [
+   {
+    "label": "Multiple Choice",
+    "count": 20,
+    "marks": 3
+   }
+  ],
+  "electronic_minutes": 60,
+  "calculator": true,
+  "exam_date": "2026-12-07",
+  "electronic_time": "10:30–11:30",
+  "paper_part": "4 free-response questions on paper",
+  "source": "Science structure: 20 MCQ (electronic) + free-response (paper)",
+  "teachers": [
+   "سناء فوزي محمود العشري",
+   "شوقي محمد تقي الدين الزيود"
+  ]
+ },
+ {
+  "grade_num": 6,
+  "track": "General",
+  "subject": "Mathematics",
+  "electronic_questions": 20,
+  "electronic_marks": null,
+  "marks_per_question": "2–4 (varies)",
+  "options": 4,
+  "parts": [
+   {
+    "label": "Multiple Choice",
+    "count": 20
+   }
+  ],
+  "electronic_minutes": 60,
+  "calculator": false,
+  "exam_date": "2026-11-25",
+  "electronic_time": "10:30–11:30",
+  "paper_part": "5 free-response questions on paper",
+  "source": "Mathematics structures: 20 MCQ (electronic) + free-response (paper) in every grade",
+  "teachers": [
+   "أحمد محمد عبدالمعبود مرسي",
+   "خولة هادف موجد"
+  ]
+ },
+ {
+  "grade_num": 6,
+  "track": "General",
+  "subject": "English",
+  "electronic_questions": 26,
+  "electronic_marks": 60,
+  "marks_per_question": "2–3",
+  "options": 3,
+  "parts": [
+   {
+    "label": "Part 1: Vocabulary",
+    "count": 5,
+    "marks": 2,
+    "options": 2
+   },
+   {
+    "label": "Part 2: Grammar",
+    "count": 5,
+    "marks": 2,
+    "options": 3
+   },
+   {
+    "label": "Part 3A: Reading",
+    "count": 8,
+    "marks": 3,
+    "options": 3
+   },
+   {
+    "label": "Part 3B: Reading",
+    "count": 8,
+    "marks": 2,
+    "options": 3
+   }
+  ],
+  "electronic_minutes": 60,
+  "calculator": false,
+  "exam_date": "2026-11-26",
+  "electronic_time": "10:30–11:30",
+  "paper_part": "Writing (40 marks) is on paper",
+  "source": "English EoT1 test specifications (Reading 60 / Writing 40)",
+  "teachers": [
+   "Christy Stanly Joseph",
+   "ماهر جمعة"
+  ]
+ },
+ {
+  "grade_num": 6,
+  "track": "General",
+  "subject": "Arabic",
+  "electronic_questions": 18,
+  "electronic_marks": 60,
+  "marks_per_question": "2–4",
+  "options": 4,
+  "parts": [
+   {
+    "label": "Reading texts",
+    "count": 18
+   }
+  ],
+  "electronic_minutes": 60,
+  "calculator": false,
+  "exam_date": "2026-12-08",
+  "electronic_time": "10:30–11:30",
+  "paper_part": "Comprehension, language skills and writing (40 marks) on paper",
+  "source": "Platform-Arabic-T1-G6 (33 questions: 15 paper + 18 electronic)",
+  "teachers": [
+   "رحاب حجاج عودة الدهيني"
+  ]
+ },
+ {
+  "grade_num": 6,
+  "track": "General",
+  "subject": "Islamic Education",
+  "electronic_questions": 27,
+  "electronic_marks": 100,
+  "marks_per_question": "2, 3 or 4",
+  "options": 4,
+  "parts": [
+   {
+    "label": "Multiple Choice",
+    "count": 27
+   }
+  ],
+  "electronic_minutes": 120,
+  "calculator": false,
+  "exam_date": "2026-12-09",
+  "electronic_time": "09:00–11:00",
+  "paper_part": "None — fully electronic",
+  "source": "Islamic Education structure: 27 questions, 120 min, electronic",
+  "teachers": [
+   "تامر المتولي إبراهيم",
+   "نجمة علي البلوشي"
+  ]
+ },
+ {
+  "grade_num": 6,
+  "track": "General",
+  "subject": "Social Studies",
+  "electronic_questions": 25,
+  "electronic_marks": 100,
+  "marks_per_question": "4",
+  "options": 4,
+  "parts": [
+   {
+    "label": "Multiple Choice",
+    "count": 25,
+    "marks": 4
+   }
+  ],
+  "electronic_minutes": 120,
+  "calculator": true,
+  "exam_date": "2026-12-10",
+  "electronic_time": "09:00–11:00",
+  "paper_part": "None — fully electronic",
+  "source": "Social Studies structure: 25 × 4 marks, 120 min, electronic",
+  "teachers": [
+   "عيسى محمد شفيق السوقي",
+   "ميره سالم المسافري"
+  ]
+ },
+ {
+  "grade_num": 6,
+  "track": "General",
+  "subject": "Science",
+  "electronic_questions": 20,
+  "electronic_marks": 60,
+  "marks_per_question": "3",
+  "options": 4,
+  "parts": [
+   {
+    "label": "Multiple Choice",
+    "count": 20,
+    "marks": 3
+   }
+  ],
+  "electronic_minutes": 60,
+  "calculator": true,
+  "exam_date": "2026-12-07",
+  "electronic_time": "10:30–11:30",
+  "paper_part": "4 free-response questions on paper",
+  "source": "Science structure: 20 MCQ (electronic) + free-response (paper)",
+  "teachers": [
+   "سناء فوزي محمود العشري",
+   "شوقي محمد تقي الدين الزيود"
+  ]
+ },
+ {
+  "grade_num": 7,
+  "track": "General",
+  "subject": "Mathematics",
+  "electronic_questions": 20,
+  "electronic_marks": null,
+  "marks_per_question": "2–4 (varies)",
+  "options": 4,
+  "parts": [
+   {
+    "label": "Multiple Choice",
+    "count": 20
+   }
+  ],
+  "electronic_minutes": 60,
+  "calculator": false,
+  "exam_date": "2026-11-25",
+  "electronic_time": "10:30–11:30",
+  "paper_part": "5 free-response questions on paper",
+  "source": "Mathematics structures: 20 MCQ (electronic) + free-response (paper) in every grade",
+  "teachers": [
+   "سيف الدين أشرف المومني",
+   "صفية حمد سهيل الشامسي"
+  ]
+ },
+ {
+  "grade_num": 7,
+  "track": "General",
+  "subject": "English",
+  "electronic_questions": 26,
+  "electronic_marks": 60,
+  "marks_per_question": "2–3",
+  "options": 3,
+  "parts": [
+   {
+    "label": "Part 1: Vocabulary",
+    "count": 5,
+    "marks": 2,
+    "options": 3
+   },
+   {
+    "label": "Part 2: Grammar",
+    "count": 5,
+    "marks": 2,
+    "options": 3
+   },
+   {
+    "label": "Part 3A: Reading",
+    "count": 8,
+    "marks": 3,
+    "options": 3
+   },
+   {
+    "label": "Part 3B: Reading",
+    "count": 8,
+    "marks": 2,
+    "options": 3
+   }
+  ],
+  "electronic_minutes": 60,
+  "calculator": false,
+  "exam_date": "2026-11-26",
+  "electronic_time": "10:30–11:30",
+  "paper_part": "Writing (40 marks) is on paper",
+  "source": "English EoT1 test specifications (Reading 60 / Writing 40)",
+  "teachers": [
+   "امجد حسين محمود",
+   "منى محمد الحمادي"
+  ]
+ },
+ {
+  "grade_num": 7,
+  "track": "General",
+  "subject": "Arabic",
+  "electronic_questions": 20,
+  "electronic_marks": 60,
+  "marks_per_question": "3",
+  "options": 4,
+  "parts": [
+   {
+    "label": "النص السردي",
+    "count": 10,
+    "marks": 3
+   },
+   {
+    "label": "النص المعلوماتي",
+    "count": 10,
+    "marks": 3
+   }
+  ],
+  "electronic_minutes": 60,
+  "calculator": false,
+  "exam_date": "2026-12-08",
+  "electronic_time": "10:30–11:30",
+  "paper_part": "Comprehension, language skills and writing (40 marks) on paper",
+  "source": "Arabic structure: 40 paper + 60 electronic (MCQ)",
+  "teachers": [
+   "رحاب حجاج عودة الدهيني",
+   "ضياء عبدالناصر محمد أحمد"
+  ]
+ },
+ {
+  "grade_num": 7,
+  "track": "General",
+  "subject": "Islamic Education",
+  "electronic_questions": 27,
+  "electronic_marks": 100,
+  "marks_per_question": "2, 3 or 4",
+  "options": 4,
+  "parts": [
+   {
+    "label": "Multiple Choice",
+    "count": 27
+   }
+  ],
+  "electronic_minutes": 120,
+  "calculator": false,
+  "exam_date": "2026-12-09",
+  "electronic_time": "09:00–11:00",
+  "paper_part": "None — fully electronic",
+  "source": "Islamic Education structure: 27 questions, 120 min, electronic",
+  "teachers": [
+   "تامر المتولي إبراهيم",
+   "عزه رفعت حمادة"
+  ]
+ },
+ {
+  "grade_num": 7,
+  "track": "General",
+  "subject": "Social Studies",
+  "electronic_questions": 25,
+  "electronic_marks": 100,
+  "marks_per_question": "4",
+  "options": 4,
+  "parts": [
+   {
+    "label": "Multiple Choice",
+    "count": 25,
+    "marks": 4
+   }
+  ],
+  "electronic_minutes": 120,
+  "calculator": true,
+  "exam_date": "2026-12-10",
+  "electronic_time": "09:00–11:00",
+  "paper_part": "None — fully electronic",
+  "source": "Social Studies structure: 25 × 4 marks, 120 min, electronic",
+  "teachers": [
+   "عيسى محمد شفيق السوقي",
+   "ميره سالم المسافري"
+  ]
+ },
+ {
+  "grade_num": 7,
+  "track": "General",
+  "subject": "Science",
+  "electronic_questions": 20,
+  "electronic_marks": 60,
+  "marks_per_question": "3",
+  "options": 4,
+  "parts": [
+   {
+    "label": "Multiple Choice",
+    "count": 20,
+    "marks": 3
+   }
+  ],
+  "electronic_minutes": 60,
+  "calculator": true,
+  "exam_date": "2026-12-07",
+  "electronic_time": "10:30–11:30",
+  "paper_part": "4 free-response questions on paper",
+  "source": "Science structure: 20 MCQ (electronic) + free-response (paper)",
+  "teachers": [
+   "محمد نبيل عبدالله محمد",
+   "مروة محمد أبو المعاطي"
+  ]
+ },
+ {
+  "grade_num": 8,
+  "track": "General",
+  "subject": "Mathematics",
+  "electronic_questions": 20,
+  "electronic_marks": null,
+  "marks_per_question": "2–4 (varies)",
+  "options": 4,
+  "parts": [
+   {
+    "label": "Multiple Choice",
+    "count": 20
+   }
+  ],
+  "electronic_minutes": 60,
+  "calculator": false,
+  "exam_date": "2026-11-25",
+  "electronic_time": "10:30–11:30",
+  "paper_part": "6 free-response questions on paper",
+  "source": "Mathematics structures: 20 MCQ (electronic) + free-response (paper) in every grade",
+  "teachers": [
+   "خولة هادف موجد",
+   "سيف الدين أشرف المومني"
+  ]
+ },
+ {
+  "grade_num": 8,
+  "track": "General",
+  "subject": "English",
+  "electronic_questions": 26,
+  "electronic_marks": 60,
+  "marks_per_question": "2–3",
+  "options": 3,
+  "parts": [
+   {
+    "label": "Part 1: Vocabulary",
+    "count": 5,
+    "marks": 2,
+    "options": 3
+   },
+   {
+    "label": "Part 2: Grammar",
+    "count": 5,
+    "marks": 2,
+    "options": 3
+   },
+   {
+    "label": "Part 3A: Reading",
+    "count": 8,
+    "marks": 3,
+    "options": 3
+   },
+   {
+    "label": "Part 3B: Reading",
+    "count": 8,
+    "marks": 2,
+    "options": 3
+   }
+  ],
+  "electronic_minutes": 60,
+  "calculator": false,
+  "exam_date": "2026-11-26",
+  "electronic_time": "10:30–11:30",
+  "paper_part": "Writing (40 marks) is on paper",
+  "source": "English EoT1 test specifications (Reading 60 / Writing 40)",
+  "teachers": [
+   "امجد حسين محمود",
+   "منى محمد الحمادي"
+  ]
+ },
+ {
+  "grade_num": 8,
+  "track": "General",
+  "subject": "Arabic",
+  "electronic_questions": 20,
+  "electronic_marks": 60,
+  "marks_per_question": "3",
+  "options": 4,
+  "parts": [
+   {
+    "label": "النص السردي",
+    "count": 10,
+    "marks": 3
+   },
+   {
+    "label": "النص المعلوماتي",
+    "count": 10,
+    "marks": 3
+   }
+  ],
+  "electronic_minutes": 60,
+  "calculator": false,
+  "exam_date": "2026-12-08",
+  "electronic_time": "10:30–11:30",
+  "paper_part": "Comprehension, language skills and writing (40 marks) on paper",
+  "source": "Arabic structure: 40 paper + 60 electronic (MCQ)",
+  "teachers": [
+   "إيمان سعد يحيى بدر",
+   "شيخة مصبح محمد القريني",
+   "علي محمود عمر الخراط"
+  ]
+ },
+ {
+  "grade_num": 8,
+  "track": "General",
+  "subject": "Islamic Education",
+  "electronic_questions": 27,
+  "electronic_marks": 100,
+  "marks_per_question": "2, 3 or 4",
+  "options": 4,
+  "parts": [
+   {
+    "label": "Multiple Choice",
+    "count": 27
+   }
+  ],
+  "electronic_minutes": 120,
+  "calculator": false,
+  "exam_date": "2026-12-09",
+  "electronic_time": "09:00–11:00",
+  "paper_part": "None — fully electronic",
+  "source": "Islamic Education structure: 27 questions, 120 min, electronic",
+  "teachers": [
+   "تامر المتولي إبراهيم",
+   "نجمة علي البلوشي"
+  ]
+ },
+ {
+  "grade_num": 8,
+  "track": "General",
+  "subject": "Social Studies",
+  "electronic_questions": 25,
+  "electronic_marks": 100,
+  "marks_per_question": "4",
+  "options": 4,
+  "parts": [
+   {
+    "label": "Multiple Choice",
+    "count": 25,
+    "marks": 4
+   }
+  ],
+  "electronic_minutes": 120,
+  "calculator": true,
+  "exam_date": "2026-12-10",
+  "electronic_time": "09:00–11:00",
+  "paper_part": "None — fully electronic",
+  "source": "Social Studies structure: 25 × 4 marks, 120 min, electronic",
+  "teachers": [
+   "سلطي خالد العقلة",
+   "نفيسه محمود السيد"
+  ]
+ },
+ {
+  "grade_num": 8,
+  "track": "General",
+  "subject": "Science",
+  "electronic_questions": 20,
+  "electronic_marks": 60,
+  "marks_per_question": "3",
+  "options": 4,
+  "parts": [
+   {
+    "label": "Multiple Choice",
+    "count": 20,
+    "marks": 3
+   }
+  ],
+  "electronic_minutes": 60,
+  "calculator": true,
+  "exam_date": "2026-12-07",
+  "electronic_time": "10:30–11:30",
+  "paper_part": "4 free-response questions on paper",
+  "source": "Science structure: 20 MCQ (electronic) + free-response (paper)",
+  "teachers": [
+   "محمد نبيل عبدالله محمد",
+   "مروة محمد أبو المعاطي"
+  ]
+ },
+ {
+  "grade_num": 9,
+  "track": "General",
+  "subject": "Mathematics",
+  "electronic_questions": 20,
+  "electronic_marks": null,
+  "marks_per_question": "2–4 (varies)",
+  "options": 4,
+  "parts": [
+   {
+    "label": "Multiple Choice",
+    "count": 20
+   }
+  ],
+  "electronic_minutes": 60,
+  "calculator": true,
+  "exam_date": "2026-11-25",
+  "electronic_time": "10:30–11:30",
+  "paper_part": "5 free-response questions on paper",
+  "source": "Mathematics structures: 20 MCQ (electronic) + free-response (paper) in every grade",
+  "teachers": [
+   "رياض أحمد محمد الزعبي",
+   "صفية حمد سهيل الشامسي"
+  ]
+ },
+ {
+  "grade_num": 9,
+  "track": "General",
+  "subject": "English",
+  "electronic_questions": 26,
+  "electronic_marks": 60,
+  "marks_per_question": "2–3",
+  "options": 3,
+  "parts": [
+   {
+    "label": "Part 1: Vocabulary",
+    "count": 5,
+    "marks": 2,
+    "options": 3
+   },
+   {
+    "label": "Part 2: Grammar",
+    "count": 5,
+    "marks": 2,
+    "options": 3
+   },
+   {
+    "label": "Part 3A: Reading",
+    "count": 8,
+    "marks": 3,
+    "options": 3
+   },
+   {
+    "label": "Part 3B: Reading",
+    "count": 8,
+    "marks": 2,
+    "options": 3
+   }
+  ],
+  "electronic_minutes": 60,
+  "calculator": false,
+  "exam_date": "2026-11-26",
+  "electronic_time": "10:30–11:30",
+  "paper_part": "Writing (40 marks) is on paper",
+  "source": "English EoT1 test specifications (Reading 60 / Writing 40)",
+  "teachers": [
+   "Krishna Priya Ambika Nair",
+   "برايان اولوكلين"
+  ]
+ },
+ {
+  "grade_num": 9,
+  "track": "General",
+  "subject": "Arabic",
+  "electronic_questions": 20,
+  "electronic_marks": 60,
+  "marks_per_question": "3",
+  "options": 4,
+  "parts": [
+   {
+    "label": "النص السردي",
+    "count": 10,
+    "marks": 3
+   },
+   {
+    "label": "النص المعلوماتي",
+    "count": 10,
+    "marks": 3
+   }
+  ],
+  "electronic_minutes": 60,
+  "calculator": false,
+  "exam_date": "2026-12-08",
+  "electronic_time": "10:30–11:30",
+  "paper_part": "Comprehension, language skills and writing (40 marks) on paper",
+  "source": "Arabic structure: 40 paper + 60 electronic (MCQ)",
+  "teachers": [
+   "صفية عبدالله سعيد النقبي",
+   "علي محمود عمر الخراط"
+  ]
+ },
+ {
+  "grade_num": 9,
+  "track": "General",
+  "subject": "Islamic Education",
+  "electronic_questions": 27,
+  "electronic_marks": 100,
+  "marks_per_question": "2, 3 or 4",
+  "options": 4,
+  "parts": [
+   {
+    "label": "Multiple Choice",
+    "count": 27
+   }
+  ],
+  "electronic_minutes": 120,
+  "calculator": false,
+  "exam_date": "2026-12-09",
+  "electronic_time": "09:00–11:00",
+  "paper_part": "None — fully electronic",
+  "source": "Islamic Education structure: 27 questions, 120 min, electronic",
+  "teachers": [
+   "طلال صالح حسين سعيد",
+   "نجمة علي البلوشي"
+  ]
+ },
+ {
+  "grade_num": 9,
+  "track": "General",
+  "subject": "Social Studies",
+  "electronic_questions": 25,
+  "electronic_marks": 100,
+  "marks_per_question": "4",
+  "options": 4,
+  "parts": [
+   {
+    "label": "Multiple Choice",
+    "count": 25,
+    "marks": 4
+   }
+  ],
+  "electronic_minutes": 120,
+  "calculator": true,
+  "exam_date": "2026-12-10",
+  "electronic_time": "09:00–11:00",
+  "paper_part": "None — fully electronic",
+  "source": "Social Studies structure: 25 × 4 marks, 120 min, electronic",
+  "teachers": [
+   "سلطي خالد العقلة",
+   "نفيسه محمود السيد"
+  ]
+ },
+ {
+  "grade_num": 9,
+  "track": "General",
+  "subject": "Science",
+  "electronic_questions": 20,
+  "electronic_marks": 60,
+  "marks_per_question": "3",
+  "options": 4,
+  "parts": [
+   {
+    "label": "Multiple Choice",
+    "count": 20,
+    "marks": 3
+   }
+  ],
+  "electronic_minutes": 60,
+  "calculator": true,
+  "exam_date": "2026-12-07",
+  "electronic_time": "10:30–11:30",
+  "paper_part": "4 free-response questions on paper",
+  "source": "Science structure: 20 MCQ (electronic) + free-response (paper)",
+  "teachers": [
+   "محمد أحمد علي موسى"
+  ]
+ },
+ {
+  "grade_num": 9,
+  "track": "Advanced",
+  "subject": "Mathematics",
+  "electronic_questions": 20,
+  "electronic_marks": null,
+  "marks_per_question": "2–4 (varies)",
+  "options": 4,
+  "parts": [
+   {
+    "label": "Multiple Choice",
+    "count": 20
+   }
+  ],
+  "electronic_minutes": 60,
+  "calculator": true,
+  "exam_date": "2026-11-25",
+  "electronic_time": "10:30–11:30",
+  "paper_part": "5 free-response questions on paper",
+  "source": "Mathematics structures: 20 MCQ (electronic) + free-response (paper) in every grade",
+  "teachers": [
+   "محمد زين العابدين تركماني"
+  ]
+ },
+ {
+  "grade_num": 9,
+  "track": "Advanced",
+  "subject": "English",
+  "electronic_questions": 26,
+  "electronic_marks": 60,
+  "marks_per_question": "2–3",
+  "options": 3,
+  "parts": [
+   {
+    "label": "Part 1: Vocabulary",
+    "count": 5,
+    "marks": 2,
+    "options": 3
+   },
+   {
+    "label": "Part 2: Grammar",
+    "count": 5,
+    "marks": 2,
+    "options": 3
+   },
+   {
+    "label": "Part 3A: Reading",
+    "count": 8,
+    "marks": 3,
+    "options": 3
+   },
+   {
+    "label": "Part 3B: Reading",
+    "count": 8,
+    "marks": 2,
+    "options": 3
+   }
+  ],
+  "electronic_minutes": 60,
+  "calculator": false,
+  "exam_date": "2026-11-26",
+  "electronic_time": "10:30–11:30",
+  "paper_part": "Writing (40 marks) is on paper",
+  "source": "English EoT1 test specifications (Reading 60 / Writing 40)",
+  "teachers": [
+   "حسام الدين خليل شنبور",
+   "رجاء عطيه علي السيد"
+  ]
+ },
+ {
+  "grade_num": 9,
+  "track": "Advanced",
+  "subject": "Arabic",
+  "electronic_questions": 20,
+  "electronic_marks": 60,
+  "marks_per_question": "3",
+  "options": 4,
+  "parts": [
+   {
+    "label": "النص السردي",
+    "count": 10,
+    "marks": 3
+   },
+   {
+    "label": "النص المعلوماتي",
+    "count": 10,
+    "marks": 3
+   }
+  ],
+  "electronic_minutes": 60,
+  "calculator": false,
+  "exam_date": "2026-12-08",
+  "electronic_time": "10:30–11:30",
+  "paper_part": "Comprehension, language skills and writing (40 marks) on paper",
+  "source": "Arabic structure: 40 paper + 60 electronic (MCQ)",
+  "teachers": [
+   "صفية عبدالله سعيد النقبي",
+   "علي محمود عمر الخراط"
+  ]
+ },
+ {
+  "grade_num": 9,
+  "track": "Advanced",
+  "subject": "Islamic Education",
+  "electronic_questions": 27,
+  "electronic_marks": 100,
+  "marks_per_question": "2, 3 or 4",
+  "options": 4,
+  "parts": [
+   {
+    "label": "Multiple Choice",
+    "count": 27
+   }
+  ],
+  "electronic_minutes": 120,
+  "calculator": false,
+  "exam_date": "2026-12-09",
+  "electronic_time": "09:00–11:00",
+  "paper_part": "None — fully electronic",
+  "source": "Islamic Education structure: 27 questions, 120 min, electronic",
+  "teachers": [
+   "طلال صالح حسين سعيد",
+   "نجمة علي البلوشي"
+  ]
+ },
+ {
+  "grade_num": 9,
+  "track": "Advanced",
+  "subject": "Social Studies",
+  "electronic_questions": 25,
+  "electronic_marks": 100,
+  "marks_per_question": "4",
+  "options": 4,
+  "parts": [
+   {
+    "label": "Multiple Choice",
+    "count": 25,
+    "marks": 4
+   }
+  ],
+  "electronic_minutes": 120,
+  "calculator": true,
+  "exam_date": "2026-12-10",
+  "electronic_time": "09:00–11:00",
+  "paper_part": "None — fully electronic",
+  "source": "Social Studies structure: 25 × 4 marks, 120 min, electronic",
+  "teachers": [
+   "سلطي خالد العقلة",
+   "نفيسه محمود السيد"
+  ]
+ },
+ {
+  "grade_num": 9,
+  "track": "Advanced",
+  "subject": "Physics",
+  "electronic_questions": 16,
+  "electronic_marks": null,
+  "marks_per_question": "2–4",
+  "options": 4,
+  "parts": [
+   {
+    "label": "Multiple Choice (Q1–Q16)",
+    "count": 16
+   }
+  ],
+  "electronic_minutes": 60,
+  "calculator": true,
+  "exam_date": "2026-12-07",
+  "electronic_time": "10:30–11:30",
+  "paper_part": "Remaining questions (Q17 onward) on paper",
+  "source": "Physics structure: Q1–Q16 MCQ",
+  "teachers": [
+   "أمينة حسن الحمادي"
+  ]
+ },
+ {
+  "grade_num": 9,
+  "track": "Advanced",
+  "subject": "Biology",
+  "electronic_questions": 30,
+  "electronic_marks": 100,
+  "marks_per_question": "3–4",
+  "options": 4,
+  "parts": [
+   {
+    "label": "Multiple Choice",
+    "count": 30
+   }
+  ],
+  "electronic_minutes": 120,
+  "calculator": true,
+  "exam_date": "2026-12-11",
+  "electronic_time": "09:00–11:00",
+  "paper_part": "None — fully electronic",
+  "source": "Biology structure: 30 questions, 120 min, electronic",
+  "teachers": [
+   "بتول خليل محمود",
+   "فتحي عبدالمجيد منصور"
+  ]
+ },
+ {
+  "grade_num": 10,
+  "track": "General",
+  "subject": "Mathematics",
+  "electronic_questions": 20,
+  "electronic_marks": null,
+  "marks_per_question": "2–4 (varies)",
+  "options": 4,
+  "parts": [
+   {
+    "label": "Multiple Choice",
+    "count": 20
+   }
+  ],
+  "electronic_minutes": 60,
+  "calculator": true,
+  "exam_date": "2026-11-25",
+  "electronic_time": "10:30–11:30",
+  "paper_part": "6 free-response questions on paper",
+  "source": "Mathematics structures: 20 MCQ (electronic) + free-response (paper) in every grade",
+  "teachers": [
+   "اماني جمال الشاذلي",
+   "رياض أحمد محمد الزعبي"
+  ]
+ },
+ {
+  "grade_num": 10,
+  "track": "General",
+  "subject": "English",
+  "electronic_questions": 26,
+  "electronic_marks": 60,
+  "marks_per_question": "2–3",
+  "options": 3,
+  "parts": [
+   {
+    "label": "Part 1: Vocabulary",
+    "count": 5,
+    "marks": 2,
+    "options": 3
+   },
+   {
+    "label": "Part 2: Grammar",
+    "count": 5,
+    "marks": 2,
+    "options": 3
+   },
+   {
+    "label": "Part 3A: Reading",
+    "count": 8,
+    "marks": 3,
+    "options": 3
+   },
+   {
+    "label": "Part 3B: Reading",
+    "count": 8,
+    "marks": 2,
+    "options": 3
+   }
+  ],
+  "electronic_minutes": 60,
+  "calculator": false,
+  "exam_date": "2026-11-26",
+  "electronic_time": "10:30–11:30",
+  "paper_part": "Writing (40 marks) is on paper",
+  "source": "English EoT1 test specifications (Reading 60 / Writing 40)",
+  "teachers": [
+   "حسام الدين خليل شنبور",
+   "رجاء عطيه علي السيد"
+  ]
+ },
+ {
+  "grade_num": 10,
+  "track": "General",
+  "subject": "Arabic",
+  "electronic_questions": 20,
+  "electronic_marks": 60,
+  "marks_per_question": "3",
+  "options": 4,
+  "parts": [
+   {
+    "label": "النص السردي",
+    "count": 10,
+    "marks": 3
+   },
+   {
+    "label": "النص المعلوماتي",
+    "count": 10,
+    "marks": 3
+   }
+  ],
+  "electronic_minutes": 60,
+  "calculator": false,
+  "exam_date": "2026-12-08",
+  "electronic_time": "10:30–11:30",
+  "paper_part": "Comprehension, language skills and writing (40 marks) on paper",
+  "source": "Arabic structure: 40 paper + 60 electronic (MCQ)",
+  "teachers": [
+   "صفية عبدالله سعيد النقبي",
+   "ضياء عبدالناصر محمد أحمد"
+  ]
+ },
+ {
+  "grade_num": 10,
+  "track": "General",
+  "subject": "Islamic Education",
+  "electronic_questions": 27,
+  "electronic_marks": 100,
+  "marks_per_question": "2, 3 or 4",
+  "options": 4,
+  "parts": [
+   {
+    "label": "Multiple Choice",
+    "count": 27
+   }
+  ],
+  "electronic_minutes": 120,
+  "calculator": false,
+  "exam_date": "2026-12-09",
+  "electronic_time": "09:00–11:00",
+  "paper_part": "None — fully electronic",
+  "source": "Islamic Education structure: 27 questions, 120 min, electronic",
+  "teachers": [
+   "طلال صالح حسين سعيد",
+   "نجمة علي البلوشي"
+  ]
+ },
+ {
+  "grade_num": 10,
+  "track": "General",
+  "subject": "Social Studies",
+  "electronic_questions": 25,
+  "electronic_marks": 100,
+  "marks_per_question": "4",
+  "options": 4,
+  "parts": [
+   {
+    "label": "Multiple Choice",
+    "count": 25,
+    "marks": 4
+   }
+  ],
+  "electronic_minutes": 120,
+  "calculator": true,
+  "exam_date": "2026-12-10",
+  "electronic_time": "09:00–11:00",
+  "paper_part": "None — fully electronic",
+  "source": "Social Studies structure: 25 × 4 marks, 120 min, electronic",
+  "teachers": [
+   "سلطي خالد العقلة",
+   "نفيسه محمود السيد"
+  ]
+ },
+ {
+  "grade_num": 10,
+  "track": "General",
+  "subject": "Science",
+  "electronic_questions": 20,
+  "electronic_marks": 60,
+  "marks_per_question": "3",
+  "options": 4,
+  "parts": [
+   {
+    "label": "Multiple Choice",
+    "count": 20,
+    "marks": 3
+   }
+  ],
+  "electronic_minutes": 60,
+  "calculator": true,
+  "exam_date": "2026-12-07",
+  "electronic_time": "10:30–11:30",
+  "paper_part": "5 free-response questions on paper",
+  "source": "Science structure: 20 MCQ (electronic) + free-response (paper)",
+  "teachers": [
+   "عمر محمد الصالح"
+  ]
+ },
+ {
+  "grade_num": 10,
+  "track": "Advanced",
+  "subject": "Mathematics",
+  "electronic_questions": 20,
+  "electronic_marks": null,
+  "marks_per_question": "2–4 (varies)",
+  "options": 4,
+  "parts": [
+   {
+    "label": "Multiple Choice",
+    "count": 20
+   }
+  ],
+  "electronic_minutes": 60,
+  "calculator": true,
+  "exam_date": "2026-11-25",
+  "electronic_time": "10:30–11:30",
+  "paper_part": "5 free-response questions on paper",
+  "source": "Mathematics structures: 20 MCQ (electronic) + free-response (paper) in every grade",
+  "teachers": [
+   "صفوان إبراهيم محمد نوافله"
+  ]
+ },
+ {
+  "grade_num": 10,
+  "track": "Advanced",
+  "subject": "English",
+  "electronic_questions": 26,
+  "electronic_marks": 60,
+  "marks_per_question": "2–3",
+  "options": 3,
+  "parts": [
+   {
+    "label": "Part 1: Vocabulary",
+    "count": 5,
+    "marks": 2,
+    "options": 3
+   },
+   {
+    "label": "Part 2: Grammar",
+    "count": 5,
+    "marks": 2,
+    "options": 3
+   },
+   {
+    "label": "Part 3A: Reading",
+    "count": 8,
+    "marks": 3,
+    "options": 3
+   },
+   {
+    "label": "Part 3B: Reading",
+    "count": 8,
+    "marks": 2,
+    "options": 3
+   }
+  ],
+  "electronic_minutes": 60,
+  "calculator": false,
+  "exam_date": "2026-11-26",
+  "electronic_time": "10:30–11:30",
+  "paper_part": "Writing (40 marks) is on paper",
+  "source": "English EoT1 test specifications (Reading 60 / Writing 40)",
+  "teachers": [
+   "Krishna Priya Ambika Nair",
+   "برايان اولوكلين"
+  ]
+ },
+ {
+  "grade_num": 10,
+  "track": "Advanced",
+  "subject": "Arabic",
+  "electronic_questions": 20,
+  "electronic_marks": 60,
+  "marks_per_question": "3",
+  "options": 4,
+  "parts": [
+   {
+    "label": "النص السردي",
+    "count": 10,
+    "marks": 3
+   },
+   {
+    "label": "النص المعلوماتي",
+    "count": 10,
+    "marks": 3
+   }
+  ],
+  "electronic_minutes": 60,
+  "calculator": false,
+  "exam_date": "2026-12-08",
+  "electronic_time": "10:30–11:30",
+  "paper_part": "Comprehension, language skills and writing (40 marks) on paper",
+  "source": "Arabic structure: 40 paper + 60 electronic (MCQ)",
+  "teachers": [
+   "صفية عبدالله سعيد النقبي"
+  ]
+ },
+ {
+  "grade_num": 10,
+  "track": "Advanced",
+  "subject": "Islamic Education",
+  "electronic_questions": 27,
+  "electronic_marks": 100,
+  "marks_per_question": "2, 3 or 4",
+  "options": 4,
+  "parts": [
+   {
+    "label": "Multiple Choice",
+    "count": 27
+   }
+  ],
+  "electronic_minutes": 120,
+  "calculator": false,
+  "exam_date": "2026-12-09",
+  "electronic_time": "09:00–11:00",
+  "paper_part": "None — fully electronic",
+  "source": "Islamic Education structure: 27 questions, 120 min, electronic",
+  "teachers": [
+   "طلال صالح حسين سعيد",
+   "نجمة علي البلوشي"
+  ]
+ },
+ {
+  "grade_num": 10,
+  "track": "Advanced",
+  "subject": "Social Studies",
+  "electronic_questions": 25,
+  "electronic_marks": 100,
+  "marks_per_question": "4",
+  "options": 4,
+  "parts": [
+   {
+    "label": "Multiple Choice",
+    "count": 25,
+    "marks": 4
+   }
+  ],
+  "electronic_minutes": 120,
+  "calculator": true,
+  "exam_date": "2026-12-10",
+  "electronic_time": "09:00–11:00",
+  "paper_part": "None — fully electronic",
+  "source": "Social Studies structure: 25 × 4 marks, 120 min, electronic",
+  "teachers": [
+   "عيسى محمد شفيق السوقي",
+   "نفيسه محمود السيد"
+  ]
+ },
+ {
+  "grade_num": 10,
+  "track": "Advanced",
+  "subject": "Physics",
+  "electronic_questions": 16,
+  "electronic_marks": null,
+  "marks_per_question": "2–4",
+  "options": 4,
+  "parts": [
+   {
+    "label": "Multiple Choice (Q1–Q16)",
+    "count": 16
+   }
+  ],
+  "electronic_minutes": 60,
+  "calculator": true,
+  "exam_date": "2026-12-07",
+  "electronic_time": "10:30–11:30",
+  "paper_part": "Remaining questions (Q17 onward) on paper",
+  "source": "Physics structure: Q1–Q16 MCQ",
+  "teachers": [
+   "أمينة حسن الحمادي"
+  ]
+ },
+ {
+  "grade_num": 10,
+  "track": "Advanced",
+  "subject": "Chemistry",
+  "electronic_questions": 30,
+  "electronic_marks": 100,
+  "marks_per_question": "3–4",
+  "options": 4,
+  "parts": [
+   {
+    "label": "Multiple Choice",
+    "count": 30
+   }
+  ],
+  "electronic_minutes": 120,
+  "calculator": true,
+  "exam_date": "2026-11-27",
+  "electronic_time": "09:00–11:00",
+  "paper_part": "None — fully electronic",
+  "source": "Chemistry structure: 30 questions, 120 min, electronic",
+  "teachers": [
+   "سوسن عبدالكريم العتيبي"
+  ]
+ },
+ {
+  "grade_num": 11,
+  "track": "General",
+  "subject": "Mathematics",
+  "electronic_questions": 20,
+  "electronic_marks": null,
+  "marks_per_question": "2–4 (varies)",
+  "options": 4,
+  "parts": [
+   {
+    "label": "Multiple Choice",
+    "count": 20
+   }
+  ],
+  "electronic_minutes": 60,
+  "calculator": true,
+  "exam_date": "2026-11-25",
+  "electronic_time": "10:30–11:30",
+  "paper_part": "6 free-response questions on paper",
+  "source": "Mathematics structures: 20 MCQ (electronic) + free-response (paper) in every grade",
+  "teachers": [
+   "اماني جمال الشاذلي",
+   "صفوان إبراهيم محمد نوافله"
+  ]
+ },
+ {
+  "grade_num": 11,
+  "track": "General",
+  "subject": "English",
+  "electronic_questions": 26,
+  "electronic_marks": 60,
+  "marks_per_question": "2–3",
+  "options": 3,
+  "parts": [
+   {
+    "label": "Part 1: Vocabulary",
+    "count": 5,
+    "marks": 2,
+    "options": 3
+   },
+   {
+    "label": "Part 2: Grammar",
+    "count": 5,
+    "marks": 2,
+    "options": 3
+   },
+   {
+    "label": "Part 3A: Reading",
+    "count": 8,
+    "marks": 3,
+    "options": 3
+   },
+   {
+    "label": "Part 3B: Reading",
+    "count": 8,
+    "marks": 2,
+    "options": 3
+   }
+  ],
+  "electronic_minutes": 60,
+  "calculator": false,
+  "exam_date": "2026-11-26",
+  "electronic_time": "10:30–11:30",
+  "paper_part": "Writing (40 marks) is on paper",
+  "source": "English EoT1 test specifications (Reading 60 / Writing 40)",
+  "teachers": [
+   "Krishna Priya Ambika Nair",
+   "برايان اولوكلين"
+  ]
+ },
+ {
+  "grade_num": 11,
+  "track": "General",
+  "subject": "Arabic",
+  "electronic_questions": 20,
+  "electronic_marks": 60,
+  "marks_per_question": "3",
+  "options": 4,
+  "parts": [
+   {
+    "label": "النص السردي",
+    "count": 10,
+    "marks": 3
+   },
+   {
+    "label": "النص المعلوماتي",
+    "count": 10,
+    "marks": 3
+   }
+  ],
+  "electronic_minutes": 60,
+  "calculator": false,
+  "exam_date": "2026-12-08",
+  "electronic_time": "10:30–11:30",
+  "paper_part": "Comprehension, language skills and writing (40 marks) on paper",
+  "source": "Arabic structure: 40 paper + 60 electronic (MCQ)",
+  "teachers": [
+   "شيخة مصبح محمد القريني",
+   "علي محمود عمر الخراط"
+  ]
+ },
+ {
+  "grade_num": 11,
+  "track": "General",
+  "subject": "Islamic Education",
+  "electronic_questions": 27,
+  "electronic_marks": 100,
+  "marks_per_question": "2, 3 or 4",
+  "options": 4,
+  "parts": [
+   {
+    "label": "Multiple Choice",
+    "count": 27
+   }
+  ],
+  "electronic_minutes": 120,
+  "calculator": false,
+  "exam_date": "2026-12-09",
+  "electronic_time": "09:00–11:00",
+  "paper_part": "None — fully electronic",
+  "source": "Islamic Education structure: 27 questions, 120 min, electronic",
+  "teachers": [
+   "طلال صالح حسين سعيد",
+   "نجمة علي البلوشي"
+  ]
+ },
+ {
+  "grade_num": 11,
+  "track": "General",
+  "subject": "Social Studies",
+  "electronic_questions": 25,
+  "electronic_marks": 100,
+  "marks_per_question": "4",
+  "options": 4,
+  "parts": [
+   {
+    "label": "Multiple Choice",
+    "count": 25,
+    "marks": 4
+   }
+  ],
+  "electronic_minutes": 120,
+  "calculator": true,
+  "exam_date": "2026-12-10",
+  "electronic_time": "09:00–11:00",
+  "paper_part": "None — fully electronic",
+  "source": "Social Studies structure: 25 × 4 marks, 120 min, electronic",
+  "teachers": [
+   "سلطي خالد العقلة",
+   "نفيسه محمود السيد"
+  ]
+ },
+ {
+  "grade_num": 11,
+  "track": "General",
+  "subject": "Chemistry",
+  "electronic_questions": 30,
+  "electronic_marks": 100,
+  "marks_per_question": "2–4",
+  "options": 4,
+  "parts": [
+   {
+    "label": "Multiple Choice",
+    "count": 30
+   }
+  ],
+  "electronic_minutes": 120,
+  "calculator": true,
+  "exam_date": "2026-11-27",
+  "electronic_time": "09:00–11:00",
+  "paper_part": "None — fully electronic",
+  "source": "Chemistry structure: 30 questions, 120 min, electronic",
+  "teachers": [
+   "محمد أحمد علي موسى"
+  ]
+ },
+ {
+  "grade_num": 11,
+  "track": "General",
+  "subject": "Biology",
+  "electronic_questions": 30,
+  "electronic_marks": 100,
+  "marks_per_question": "3–4",
+  "options": 4,
+  "parts": [
+   {
+    "label": "Multiple Choice",
+    "count": 30
+   }
+  ],
+  "electronic_minutes": 120,
+  "calculator": true,
+  "exam_date": "2026-12-11",
+  "electronic_time": "09:00–11:00",
+  "paper_part": "None — fully electronic",
+  "source": "Biology structure: 30 questions, 120 min, electronic",
+  "teachers": [
+   "ابتسام راشد القايدي",
+   "فتحي عبدالمجيد منصور"
+  ]
+ },
+ {
+  "grade_num": 11,
+  "track": "Advanced",
+  "subject": "Mathematics",
+  "electronic_questions": 20,
+  "electronic_marks": null,
+  "marks_per_question": "2–4 (varies)",
+  "options": 4,
+  "parts": [
+   {
+    "label": "Multiple Choice",
+    "count": 20
+   }
+  ],
+  "electronic_minutes": 60,
+  "calculator": true,
+  "exam_date": "2026-11-25",
+  "electronic_time": "10:30–11:30",
+  "paper_part": "5 free-response questions on paper",
+  "source": "Mathematics structures: 20 MCQ (electronic) + free-response (paper) in every grade",
+  "teachers": [
+   "Arjun Bhanuvikraman Chandrasekharan"
+  ]
+ },
+ {
+  "grade_num": 11,
+  "track": "Advanced",
+  "subject": "English",
+  "electronic_questions": 26,
+  "electronic_marks": 60,
+  "marks_per_question": "2–3",
+  "options": 3,
+  "parts": [
+   {
+    "label": "Part 1: Vocabulary",
+    "count": 5,
+    "marks": 2,
+    "options": 3
+   },
+   {
+    "label": "Part 2: Grammar",
+    "count": 5,
+    "marks": 2,
+    "options": 3
+   },
+   {
+    "label": "Part 3A: Reading",
+    "count": 8,
+    "marks": 3,
+    "options": 3
+   },
+   {
+    "label": "Part 3B: Reading",
+    "count": 8,
+    "marks": 2,
+    "options": 3
+   }
+  ],
+  "electronic_minutes": 60,
+  "calculator": false,
+  "exam_date": "2026-11-26",
+  "electronic_time": "10:30–11:30",
+  "paper_part": "Writing (40 marks) is on paper",
+  "source": "English EoT1 test specifications (Reading 60 / Writing 40)",
+  "teachers": [
+   "Krishna Priya Ambika Nair"
+  ]
+ },
+ {
+  "grade_num": 11,
+  "track": "Advanced",
+  "subject": "Arabic",
+  "electronic_questions": 20,
+  "electronic_marks": 60,
+  "marks_per_question": "3",
+  "options": 4,
+  "parts": [
+   {
+    "label": "النص السردي",
+    "count": 10,
+    "marks": 3
+   },
+   {
+    "label": "النص المعلوماتي",
+    "count": 10,
+    "marks": 3
+   }
+  ],
+  "electronic_minutes": 60,
+  "calculator": false,
+  "exam_date": "2026-12-08",
+  "electronic_time": "10:30–11:30",
+  "paper_part": "Comprehension, language skills and writing (40 marks) on paper",
+  "source": "Arabic structure: 40 paper + 60 electronic (MCQ)",
+  "teachers": [
+   "شيخة مصبح محمد القريني"
+  ]
+ },
+ {
+  "grade_num": 11,
+  "track": "Advanced",
+  "subject": "Islamic Education",
+  "electronic_questions": 27,
+  "electronic_marks": 100,
+  "marks_per_question": "2, 3 or 4",
+  "options": 4,
+  "parts": [
+   {
+    "label": "Multiple Choice",
+    "count": 27
+   }
+  ],
+  "electronic_minutes": 120,
+  "calculator": false,
+  "exam_date": "2026-12-09",
+  "electronic_time": "09:00–11:00",
+  "paper_part": "None — fully electronic",
+  "source": "Islamic Education structure: 27 questions, 120 min, electronic",
+  "teachers": [
+   "نجمة علي البلوشي"
+  ]
+ },
+ {
+  "grade_num": 11,
+  "track": "Advanced",
+  "subject": "Social Studies",
+  "electronic_questions": 25,
+  "electronic_marks": 100,
+  "marks_per_question": "4",
+  "options": 4,
+  "parts": [
+   {
+    "label": "Multiple Choice",
+    "count": 25,
+    "marks": 4
+   }
+  ],
+  "electronic_minutes": 120,
+  "calculator": true,
+  "exam_date": "2026-12-10",
+  "electronic_time": "09:00–11:00",
+  "paper_part": "None — fully electronic",
+  "source": "Social Studies structure: 25 × 4 marks, 120 min, electronic",
+  "teachers": [
+   "نفيسه محمود السيد"
+  ]
+ },
+ {
+  "grade_num": 11,
+  "track": "Advanced",
+  "subject": "Physics",
+  "electronic_questions": 16,
+  "electronic_marks": null,
+  "marks_per_question": "2–4",
+  "options": 4,
+  "parts": [
+   {
+    "label": "Multiple Choice (Q1–Q16)",
+    "count": 16
+   }
+  ],
+  "electronic_minutes": 60,
+  "calculator": true,
+  "exam_date": "2026-12-07",
+  "electronic_time": "10:30–11:30",
+  "paper_part": "Remaining questions (Q17 onward) on paper",
+  "source": "Physics structure: Q1–Q16 MCQ",
+  "teachers": [
+   "سمية احمد خليل رواشدة"
+  ]
+ },
+ {
+  "grade_num": 11,
+  "track": "Advanced",
+  "subject": "Chemistry",
+  "electronic_questions": 30,
+  "electronic_marks": 100,
+  "marks_per_question": "2–4",
+  "options": 4,
+  "parts": [
+   {
+    "label": "Multiple Choice",
+    "count": 30
+   }
+  ],
+  "electronic_minutes": 120,
+  "calculator": true,
+  "exam_date": "2026-11-27",
+  "electronic_time": "09:00–11:00",
+  "paper_part": "None — fully electronic",
+  "source": "Chemistry structure: 30 questions, 120 min, electronic",
+  "teachers": [
+   "سوسن عبدالكريم العتيبي"
+  ]
+ },
+ {
+  "grade_num": 11,
+  "track": "Advanced",
+  "subject": "Biology",
+  "electronic_questions": 30,
+  "electronic_marks": 100,
+  "marks_per_question": "3–4",
+  "options": 4,
+  "parts": [
+   {
+    "label": "Multiple Choice",
+    "count": 30
+   }
+  ],
+  "electronic_minutes": 120,
+  "calculator": true,
+  "exam_date": "2026-12-11",
+  "electronic_time": "09:00–11:00",
+  "paper_part": "None — fully electronic",
+  "source": "No Grade 11 Advanced structure supplied — using the 30-question Biology format of the other grades",
+  "teachers": [
+   "بتول خليل محمود"
+  ]
+ },
+ {
+  "grade_num": 12,
+  "track": "General",
+  "subject": "Mathematics",
+  "electronic_questions": 20,
+  "electronic_marks": null,
+  "marks_per_question": "2–4 (varies)",
+  "options": 4,
+  "parts": [
+   {
+    "label": "Multiple Choice",
+    "count": 20
+   }
+  ],
+  "electronic_minutes": 60,
+  "calculator": true,
+  "exam_date": "2026-11-25",
+  "electronic_time": "13:30–14:30",
+  "paper_part": "5 free-response questions on paper",
+  "source": "Mathematics structures: 20 MCQ (electronic) + free-response (paper) in every grade",
+  "teachers": [
+   "اماني جمال الشاذلي",
+   "رياض أحمد محمد الزعبي"
+  ]
+ },
+ {
+  "grade_num": 12,
+  "track": "General",
+  "subject": "English",
+  "electronic_questions": 26,
+  "electronic_marks": 60,
+  "marks_per_question": "2–3",
+  "options": 3,
+  "parts": [
+   {
+    "label": "Part 1: Vocabulary",
+    "count": 5,
+    "marks": 2,
+    "options": 3
+   },
+   {
+    "label": "Part 2: Grammar",
+    "count": 5,
+    "marks": 2,
+    "options": 3
+   },
+   {
+    "label": "Part 3A: Reading",
+    "count": 8,
+    "marks": 3,
+    "options": 3
+   },
+   {
+    "label": "Part 3B: Reading",
+    "count": 8,
+    "marks": 2,
+    "options": 3
+   }
+  ],
+  "electronic_minutes": 60,
+  "calculator": false,
+  "exam_date": "2026-11-26",
+  "electronic_time": "13:30–14:30",
+  "paper_part": "Writing (40 marks) is a separate electronic writing task — not multiple choice",
+  "source": "English EoT1 test specifications (Reading 60 / Writing 40)",
+  "teachers": [
+   "حسام الدين خليل شنبور",
+   "رجاء عطيه علي السيد"
+  ]
+ },
+ {
+  "grade_num": 12,
+  "track": "General",
+  "subject": "Arabic",
+  "electronic_questions": 20,
+  "electronic_marks": 60,
+  "marks_per_question": "3",
+  "options": 4,
+  "parts": [
+   {
+    "label": "النص السردي",
+    "count": 10,
+    "marks": 3
+   },
+   {
+    "label": "النص المعلوماتي",
+    "count": 10,
+    "marks": 3
+   }
+  ],
+  "electronic_minutes": 60,
+  "calculator": false,
+  "exam_date": "2026-12-08",
+  "electronic_time": "13:30–14:30",
+  "paper_part": "Comprehension, language skills and writing (40 marks) on paper",
+  "source": "Arabic structure: 40 paper + 60 electronic (MCQ)",
+  "teachers": [
+   "شيخة مصبح محمد القريني",
+   "ضياء عبدالناصر محمد أحمد"
+  ]
+ },
+ {
+  "grade_num": 12,
+  "track": "General",
+  "subject": "Islamic Education",
+  "electronic_questions": 27,
+  "electronic_marks": 100,
+  "marks_per_question": "2, 3 or 4",
+  "options": 4,
+  "parts": [
+   {
+    "label": "Multiple Choice",
+    "count": 27
+   }
+  ],
+  "electronic_minutes": 120,
+  "calculator": false,
+  "exam_date": "2026-12-09",
+  "electronic_time": "12:00–14:00",
+  "paper_part": "None — fully electronic",
+  "source": "Islamic Education structure: 27 questions, 120 min, electronic",
+  "teachers": [
+   "طلال صالح حسين سعيد",
+   "نجمة علي البلوشي"
+  ]
+ },
+ {
+  "grade_num": 12,
+  "track": "General",
+  "subject": "Social Studies",
+  "electronic_questions": 25,
+  "electronic_marks": 100,
+  "marks_per_question": "4",
+  "options": 4,
+  "parts": [
+   {
+    "label": "Multiple Choice",
+    "count": 25,
+    "marks": 4
+   }
+  ],
+  "electronic_minutes": 120,
+  "calculator": true,
+  "exam_date": "2026-12-10",
+  "electronic_time": "12:00–14:00",
+  "paper_part": "None — fully electronic",
+  "source": "Social Studies structure: 25 × 4 marks, 120 min, electronic",
+  "teachers": [
+   "سلطي خالد العقلة",
+   "نفيسه محمود السيد"
+  ]
+ },
+ {
+  "grade_num": 12,
+  "track": "General",
+  "subject": "Physics",
+  "electronic_questions": 16,
+  "electronic_marks": 64,
+  "marks_per_question": "4",
+  "options": 4,
+  "parts": [
+   {
+    "label": "Multiple Choice (Q1–Q16)",
+    "count": 16
+   }
+  ],
+  "electronic_minutes": 60,
+  "calculator": true,
+  "exam_date": "2026-12-07",
+  "electronic_time": "13:30–14:30",
+  "paper_part": "Remaining questions (Q17 onward) on paper",
+  "source": "Physics structure: Q1–Q16 MCQ",
+  "teachers": [
+   "عمر محمد الصالح"
+  ]
+ },
+ {
+  "grade_num": 12,
+  "track": "General",
+  "subject": "Chemistry",
+  "electronic_questions": 25,
+  "electronic_marks": 100,
+  "marks_per_question": "4",
+  "options": 4,
+  "parts": [
+   {
+    "label": "Multiple Choice",
+    "count": 25
+   }
+  ],
+  "electronic_minutes": 120,
+  "calculator": true,
+  "exam_date": "2026-11-27",
+  "electronic_time": "09:00–11:00",
+  "paper_part": "None — fully electronic",
+  "source": "Chemistry 12 General: 25 × 4",
+  "teachers": [
+   "محمد أحمد علي موسى"
+  ]
+ },
+ {
+  "grade_num": 12,
+  "track": "General",
+  "subject": "Biology",
+  "electronic_questions": 30,
+  "electronic_marks": 100,
+  "marks_per_question": "3–4",
+  "options": 4,
+  "parts": [
+   {
+    "label": "Multiple Choice",
+    "count": 30
+   }
+  ],
+  "electronic_minutes": 120,
+  "calculator": true,
+  "exam_date": "2026-12-11",
+  "electronic_time": "09:00–11:00",
+  "paper_part": "None — fully electronic",
+  "source": "Biology structure: 30 questions, 120 min, electronic",
+  "teachers": [
+   "فتحي عبدالمجيد منصور"
+  ]
+ },
+ {
+  "grade_num": 12,
+  "track": "Advanced",
+  "subject": "Mathematics",
+  "electronic_questions": 20,
+  "electronic_marks": null,
+  "marks_per_question": "2–4 (varies)",
+  "options": 4,
+  "parts": [
+   {
+    "label": "Multiple Choice",
+    "count": 20
+   }
+  ],
+  "electronic_minutes": 60,
+  "calculator": true,
+  "exam_date": "2026-11-25",
+  "electronic_time": "13:30–14:30",
+  "paper_part": "6 free-response questions on paper",
+  "source": "Mathematics structures: 20 MCQ (electronic) + free-response (paper) in every grade",
+  "teachers": [
+   "Arjun Bhanuvikraman Chandrasekharan"
+  ]
+ },
+ {
+  "grade_num": 12,
+  "track": "Advanced",
+  "subject": "English",
+  "electronic_questions": 26,
+  "electronic_marks": 60,
+  "marks_per_question": "2–3",
+  "options": 3,
+  "parts": [
+   {
+    "label": "Part 1: Vocabulary",
+    "count": 5,
+    "marks": 2,
+    "options": 3
+   },
+   {
+    "label": "Part 2: Grammar",
+    "count": 5,
+    "marks": 2,
+    "options": 3
+   },
+   {
+    "label": "Part 3A: Reading",
+    "count": 8,
+    "marks": 3,
+    "options": 3
+   },
+   {
+    "label": "Part 3B: Reading",
+    "count": 8,
+    "marks": 2,
+    "options": 3
+   }
+  ],
+  "electronic_minutes": 60,
+  "calculator": false,
+  "exam_date": "2026-11-26",
+  "electronic_time": "13:30–14:30",
+  "paper_part": "Writing (40 marks) is a separate electronic writing task — not multiple choice",
+  "source": "English EoT1 test specifications (Reading 60 / Writing 40)",
+  "teachers": [
+   "برايان اولوكلين",
+   "رجاء عطيه علي السيد"
+  ]
+ },
+ {
+  "grade_num": 12,
+  "track": "Advanced",
+  "subject": "Arabic",
+  "electronic_questions": 20,
+  "electronic_marks": 60,
+  "marks_per_question": "3",
+  "options": 4,
+  "parts": [
+   {
+    "label": "النص السردي",
+    "count": 10,
+    "marks": 3
+   },
+   {
+    "label": "النص المعلوماتي",
+    "count": 10,
+    "marks": 3
+   }
+  ],
+  "electronic_minutes": 60,
+  "calculator": false,
+  "exam_date": "2026-12-08",
+  "electronic_time": "13:30–14:30",
+  "paper_part": "Comprehension, language skills and writing (40 marks) on paper",
+  "source": "Arabic structure: 40 paper + 60 electronic (MCQ)",
+  "teachers": [
+   "شيخة مصبح محمد القريني",
+   "ضياء عبدالناصر محمد أحمد"
+  ]
+ },
+ {
+  "grade_num": 12,
+  "track": "Advanced",
+  "subject": "Islamic Education",
+  "electronic_questions": 27,
+  "electronic_marks": 100,
+  "marks_per_question": "2, 3 or 4",
+  "options": 4,
+  "parts": [
+   {
+    "label": "Multiple Choice",
+    "count": 27
+   }
+  ],
+  "electronic_minutes": 120,
+  "calculator": false,
+  "exam_date": "2026-12-09",
+  "electronic_time": "12:00–14:00",
+  "paper_part": "None — fully electronic",
+  "source": "Islamic Education structure: 27 questions, 120 min, electronic",
+  "teachers": [
+   "طلال صالح حسين سعيد",
+   "نجمة علي البلوشي"
+  ]
+ },
+ {
+  "grade_num": 12,
+  "track": "Advanced",
+  "subject": "Social Studies",
+  "electronic_questions": 25,
+  "electronic_marks": 100,
+  "marks_per_question": "4",
+  "options": 4,
+  "parts": [
+   {
+    "label": "Multiple Choice",
+    "count": 25,
+    "marks": 4
+   }
+  ],
+  "electronic_minutes": 120,
+  "calculator": true,
+  "exam_date": "2026-12-10",
+  "electronic_time": "12:00–14:00",
+  "paper_part": "None — fully electronic",
+  "source": "Social Studies structure: 25 × 4 marks, 120 min, electronic",
+  "teachers": [
+   "سلطي خالد العقلة",
+   "نفيسه محمود السيد"
+  ]
+ },
+ {
+  "grade_num": 12,
+  "track": "Advanced",
+  "subject": "Physics",
+  "electronic_questions": 16,
+  "electronic_marks": null,
+  "marks_per_question": "2–4",
+  "options": 4,
+  "parts": [
+   {
+    "label": "Multiple Choice (Q1–Q16)",
+    "count": 16
+   }
+  ],
+  "electronic_minutes": 60,
+  "calculator": true,
+  "exam_date": "2026-12-07",
+  "electronic_time": "13:30–14:30",
+  "paper_part": "Remaining questions (Q17 onward) on paper",
+  "source": "Physics structure: Q1–Q16 MCQ",
+  "teachers": [
+   "سمية احمد خليل رواشدة"
+  ]
+ },
+ {
+  "grade_num": 12,
+  "track": "Advanced",
+  "subject": "Chemistry",
+  "electronic_questions": 30,
+  "electronic_marks": 100,
+  "marks_per_question": "3–4",
+  "options": 4,
+  "parts": [
+   {
+    "label": "Multiple Choice",
+    "count": 30
+   }
+  ],
+  "electronic_minutes": 120,
+  "calculator": true,
+  "exam_date": "2026-11-27",
+  "electronic_time": "09:00–11:00",
+  "paper_part": "None — fully electronic",
+  "source": "Chemistry structure: 30 questions, 120 min, electronic",
+  "teachers": [
+   "سوسن عبدالكريم العتيبي"
+  ]
+ },
+ {
+  "grade_num": 12,
+  "track": "Advanced",
+  "subject": "Biology",
+  "electronic_questions": 30,
+  "electronic_marks": 100,
+  "marks_per_question": "3–4",
+  "options": 4,
+  "parts": [
+   {
+    "label": "Multiple Choice",
+    "count": 30
+   }
+  ],
+  "electronic_minutes": 120,
+  "calculator": true,
+  "exam_date": "2026-12-11",
+  "electronic_time": "09:00–11:00",
+  "paper_part": "None — fully electronic",
+  "source": "Biology structure: 30 questions, 120 min, electronic",
+  "teachers": [
+   "بتول خليل محمود",
+   "فتحي عبدالمجيد منصور"
+  ]
+ }
+]

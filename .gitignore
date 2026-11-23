@@ -1,0 +1,22 @@
+# ---- Student data: NEVER commit (Student IDs live only in Supabase) ----
+data/roster.xlsx
+data/students.json
+data/students.csv
+data/sections.json
+data/seed_students.sql
+data/supabase_seed_students.sql
+data/teachers-source.xlsx
+public/data/
+# exported reports (contain Student IDs and results)
+/*.xlsx
+Results_*.xlsx
+
+# ---- Internal reference material ----
+reference/
+
+# ---- Tooling ----
+node_modules/
+.claude/settings.local.json
+*.log
+Thumbs.db
+desktop.ini

@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Administrator · Exam Training Platform</title>
+<link rel="icon" href="assets/complex-logo.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="vendor/katex/katex.min.css">
+<script defer src="vendor/katex/katex.min.js"></script>
+<script defer src="vendor/katex/auto-render.min.js"></script>
+<link rel="stylesheet" href="css/portal.css">
+<style>
+  .control { display: grid; grid-template-columns: minmax(0, 340px) minmax(0, 1fr); gap: 16px; margin-bottom: 18px; }
+  .term-switch { display: flex; gap: 6px; background: var(--sky-2); border: 1px solid var(--line); padding: 5px; border-radius: 12px; }
+  .term-switch button { flex: 1; border: 0; background: none; border-radius: 9px; padding: 10px 6px; font-weight: 800; color: var(--muted); cursor: pointer; }
+  .term-switch button.on { background: var(--navy); color: #fff; box-shadow: 0 2px 8px rgba(46,26,14,.3); }
+  .exp-btns { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 12px; }
+  .live { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 12px; }
+  .live .kpi { flex: 1; min-width: 200px; margin: 0; }
+  .classes { display: grid; grid-template-columns: repeat(auto-fill, minmax(270px, 1fr)); gap: 12px; }
+  .cls { background: #fff; border: 1px solid var(--line); border-radius: 12px; padding: 12px 14px; }
+  .cls.missing { border-color: #F2C9C3; background: linear-gradient(180deg, #fff, #FCF3ED); }
+  .cls h3 { font-size: 15px; display: flex; align-items: center; gap: 8px; }
+  .cls .secs { display: flex; flex-wrap: wrap; gap: 6px; margin: 8px 0; }
+  .cls .subjs { display: flex; flex-wrap: wrap; gap: 4px; }
+  .cls .subjs span { font-size: 11px; padding: 2px 7px; border-radius: 999px; font-weight: 800; }
+  .cls .subjs .y { background: var(--ok-bg); color: var(--ok); } .cls .subjs .n { background: var(--bad-bg); color: var(--bad); }
+  .pin-card { max-width: 420px; }
+  @media (max-width: 900px) { .control { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+<div id="appHeader"></div>
+<main class="page">
+  <div class="control">
+    <section class="card">
+      <div class="card-h"><img class="ill" src="assets/ornaments/calendar.svg" alt=""><div><h2 data-i18n="term_ctl"></h2><div class="sub" data-i18n="term_ctl_s"></div></div></div>
+      <div class="card-b"><div class="term-switch" id="termSwitch"></div><p class="small muted" style="margin:10px 0 0" data-i18n="term_note"></p></div>
+    </section>
+    <section class="card">
+      <div class="card-h"><img class="ill" src="assets/ornaments/reports.svg" alt=""><div><h2 data-i18n="exp_title"></h2><div class="sub" data-i18n="exp_sub"></div></div></div>
+      <div class="card-b">
+        <div class="filters" style="margin:0">
+          <label class="field"><span data-i18n="term"></span><select class="input" id="xTerm"></select></label>
+          <label class="field"><span data-i18n="grade"></span><select class="input" id="xGrade"></select></label>
+          <label class="field"><span data-i18n="track"></span><select class="input" id="xTrack"></select></label>
+          <label class="field"><span data-i18n="section"></span><select class="input" id="xSection"></select></label>
+          <label class="field"><span data-i18n="subject"></span><select class="input" id="xSubject"></select></label>
+        </div>
+        <div class="exp-btns">
+          <button class="btn btn-primary" data-rep="student-performance"></button>
+          <button class="btn btn-olive" data-rep="teacher-uploads"></button>
+          <button class="btn btn-lime" data-rep="full"></button>
+        </div>
+        <div class="live" id="live"></div>
+      </div>
+    </section>
+  </div>
+
+  <div class="tabs">
+    <button data-tab="tab-overview"><img src="assets/ornaments/checklist.svg" alt=""><span data-i18n="a_overview"></span></button>
+    <button data-tab="tab-results"><img src="assets/ornaments/analytics.svg" alt=""><span data-i18n="a_results"></span></button>
+    <button data-tab="tab-roster"><img src="assets/ornaments/archive.svg" alt=""><span data-i18n="a_roster"></span></button>
+    <button data-tab="tab-security"><img src="assets/ornaments/laptop-shield.svg" alt=""><span data-i18n="a_security"></span></button>
+  </div>
+
+  <section class="tab-panel" id="tab-overview"><div class="stack">
+    <div class="card"><div class="card-h"><img class="ill" src="assets/ornaments/map.svg" alt=""><div style="flex:1"><h2 data-i18n="classes_t"></h2><div class="sub" id="classesSub"></div></div>
+      <label class="check"><input type="checkbox" id="onlyMissing"> <span data-i18n="only_missing"></span></label></div>
+      <div class="card-b"><div class="filters"><label class="field"><span data-i18n="grade"></span><select class="input" id="cGrade"></select></label><label class="field"><span data-i18n="track"></span><select class="input" id="cTrack"></select></label><label class="field"><span data-i18n="term"></span><select class="input" id="cTerm"></select></label></div>
+      <div class="classes" id="classes"></div></div></div>
+    <div class="card"><div class="card-h"><img class="ill" src="assets/ornaments/presentation.svg" alt=""><div><h2 data-i18n="uploads_t"></h2><div class="sub" data-i18n="uploads_s"></div></div><a class="btn btn-ghost btn-sm" href="teacher.html" style="margin-inline-start:auto" data-i18n="open_teacher"></a></div><div class="card-b" id="examsHost"></div></div>
+  </div></section>
+
+  <section class="tab-panel" id="tab-results"><div class="card"><div class="card-h"><img class="ill" src="assets/ornaments/analytics.svg" alt=""><div><h2 data-i18n="a_results"></h2><div class="sub" data-i18n="results_s"></div></div></div><div class="card-b" id="resultsHost"></div></div></section>
+
+  <section class="tab-panel" id="tab-roster"><div class="stack">
+    <div class="card"><div class="card-h"><img class="ill" src="assets/ornaments/archive.svg" alt=""><div style="flex:1"><h2 data-i18n="a_roster"></h2><div class="sub" id="rosterSub"></div></div>
+      <label class="btn btn-olive"><input type="file" id="rosterFile" accept=".xlsx" hidden><span data-i18n="roster_up"></span></label></div>
+      <div class="card-b"><div class="grid g2">
+        <div><h3 style="font-size:15px;margin-bottom:8px" data-i18n="sections"></h3><div class="table-wrap" id="secTable"></div></div>
+        <div><div class="filters" style="grid-template-columns:1fr 1fr"><label class="field"><span data-i18n="section"></span><select class="input" id="rSection"></select></label><label class="field"><span data-i18n="student_id"></span><input class="input" id="rSearch" data-i18n-ph="search_id"></label></div>
+          <div class="table-wrap" id="stuTable"></div></div>
+      </div></div></div>
+  </div></section>
+
+  <section class="tab-panel" id="tab-security"><div class="grid g2">
+    <div class="card pin-card"><div class="card-h"><img class="ill" src="assets/ornaments/mobile-shield.svg" alt=""><div><h2 data-i18n="pin_admin"></h2><div class="sub" data-i18n="pin_s"></div></div></div>
+      <form class="card-b stack" data-kind="admin"><label class="field"><span data-i18n="new_pin"></span><input class="input pin-input" type="password" inputmode="numeric" maxlength="4" required></label><label class="field"><span data-i18n="confirm_pin"></span><input class="input pin-input" type="password" inputmode="numeric" maxlength="4" required></label><button class="btn btn-navy" data-i18n="save"></button></form></div>
+    <div class="card pin-card"><div class="card-h"><img class="ill" src="assets/ornaments/laptop-shield.svg" alt=""><div><h2 data-i18n="pin_teacher"></h2><div class="sub" data-i18n="pin_s2"></div></div></div>
+      <form class="card-b stack" data-kind="teacher"><label class="field"><span data-i18n="new_pin"></span><input class="input pin-input" type="password" inputmode="numeric" maxlength="4" required></label><label class="field"><span data-i18n="confirm_pin"></span><input class="input pin-input" type="password" inputmode="numeric" maxlength="4" required></label><button class="btn btn-navy" data-i18n="save"></button></form></div>
+  </div></section>
+</main>
+<div id="appFooter"></div>
+
+<script src="vendor/exceljs.min.js"></script>
+<script src="vendor/jszip.min.js"></script>
+<script src="js/config.js"></script>
+<script src="js/i18n.js"></script>
+<script src="js/shared/teachers-data.js"></script>
+<script src="js/shared/catalog.js"></script>
+<script src="js/shared/reports.js"></script>
+<script src="js/shared/roster-parser.js"></script>
+<script src="js/api.js"></script>
+<script src="js/ui.js"></script>
+<script src="js/panels.js"></script>
+<script>
+I18N.add({
+  en: { portal: 'Administrator Control Panel', portal_sub: 'All grades 5–12, every section, every upload and every result in one place.',
+    term_ctl: 'Active term', term_ctl_s: 'Students only see exams from the active term.', term_note: 'Past terms stay archived — use the Term filters to review them.',
+    term_confirm: 'Switch the active term to {t}? Students will immediately see ONLY {t} exams. Teachers and admins can still review other terms.', term_ok: 'Active term is now {t}.',
+    exp_title: 'Export reports (تصدير التقارير)', exp_sub: 'Styled .xlsx workbooks for the selected term and filters.',
+    rep1: 'Export Student Attempts & Highest Marks (.xlsx)', rep2: 'Export Teacher Subject Uploads Status (.xlsx)', rep3: 'Export Full Admin Report (.xlsx)',
+    live_up: 'Uploaded subjects', live_up_s: '{a} / {b} grade-track-subject slots', live_part: 'Students participated', live_part_s: '{a} / {b} students in scope',
+    a_overview: 'All Classes & Uploads', a_results: 'School-Wide Results', a_roster: 'Student Roster (Grades 5–12)', a_security: 'Security Settings',
+    classes_t: 'Grades, tracks & sections', classes_s: '{g} grade-tracks · {s} sections · {n} students', only_missing: 'Show classes missing uploads',
+    uploads_t: 'Uploaded exams', uploads_s: 'Preview, publish / hide, edit grade-track-subject-title, or delete.', open_teacher: 'Open teacher upload',
+    exams_n: '{n} exam(s)', no_uploads: 'No uploads yet', missing_n: '{n} subject(s) missing',
+    results_s: 'Best score per student by default — toggle All Attempts, filter, and export.',
+    roster_s: '{n} students in {s} sections (Grades 5–12). Only Student IDs are stored — no names.', roster_up: 'Upload new roster (.xlsx)',
+    roster_confirm: 'Replace the roster with “{f}”? Students not in the new file will no longer be able to sign in. Existing attempts are kept.', roster_ok: 'Roster synced: {n} students in {s} sections (+{a} / −{r}).',
+    search_id: 'Search Student ID…', count: 'Students', more_rows: 'Showing first {n} — refine the search to see more.',
+    pin_admin: 'Administrator PIN', pin_teacher: 'Teacher PIN', pin_s: 'Used to open this control panel.', pin_s2: 'Shared by all teachers to open the Teacher Portal.',
+    new_pin: 'New 4-digit PIN', confirm_pin: 'Confirm new PIN', pin_mismatch: 'The two PINs do not match.', pin_bad: 'The PIN must be exactly 4 digits.', pin_ok: 'PIN updated.', exporting: 'Preparing workbook…' },
+  ar: { portal: 'لوحة تحكم الإدارة', portal_sub: 'جميع الصفوف 5–12 وكل الشعب والاختبارات المرفوعة والنتائج في مكان واحد.',
+    term_ctl: 'الفصل الدراسي الحالي', term_ctl_s: 'يرى الطلبة اختبارات الفصل الحالي فقط.', term_note: 'تبقى الفصول السابقة محفوظة — استخدم مرشح الفصل لمراجعتها.',
+    term_confirm: 'تغيير الفصل الحالي إلى {t}؟ سيرى الطلبة فوراً اختبارات {t} فقط، ويمكن للمعلمين والإدارة مراجعة الفصول الأخرى.', term_ok: 'الفصل الحالي الآن: {t}.',
+    exp_title: 'تصدير التقارير (Export reports)', exp_sub: 'ملفات ‎.xlsx منسقة حسب الفصل والمرشحات المختارة.',
+    rep1: 'تصدير محاولات الطلبة وأعلى الدرجات (.xlsx)', rep2: 'تصدير حالة رفع المعلمين للمواد (.xlsx)', rep3: 'تصدير التقرير الإداري الشامل (.xlsx)',
+    live_up: 'المواد المرفوعة', live_up_s: '{a} / {b} من خانات الصف والمسار والمادة', live_part: 'الطلبة المشاركون', live_part_s: '{a} / {b} طالباً ضمن النطاق',
+    a_overview: 'جميع الصفوف والاختبارات', a_results: 'نتائج المدرسة', a_roster: 'سجل الطلبة (الصفوف 5–12)', a_security: 'إعدادات الأمان',
+    classes_t: 'الصفوف والمسارات والشعب', classes_s: '{g} صف ومسار · {s} شعبة · {n} طالباً', only_missing: 'عرض الصفوف التي تنقصها اختبارات',
+    uploads_t: 'الاختبارات المرفوعة', uploads_s: 'معاينة، نشر / إخفاء، تعديل الصف والمسار والمادة والعنوان، أو الحذف.', open_teacher: 'فتح صفحة رفع المعلم',
+    exams_n: '{n} اختبار', no_uploads: 'لا توجد اختبارات', missing_n: 'تنقص {n} مادة',
+    results_s: 'أفضل نتيجة لكل طالب افتراضياً — يمكن عرض جميع المحاولات والتصفية والتصدير.',
+    roster_s: '{n} طالباً في {s} شعبة (الصفوف 5–12). تُحفظ أرقام الطلبة فقط دون الأسماء.', roster_up: 'رفع سجل جديد (.xlsx)',
+    roster_confirm: 'استبدال السجل بالملف "{f}"؟ لن يتمكن الطلبة غير الموجودين في الملف الجديد من الدخول، وتبقى المحاولات السابقة محفوظة.', roster_ok: 'تمت مزامنة السجل: {n} طالباً في {s} شعبة (+{a} / −{r}).',
+    search_id: 'ابحث برقم الطالب…', count: 'الطلبة', more_rows: 'عرض أول {n} — حدّد البحث لرؤية المزيد.',
+    pin_admin: 'رمز الإدارة', pin_teacher: 'رمز المعلمين', pin_s: 'يُستخدم لفتح لوحة التحكم هذه.', pin_s2: 'رمز مشترك لجميع المعلمين لفتح بوابة المعلم.',
+    new_pin: 'الرمز الجديد (4 أرقام)', confirm_pin: 'تأكيد الرمز الجديد', pin_mismatch: 'الرمزان غير متطابقين.', pin_bad: 'يجب أن يتكون الرمز من 4 أرقام.', pin_ok: 'تم تحديث الرمز.', exporting: 'جارٍ تجهيز الملف…' },
+});
+const { $, $$, esc } = UI; const t = (k, v) => I18N.t(k, v);
+let S, ACTIVE = 'Term 1', SECS = [], examsMgr, resultsPanel;
+
+/* ---------- active term ---------- */
+function drawTermSwitch() {
+  $('#termSwitch').innerHTML = UI.TERMS.map(x => `<button class="${x === ACTIVE ? 'on' : ''}" data-t="${x}">${esc(t(x))}</button>`).join('');
+  $$('#termSwitch button').forEach(b => b.onclick = async () => {
+    const nt = b.dataset.t; if (nt === ACTIVE) return;
+    if (!await UI.confirmDlg(esc(t('term_confirm', { t: t(nt) })))) return;
+    try { await API.setActiveTerm(nt); ACTIVE = nt; UI.toast(t('term_ok', { t: t(nt) }), 'ok'); const hb = $('#hdrTerm'); if (hb) hb.textContent = t(nt); drawTermSwitch(); } catch (e) { UI.handle(e); }
+  });
+}
+
+/* ---------- export reports + live summary ---------- */
+function fillExport() {
+  UI.fillSelect('#xTerm', UI.termItems(true), $('#xTerm').value || ACTIVE);
+  UI.fillSelect('#xGrade', UI.gradeItems(), $('#xGrade').value, 'all_grades');
+  UI.fillSelect('#xTrack', UI.trackItems(), $('#xTrack').value, 'all_tracks');
+  const g = $('#xGrade').value, tr = $('#xTrack').value;
+  UI.fillSelect('#xSection', SECS.filter(s => (!g || s.grade_num === Number(g)) && (!tr || s.track === tr)).map(s => ({ value: s.section, label: s.section })), $('#xSection').value, 'all_sections');
+  UI.fillSelect('#xSubject', UI.subjectItems(), $('#xSubject').value, 'all_subjects');
+  $('[data-rep=student-performance]').innerHTML = UI.ICONS.download + `<span>${t('rep1')}</span>`;
+  $('[data-rep=teacher-uploads]').innerHTML = UI.ICONS.download + `<span>${t('rep2')}</span>`;
+  $('[data-rep=full]').innerHTML = UI.ICONS.download + `<span>${t('rep3')}</span>`;
+}
+const xf = () => ({ term: $('#xTerm').value, grade: $('#xGrade').value, track: $('#xTrack').value, section: $('#xSection').value, subject: $('#xSubject').value });
+['#xTerm', '#xGrade', '#xTrack', '#xSection', '#xSubject'].forEach(s => $(s).addEventListener('change', () => { if (s === '#xGrade' || s === '#xTrack') $('#xSection').value = ''; fillExport(); live(); }));
+$$('[data-rep]').forEach(b => b.onclick = async () => {
+  const old = b.innerHTML; b.disabled = true; b.innerHTML = `<span class="spinner" style="width:16px;height:16px;border-width:2px"></span> ${t('exporting')}`;
+  try { await API.downloadReport(b.dataset.rep, xf()); } catch (e) { UI.handle(e); } finally { b.disabled = false; b.innerHTML = old; }
+});
+async function live() {
+  try {
+    const f = xf(); const d = await API.reportData(f.term);
+    const sp = Reports.studentPerformance({ ...d, term: f.term, filters: f });
+    const up = Reports.teacherUploads({ ...d, term: f.term });
+    $('#live').innerHTML = `<div class="kpi olive"><div class="l">${t('live_up')}</div><div class="v">${up.uploadedCells} / ${up.totalCells}</div><div class="small muted">${t('live_up_s', { a: up.uploadedCells, b: up.totalCells })}</div><div class="bar"><i style="width:${up.uploadedCells / up.totalCells * 100}%"></i></div></div>
+      <div class="kpi"><div class="l">${t('live_part')}</div><div class="v">${sp.participated} / ${sp.scopeCount}</div><div class="small muted">${t('live_part_s', { a: sp.participated, b: sp.scopeCount })}</div><div class="bar"><i style="width:${sp.scopeCount ? sp.participated / sp.scopeCount * 100 : 0}%"></i></div></div>`;
+  } catch (e) { UI.handle(e); }
+}
+
+/* ---------- overview: classes ---------- */
+async function drawClasses() {
+  UI.fillSelect('#cGrade', UI.gradeItems(), $('#cGrade').value, 'all_grades');
+  UI.fillSelect('#cTrack', UI.trackItems(), $('#cTrack').value, 'all_tracks');
+  UI.fillSelect('#cTerm', UI.termItems(true), $('#cTerm').value || ACTIVE);
+  const exams = await API.exams({ term: $('#cTerm').value });
+  const g = $('#cGrade').value, tr = $('#cTrack').value, onlyMissing = $('#onlyMissing').checked;
+  const total = SECS.reduce((a, s) => a + s.student_count, 0);
+  $('#classesSub').textContent = t('classes_s', { g: Reports.GRADE_TRACKS.length, s: SECS.length, n: total });
+  const cards = Reports.GRADE_TRACKS.filter(x => (!g || x.grade_num === Number(g)) && (!tr || x.track === tr)).map(x => {
+    const secs = SECS.filter(s => s.grade_num === x.grade_num && s.track === x.track);
+    const ex = exams.filter(e => e.grade_num === x.grade_num && (e.track === x.track || e.track === 'All'));
+    const have = new Set(ex.map(e => e.subject)); const taught = Catalog.subjectsFor(x.grade_num, x.track); const missing = taught.filter(s => !have.has(s));
+    return { x, secs, ex, have, missing, taught };
+  }).filter(c => !onlyMissing || c.missing.length);
+  $('#classes').innerHTML = cards.map(c => `<div class="cls ${c.ex.length ? '' : 'missing'}">
+      <h3>${esc(UI.gradeTrackLabel(c.x.grade_num, c.x.track))} <span class="badge ${c.ex.length ? 'b-blue' : 'b-bad'} num" style="margin-inline-start:auto">${c.ex.length ? t('exams_n', { n: c.ex.length }) : t('no_uploads')}</span></h3>
+      <div class="secs">${c.secs.map(s => `<span class="badge b-gray"><bdi>${esc(s.section)}</bdi> · <span class="num">${s.student_count}</span></span>`).join('')}</div>
+      <div class="subjs">${c.taught.map(s => `<span class="${c.have.has(s) ? 'y' : 'n'}" title="${esc(Catalog.teachersFor(s, c.x.grade_num, c.x.track).join('، '))}">${c.have.has(s) ? '✓' : '✗'} ${esc(Catalog.departmentOf(s) !== s ? t('Science') + ' – ' + t(s) : t(s))}</span>`).join('')}${[...c.have].filter(s => !c.taught.includes(s)).map(s => `<span class="y">✓ ${esc(t(s))}</span>`).join('')}</div>
+      ${c.missing.length ? `<div class="small" style="color:var(--bad);margin-top:6px">${t('missing_n', { n: c.missing.length })}</div>` : ''}</div>`).join('') || `<div class="empty">${t('no_data')}</div>`;
+}
+['#cGrade', '#cTrack', '#cTerm', '#onlyMissing'].forEach(s => $(s).addEventListener('change', () => drawClasses().catch(UI.handle)));
+
+/* ---------- roster ---------- */
+let STUDENTS = [];
+async function drawRoster() {
+  SECS = await API.sections(); STUDENTS = await API.students({});
+  $('#rosterSub').textContent = t('roster_s', { n: STUDENTS.length, s: SECS.length });
+  $('#secTable').innerHTML = `<table class="data"><thead><tr><th>${t('grade')}</th><th>${t('track')}</th><th>${t('section')}</th><th class="c">${t('count')}</th></tr></thead><tbody>${SECS.map(s => `<tr class="clickable" data-s="${esc(s.section)}"><td>${esc(I18N.gradeLabel(s.grade_num))}</td><td>${s.track === 'Advanced' ? `<span class="badge b-gold">${t('Advanced')}</span>` : `<span class="badge b-blue">${t('General')}</span>`}</td><td><b>${esc(s.section)}</b></td><td class="c num">${s.student_count}</td></tr>`).join('')}
+    <tr class="group"><td colspan="3">${t('all')}</td><td class="c num">${STUDENTS.length}</td></tr></tbody></table>`;
+  $$('#secTable tr[data-s]').forEach(r => r.onclick = () => { $('#rSection').value = r.dataset.s; drawStudents(); });
+  UI.fillSelect('#rSection', SECS.map(s => ({ value: s.section, label: `${s.section} (${s.student_count})` })), $('#rSection').value, 'all_sections');
+  drawStudents();
+}
+function drawStudents() {
+  const sec = $('#rSection').value, q = API.normalizeId($('#rSearch').value);
+  const list = STUDENTS.filter(s => (!sec || s.section === sec) && (!q || s.student_id.includes(q)));
+  const shown = list.slice(0, 300);
+  $('#stuTable').innerHTML = `<table class="data"><thead><tr><th>#</th><th>${t('student_id')}</th><th>${t('grade')}</th><th>${t('track')}</th><th>${t('section')}</th></tr></thead><tbody>${shown.map((s, i) => `<tr><td class="num muted">${i + 1}</td><td class="num"><b>${esc(s.student_id)}</b></td><td>${esc(I18N.gradeLabel(s.grade_num))}</td><td>${esc(t(s.track))}</td><td>${esc(s.section)}</td></tr>`).join('')}</tbody></table>${list.length > 300 ? `<div class="small muted" style="padding:8px">${t('more_rows', { n: 300 })}</div>` : ''}`;
+}
+$('#rSection').onchange = drawStudents; $('#rSearch').oninput = UI.debounce(drawStudents, 200);
+$('#rosterFile').onchange = async e => {
+  const f = e.target.files[0]; e.target.value = ''; if (!f) return;
+  if (!await UI.confirmDlg(esc(t('roster_confirm', { f: f.name })))) return;
+  try { const r = await API.importRoster(f); UI.toast(t('roster_ok', { n: r.students, s: r.sections, a: r.added, r: r.removed }), 'ok', 6000); Panels.sections && (SECS = await API.sections()); await drawRoster(); fillExport(); drawClasses(); live(); } catch (err) { UI.handle(err); }
+};
+
+/* ---------- security ---------- */
+$$('#tab-security form').forEach(f => {
+  $$('input', f).forEach(i => i.addEventListener('input', () => { i.value = I18N.toWestern(i.value).replace(/\D/g, '').slice(0, 4); }));
+  f.onsubmit = async e => {
+    e.preventDefault(); const [a, b] = $$('input', f).map(i => i.value);
+    if (!/^\d{4}$/.test(a)) return UI.toast(t('pin_bad'), 'warn');
+    if (a !== b) return UI.toast(t('pin_mismatch'), 'warn');
+    try { await API.changePin(f.dataset.kind, a); UI.toast(t('pin_ok'), 'ok'); f.reset(); } catch (err) { UI.handle(err); }
+  };
+});
+
+/* ---------- boot ---------- */
+(async () => {
+  try { S = await UI.requireRole('admin'); } catch (_) { return; }
+  ACTIVE = await UI.header({ session: S, title: t('portal'), subtitle: t('portal_sub'), ornament: 'admin-settings' });
+  UI.footer();
+  try { SECS = await API.sections(); } catch (e) { UI.handle(e); }
+  drawTermSwitch(); fillExport(); I18N.apply();
+  UI.tabs($('main'));
+  examsMgr = Panels.examsManager($('#examsHost'), { term: ACTIVE, onChange: () => { drawClasses(); live(); } });
+  resultsPanel = Panels.results($('#resultsHost'), { term: ACTIVE });
+  drawClasses().catch(UI.handle); drawRoster().catch(UI.handle); live();
+  I18N.onChange(() => { UI.setHero(t('portal'), t('portal_sub')); drawTermSwitch(); fillExport(); drawClasses(); drawRoster(); live(); });
+})();
+</script>
+</body>
+</html>
