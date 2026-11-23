@@ -220,6 +220,23 @@ async function liteWorkbook(zip) {
   return { worksheets, lite: true };
 }
 
+// "English / عربي" typed in ONE cell -> { en, ar } (split at " / " or " | " outside $…$ maths, when exactly one side is Arabic)
+const AR_LETTER = /[؀-ۿ]/, noMath = s => String(s).replace(/\$[^$]*\$/g, '');
+function splitBi(s) {
+  s = String(s ?? ''); if (!AR_LETTER.test(noMath(s)) || !/[A-Za-z]{2}/.test(noMath(s))) return null;
+  let inM = false;
+  for (let i = 0; i < s.length; i++) {
+    const c = s[i];
+    if (c === '\\' && s[i + 1] === '$') { i++; continue; }
+    if (c === '$') { inM = !inM; continue; }
+    if (!inM && /\s/.test(c) && (s[i + 1] === '/' || s[i + 1] === '|') && /\s/.test(s[i + 2] || '')) {
+      const a = s.slice(0, i).trim(), b = s.slice(i + 2).trim(), aAr = AR_LETTER.test(noMath(a)), bAr = AR_LETTER.test(noMath(b));
+      if (a && b && aAr !== bAr) return aAr ? { en: b, ar: a } : { en: a, ar: b };
+    }
+  }
+  return null;
+}
+
 async function parseExamWorkbook(buffer, opts = {}) {
   const errors = [], warnings = [];
   const empty = (message, message_ar) => ({ ok: false, examInfo: {}, config: {}, passages: {}, questions: [], images: {}, warnings,
@@ -280,7 +297,8 @@ async function parseExamWorkbook(buffer, opts = {}) {
   }
   const questions = [];
   for (const row of qt.rows) {
-    const en = row.get('Question_EN'), ar = row.get('Question_AR');
+    let en = row.get('Question_EN'), ar = row.get('Question_AR');
+    if (!ar) { const sp = splitBi(en); if (sp) { en = sp.en; ar = sp.ar; } }
     const S = 'Questions', R = row.r;
     const opts = LETTERS.map(L => row.get('Option_' + L));
     const optsAr = LETTERS.map(L => row.get('Option_' + L + '_AR'));   // optional Arabic text of each answer (bilingual exams)
@@ -304,6 +322,7 @@ async function parseExamWorkbook(buffer, opts = {}) {
     const keep = LETTERS.map((_, k) => k).filter(k => filled[k]);
     const options = keep.map(k => opts[k]);
     const options_ar = keep.map(k => optsAr[k] || '');
+    options.forEach((o, k) => { if (options_ar[k]) return; const sp = splitBi(o); if (sp) { options[k] = sp.en; options_ar[k] = sp.ar; } });
     const option_images = [], option_image_refs = [];
     keep.forEach(k => { const p = optImg[k];
       option_images.push(p && p.url ? p.url : '');

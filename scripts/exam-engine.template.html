@@ -170,6 +170,26 @@ function applyContentLang(){
     q.title=plainTxt(q.en||q.ar).slice(0,110);
   });
 }
+// "English / عربي" written in ONE cell (common in uploaded files) -> split into the English and the Arabic part, so the
+// answer shows as two separate lines like the question. Splits only at " / " or " | " OUTSIDE $…$ maths, and only when
+// one side is Arabic and the other is not. Exams already uploaded are fixed on screen without re-uploading.
+const AR_LETTER=/[؀-ۿ]/, noMath=s=>String(s).replace(/\$[^$]*\$/g,'');
+function splitBi(s){ s=String(s??''); if(!AR_LETTER.test(noMath(s)) || !/[A-Za-z]{2}/.test(noMath(s))) return null;
+  let inM=false;
+  for(let i=0;i<s.length;i++){ const c=s[i];
+    if(c==='\\'&&s[i+1]==='$'){ i++; continue; }
+    if(c==='$'){ inM=!inM; continue; }
+    if(!inM && /\s/.test(c) && (s[i+1]==='/'||s[i+1]==='|') && /\s/.test(s[i+2]||'')){
+      const a=s.slice(0,i).trim(), b=s.slice(i+2).trim(), aAr=AR_LETTER.test(noMath(a)), bAr=AR_LETTER.test(noMath(b));
+      if(a && b && aAr!==bAr) return aAr ? { en:b, ar:a } : { en:a, ar:b };
+    } }
+  return null; }
+function splitCombined(){
+  SOURCE_QUESTIONS.forEach(q=>{
+    q.options.forEach((o,k)=>{ if(String(q.options_ar[k]||'').trim()) return; const sp=splitBi(o); if(sp){ q.options[k]=sp.en; q.options_ar[k]=sp.ar; } });
+    if(!String(q.ar||'').trim()){ const sp=splitBi(q.en); if(sp){ q.en=sp.en; q.ar=sp.ar; } }
+  });
+}
 async function boot(){
   try{ lang = localStorage.getItem('zec.lang') || ''; }catch(_){}
   ME = await API.me();
@@ -189,7 +209,7 @@ async function boot(){
     option_images:(q.options||[]).map((_,k)=>(q.option_images||[])[k]||''),
     options_ar:(q.options||[]).map((_,k)=>String((q.options_ar||[])[k]??'')),
     title: plainTxt(q.en||q.ar).slice(0,110), passage: q.passage_id && P[q.passage_id] ? { id:q.passage_id, ...P[q.passage_id] } : null }));
-  applyContentLang(); if(CONTENT_LANG) lang = CONTENT_LANG;   // school language rule (see contentLang)
+  splitCombined(); applyContentLang(); if(CONTENT_LANG) lang = CONTENT_LANG;   // school language rule (see contentLang)
   TOTAL_Q = SOURCE_QUESTIONS.length; TOTAL_MARKS = SOURCE_QUESTIONS.reduce((a,q)=>a+mk(q),0);
   PASS_MARK = Math.ceil(TOTAL_MARKS*C.passingPercent/100);
   EXAM_TITLE = EXAM.title || `Grade ${C.grade} - ${C.subject} - ${C.term}`;
