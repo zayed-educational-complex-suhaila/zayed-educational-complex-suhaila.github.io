@@ -223,7 +223,14 @@ async function liteWorkbook(zip) {
 // "English / عربي" typed in ONE cell -> { en, ar } (split at " / " or " | " outside $…$ maths, when exactly one side is Arabic)
 const AR_LETTER = /[؀-ۿ]/, noMath = s => String(s).replace(/\$[^$]*\$/g, '');
 function splitBi(s) {
-  s = String(s ?? ''); if (!AR_LETTER.test(noMath(s)) || !/[A-Za-z]{2}/.test(noMath(s))) return null;
+  s = String(s ?? '');
+  // drop invisible direction marks (LRM/RLM, embeddings, isolates) that editors and Claude often add around Arabic
+  s = s.replace(/[\u200E\u200F\u202A-\u202E\u2066-\u2069]/g, '');
+  // Arabic and English on separate LINES of one cell (new line or <br>): group the Arabic lines and the other lines
+  const lines = s.split(/\s*(?:\r?\n|<br\s*\/?>)\s*/i).map(x => x.trim()).filter(Boolean);
+  if (lines.length > 1) { const ar = [], en = []; lines.forEach(l => (AR_LETTER.test(noMath(l)) ? ar : en).push(l)); if (ar.length && en.length) return { en: en.join(' '), ar: ar.join(' ') }; }
+
+  if (!AR_LETTER.test(noMath(s)) || !/[A-Za-z]{2}/.test(noMath(s))) return null;
   let inM = false;
   for (let i = 0; i < s.length; i++) {
     const c = s[i];
