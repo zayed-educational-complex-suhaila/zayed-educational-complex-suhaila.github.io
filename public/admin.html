@@ -91,6 +91,9 @@
       <form class="card-b stack" data-kind="admin"><label class="field"><span data-i18n="new_pin"></span><input class="input pin-input" type="password" inputmode="numeric" maxlength="4" required></label><label class="field"><span data-i18n="confirm_pin"></span><input class="input pin-input" type="password" inputmode="numeric" maxlength="4" required></label><button class="btn btn-navy" data-i18n="save"></button></form></div>
     <div class="card pin-card"><div class="card-h"><img class="ill" src="assets/ornaments/laptop-shield.svg" alt=""><div><h2 data-i18n="pin_teacher"></h2><div class="sub" data-i18n="pin_s2"></div></div></div>
       <form class="card-b stack" data-kind="teacher"><label class="field"><span data-i18n="new_pin"></span><input class="input pin-input" type="password" inputmode="numeric" maxlength="4" required></label><label class="field"><span data-i18n="confirm_pin"></span><input class="input pin-input" type="password" inputmode="numeric" maxlength="4" required></label><button class="btn btn-navy" data-i18n="save"></button></form></div>
+    <div class="card" style="grid-column:1/-1"><div class="card-h"><img class="ill" src="assets/ornaments/idea-box.svg" alt=""><div style="flex:1"><h2 data-i18n="guest_t"></h2><div class="sub" data-i18n="guest_s"></div></div>
+      <label class="check" style="font-weight:800"><input type="checkbox" id="guestOn"> <span data-i18n="guest_on"></span></label></div>
+      <div class="card-b"><div class="row" id="guestCodes" style="gap:8px"></div><p class="small muted" style="margin:10px 0 0" data-i18n="guest_how"></p></div></div>
   </div></section>
 </main>
 <div id="appFooter"></div>
@@ -123,7 +126,9 @@ I18N.add({
     roster_confirm: 'Replace the roster with “{f}”? Students not in the new file will no longer be able to sign in. Existing attempts are kept.', roster_ok: 'Roster synced: {n} students in {s} sections (+{a} / −{r}).',
     search_id: 'Search Student ID…', count: 'Students', more_rows: 'Showing first {n} — refine the search to see more.',
     pin_admin: 'Administrator PIN', pin_teacher: 'Teacher PIN', pin_s: 'Used to open this control panel.', pin_s2: 'Shared by all teachers to open the Teacher Portal.',
-    new_pin: 'New 4-digit PIN', confirm_pin: 'Confirm new PIN', pin_mismatch: 'The two PINs do not match.', pin_bad: 'The PIN must be exactly 4 digits.', pin_ok: 'PIN updated.', exporting: 'Preparing workbook…' },
+    new_pin: 'New 4-digit PIN', confirm_pin: 'Confirm new PIN', pin_mismatch: 'The two PINs do not match.', pin_bad: 'The PIN must be exactly 4 digits.', pin_ok: 'PIN updated.', exporting: 'Preparing workbook…',
+    guest_t: 'Guest practice codes (visitors)', guest_s: 'Visitors from outside the school choose "Guest" on the sign-in page and type their class code. They see every published exam of that grade and track in the active term, get their result at the end — and nothing is saved or counted.',
+    guest_on: 'Guest codes on', guest_how: 'g = General, a = Advanced. Switching off signs current guests out immediately.', guest_ok_on: 'Guest codes are ON.', guest_ok_off: 'Guest codes are OFF.' },
   ar: { portal: 'لوحة تحكم الإدارة', portal_sub: 'جميع الصفوف 5–12 وكل الشعب والاختبارات المرفوعة والنتائج في مكان واحد.',
     term_ctl: 'الفصل الدراسي الحالي', term_ctl_s: 'يرى الطلبة اختبارات الفصل الحالي فقط.', term_note: 'تبقى الفصول السابقة محفوظة — استخدم مرشح الفصل لمراجعتها.',
     term_confirm: 'تغيير الفصل الحالي إلى {t}؟ سيرى الطلبة فوراً اختبارات {t} فقط، ويمكن للمعلمين والإدارة مراجعة الفصول الأخرى.', term_ok: 'الفصل الحالي الآن: {t}.',
@@ -139,7 +144,9 @@ I18N.add({
     roster_confirm: 'استبدال السجل بالملف "{f}"؟ لن يتمكن الطلبة غير الموجودين في الملف الجديد من الدخول، وتبقى المحاولات السابقة محفوظة.', roster_ok: 'تمت مزامنة السجل: {n} طالباً في {s} شعبة (+{a} / −{r}).',
     search_id: 'ابحث برقم الطالب…', count: 'الطلبة', more_rows: 'عرض أول {n} — حدّد البحث لرؤية المزيد.',
     pin_admin: 'رمز الإدارة', pin_teacher: 'رمز المعلمين', pin_s: 'يُستخدم لفتح لوحة التحكم هذه.', pin_s2: 'رمز مشترك لجميع المعلمين لفتح بوابة المعلم.',
-    new_pin: 'الرمز الجديد (4 أرقام)', confirm_pin: 'تأكيد الرمز الجديد', pin_mismatch: 'الرمزان غير متطابقين.', pin_bad: 'يجب أن يتكون الرمز من 4 أرقام.', pin_ok: 'تم تحديث الرمز.', exporting: 'جارٍ تجهيز الملف…' },
+    new_pin: 'الرمز الجديد (4 أرقام)', confirm_pin: 'تأكيد الرمز الجديد', pin_mismatch: 'الرمزان غير متطابقين.', pin_bad: 'يجب أن يتكون الرمز من 4 أرقام.', pin_ok: 'تم تحديث الرمز.', exporting: 'جارٍ تجهيز الملف…',
+    guest_t: 'رموز التدريب للزوار', guest_s: 'يختار الزوار من خارج المدرسة "زائر" في صفحة الدخول ويكتبون رمز صفهم، فيرون جميع الاختبارات المنشورة لذلك الصف والمسار في الفصل الحالي ويحصلون على نتيجتهم في النهاية — ولا يُحفظ أي شيء ولا يُحتسب.',
+    guest_on: 'تفعيل رموز الزوار', guest_how: 'g = عام، a = متقدم. عند الإيقاف يُسجَّل خروج الزوار الحاليين فوراً.', guest_ok_on: 'رموز الزوار مفعّلة.', guest_ok_off: 'رموز الزوار متوقفة.' },
 });
 const { $, $$, esc } = UI; const t = (k, v) => I18N.t(k, v);
 let S, ACTIVE = 'Term 1', SECS = [], examsMgr, resultsPanel;
@@ -240,6 +247,17 @@ $$('#tab-security form').forEach(f => {
   };
 });
 
+/* ---------- guest practice codes ---------- */
+async function drawGuest() {
+  const codes = Reports.GRADE_TRACKS.map(x => ({ code: x.grade_num + (x.track === 'Advanced' ? 'a' : 'g'), label: UI.gradeTrackLabel(x.grade_num, x.track) }));
+  $('#guestCodes').innerHTML = codes.map(c => `<span class="badge b-gray" title="${esc(c.label)}"><b class="num" style="color:var(--navy)">${c.code}</b> · ${esc(c.label)}</span>`).join('');
+  try { $('#guestOn').checked = (await API.getTerm()).guest_enabled !== false; } catch (e) { UI.handle(e); }
+}
+$('#guestOn').onchange = async e => {
+  const on = e.target.checked;
+  try { await API.setGuestEnabled(on); UI.toast(t(on ? 'guest_ok_on' : 'guest_ok_off'), 'ok'); } catch (err) { e.target.checked = !on; UI.handle(err); }
+};
+
 /* ---------- boot ---------- */
 (async () => {
   try { S = await UI.requireRole('admin'); } catch (_) { return; }
@@ -250,8 +268,8 @@ $$('#tab-security form').forEach(f => {
   UI.tabs($('main'));
   examsMgr = Panels.examsManager($('#examsHost'), { term: ACTIVE, onChange: () => { drawClasses(); live(); } });
   resultsPanel = Panels.results($('#resultsHost'), { term: ACTIVE });
-  drawClasses().catch(UI.handle); drawRoster().catch(UI.handle); live();
-  I18N.onChange(() => { UI.setHero(t('portal'), t('portal_sub')); drawTermSwitch(); fillExport(); drawClasses(); drawRoster(); live(); });
+  drawClasses().catch(UI.handle); drawRoster().catch(UI.handle); live(); drawGuest();
+  I18N.onChange(() => { UI.setHero(t('portal'), t('portal_sub')); drawTermSwitch(); fillExport(); drawClasses(); drawRoster(); live(); drawGuest(); });
 })();
 </script>
 </body>

@@ -13,6 +13,15 @@ const uuid = () => (crypto.randomUUID ? crypto.randomUUID() : 'xxxxxxxx-xxxx-4xx
 const nowIso = () => new Date().toISOString();
 const normalizeId = v => String(v ?? '').replace(/[٠-٩]/g, d => '٠١٢٣٤٥٦٧٨٩'.indexOf(d)).replace(/[۰-۹]/g, d => '۰۱۲۳۴۵۶۷۸۹'.indexOf(d)).replace(/\s+/g, '').toUpperCase().replace(/^(\d+)\.0+$/, '$1');
 const totalMarks = qs => qs.reduce((s, q) => s + (Number(q.marks) || 0), 0);
+// Guest practice code -> class: 5g … 8g (General), 9g/9a … 12g/12a. Arabic digits and ع (عام) / م (متقدم) accepted.
+// Mirrors _guest_class() in database/supabase.sql.
+const parseGuestCode = v => {
+  const s = String(v ?? '').replace(/[٠-٩]/g, d => '٠١٢٣٤٥٦٧٨٩'.indexOf(d)).replace(/[۰-۹]/g, d => '۰۱۲۳۴۵۶۷۸۹'.indexOf(d))
+    .replace(/ع/g, 'g').replace(/م/g, 'a').replace(/\s+/g, '').toLowerCase();
+  let m = s.match(/^([5-8])g$/); if (m) return { grade_num: +m[1], track: 'General' };
+  m = s.match(/^(9|10|11|12)([ga])$/); if (m) return { grade_num: +m[1], track: m[2] === 'a' ? 'Advanced' : 'General' };
+  return null;
+};
 class ApiError extends Error { constructor(code, message, status) { super(message || code); this.code = code; this.status = status; } }
 
 // ---------------------------------------------------------------- SERVER MODE
@@ -102,6 +111,8 @@ function supabaseApi() {
     studentExams: () => T('api_student_exams'),
     myAttempts: term => T('api_my_attempts', { p: { term } }),
     submitAttempt: payload => T('api_submit_attempt', { p: payload }),
+    guestSubmit: payload => T('api_guest_submit', { p: payload }),
+    setGuestEnabled: on => T('api_set_guest', { p: { enabled: !!on } }),
     attempts: f => T('api_attempts', { p: f || {} }),
     attempt: id => T('api_attempt', { p_id: id }),
     examItemStats: (id, f) => T('api_item_stats', { p_id: id, p: f || {} }),
@@ -167,6 +178,8 @@ function demoApi() {
       avg_best_pct: bests.length ? bests.reduce((a, b) => a + b, 0) / bests.length : null,
     };
   };
+  // guests: published, active term, same grade, track All or theirs (sections don't apply)
+  const guestVisible = (e, s, term) => !!e.is_published && e.grade_num === Number(s.grade_num) && (e.track === 'All' || e.track === s.track) && e.term === term;
   const subjMatch = (s, f) => !f || f === 'ALL' || s === f || (f === 'Science' && window.Catalog && window.Catalog.departmentOf(s) === 'Science');
   const matchExam = (e, f = {}) => (!f.term || f.term === 'ALL' || e.term === f.term) && (!f.grade || e.grade_num === Number(f.grade)) &&
     (!f.track || f.track === 'ALL' || e.track === f.track) && subjMatch(e.subject, f.subject) &&
@@ -175,7 +188,24 @@ function demoApi() {
 
   const api = {
     mode: 'demo',
-    async getTerm() { await init(); return { active_term: (await get('settings')).active_term }; },
+    async getTerm() { await init(); const s = await get('settings'); return { active_term: s.active_term, guest_enabled: s.guest_enabled !== false }; },
+    async setGuestEnabled(on) {
+      await init(); need('admin'); const s = await get('settings'); s.guest_enabled = !!on; await put('settings', s);
+      if (!on) { const cur = getSession(); if (cur && cur.role === 'guest') localStorage.removeItem(SKEY); }
+      return { guest_enabled: !!on };
+    },
+    // guests: nothing is saved — score from the key and hand the key back for the review
+    async guestSubmit(p) {
+      await init(); const s = need('guest');
+      const e = (await get('exams')).find(x => x.id === p.exam_id);
+      if (!e) throw new ApiError('not_found');
+      if (!guestVisible(e, s, (await get('settings')).active_term)) throw new ApiError('forbidden', 'This exam is not available', 403);
+      let got = 0; const answers = p.answers || {};
+      e.questions.forEach((q, i) => { const a = answers[i]; if (a && a.picked === q.correct) got += Number(q.marks) || 0; });
+      const total = totalMarks(e.questions), pct = total ? Math.round(got / total * 10000) / 100 : 0;
+      return { guest: true, exam_id: e.id, score_gained: got, total_marks: total, percentage: pct, passed: pct >= (Number(e.config.passingPercent) || 50) ? 1 : 0,
+        key: e.questions.map(q => ({ correct: q.correct, feedback: q.feedback || '' })) };
+    },
     async setActiveTerm(term) { await init(); need('admin'); if (!TERMS.includes(term)) throw new ApiError('bad_term'); const s = await get('settings'); s.active_term = term; await put('settings', s); return { active_term: term }; },
 
     async login(role, p = {}) {
@@ -188,6 +218,11 @@ function demoApi() {
         if (!String(p.teacher_name || '').trim()) throw new ApiError('name_required');
         if (window.Catalog && !window.Catalog.teacherNames().includes(String(p.teacher_name).trim())) throw new ApiError('unknown_teacher', 'Teacher name is not on the school teacher list', 400);
         return setSession({ role: 'teacher', name: String(p.teacher_name).trim(), grade: Number(p.grade) || null, track: p.track || 'General', subject: p.subject || '' });
+      }
+      if (role === 'guest') {
+        if (s.guest_enabled === false) throw new ApiError('guest_disabled', 'Guest practice is switched off', 403);
+        const cls = parseGuestCode(p.code); if (!cls) throw new ApiError('bad_guest_code', 'Unknown guest code', 400);
+        return setSession({ role: 'guest', name: 'Guest', ...cls });
       }
       if (role === 'student') {
         const id = normalizeId(p.student_id);
@@ -229,9 +264,13 @@ function demoApi() {
       return exams.filter(e => matchExam(e, f)).map(e => summarize(e, attempts, students)).sort((a, b) => String(b.created_at).localeCompare(a.created_at));
     },
     async exam(id) {
-      await init(); const s = need('admin', 'teacher', 'student');
+      await init(); const s = need('admin', 'teacher', 'student', 'guest');
       const e = (await get('exams')).find(x => x.id === id);
       if (!e) throw new ApiError('not_found', 'Exam not found', 404);
+      if (s.role === 'guest') {
+        if (!guestVisible(e, s, (await get('settings')).active_term)) throw new ApiError('forbidden', 'This exam is not available', 403);
+        return { ...e, teacher_name: '', questions: e.questions.map(({ correct, feedback, ...q }) => q) };   // key only after submitting
+      }
       if (s.role === 'student' && (!e.is_published || !Reports.examVisibleTo(e, s) || e.term !== (await get('settings')).active_term)) throw new ApiError('forbidden', 'This exam is not available', 403);
       return e;
     },
@@ -264,12 +303,12 @@ function demoApi() {
     },
 
     async studentExams() {
-      await init(); const s = need('student'); const term = (await get('settings')).active_term;
+      await init(); const s = need('student', 'guest'); const term = (await get('settings')).active_term; const guest = s.role === 'guest';
       const [exams, attempts] = await Promise.all([get('exams'), get('attempts')]);
-      const mine = attempts.filter(a => a.student_id === s.student_id);
-      const list = exams.filter(e => e.is_published && e.term === term && Reports.examVisibleTo(e, s)).map(e => {
+      const mine = guest ? [] : attempts.filter(a => a.student_id === s.student_id);
+      const list = exams.filter(e => guest ? guestVisible(e, s, term) : (e.is_published && e.term === term && Reports.examVisibleTo(e, s))).map(e => {
         const at = mine.filter(a => a.exam_id === e.id); const b = at.length ? at.reduce((x, y) => (y.percentage > x.percentage ? y : x)) : null;
-        return { id: e.id, title: e.title, subject: e.subject, teacher_name: e.teacher_name, term: e.term, q_count: e.questions.length, total_marks: totalMarks(e.questions),
+        return { id: e.id, title: e.title, subject: e.subject, teacher_name: guest ? '' : e.teacher_name, term: e.term, q_count: e.questions.length, total_marks: totalMarks(e.questions),
           duration_minutes: e.config.durationMinutes, calculator_allowed: !!e.config.calculatorAllowed, my_attempts: at.length,
           my_best_score: b ? b.score_gained : null, my_best_pct: b ? b.percentage : null, my_best_passed: b ? !!b.passed : null, created_at: e.created_at };
       }).sort((a, b) => a.subject.localeCompare(b.subject) || String(b.created_at).localeCompare(a.created_at));
@@ -346,6 +385,7 @@ async function saveWorkbook(wb, filename) {
 window.API = CFG.mode === 'server' ? serverApi() : CFG.mode === 'supabase' ? supabaseApi() : demoApi();
 window.API.TERMS = TERMS;
 window.API.normalizeId = normalizeId;
+window.API.parseGuestCode = parseGuestCode;
 window.API.saveWorkbook = saveWorkbook;
 window.ApiError = ApiError;
 })();

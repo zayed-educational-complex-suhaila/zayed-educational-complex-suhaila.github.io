@@ -76,10 +76,10 @@ async function header({ session, title, subtitle, ornament }) {
   const host = $('#appHeader'); if (!host) return;
   let term = 'Term 1'; try { term = (await API.getTerm()).active_term; } catch (_) { /* */ }
   const roleKey = session ? 'role_' + session.role : '';
-  const who = session ? (session.role === 'student' ? session.student_id : session.name) : '';
+  const who = session ? (session.role === 'student' ? session.student_id : session.role === 'guest' ? `${I18N.gradeLabel(session.grade_num)} · ${t(session.track)}` : session.name) : '';
   host.innerHTML = `${API.mode === 'demo' ? `<div class="demo-ribbon" data-i18n="demo_ribbon"></div>` : ''}
   <header class="app-header"><div class="bar">
-    <a class="brand" href="${session ? (session.role === 'student' ? 'student.html' : session.role + '.html') : 'index.html'}"><img class="strip" src="assets/school-logo.png" alt="${esc(t('school'))}"><img class="mark" src="assets/complex-logo.png" alt=""></a>
+    <a class="brand" href="${session ? (session.role === 'student' || session.role === 'guest' ? 'student.html' : session.role + '.html') : 'index.html'}"><img class="strip" src="assets/school-logo.png" alt="${esc(t('school'))}"><img class="mark" src="assets/complex-logo.png" alt=""></a>
     <span class="spacer"></span>
     <div class="tools">
       <span class="term-badge" id="hdrTerm" title="${esc(t('active_term'))}">${esc(t(term))}</span>

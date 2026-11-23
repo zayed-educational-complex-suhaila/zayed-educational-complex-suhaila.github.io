@@ -89,6 +89,7 @@ create table if not exists public.login_guard (key text primary key, fails int n
 
 insert into public.settings (key, value) values
   ('active_term', 'Term 1'),
+  ('guest_enabled', 'true'),     -- guest practice codes (5g … 12a) on/off; admin switch
   ('admin_pin_hash',   extensions.crypt('2026', extensions.gen_salt('bf'))),
   ('teacher_pin_hash', extensions.crypt('5113', extensions.gen_salt('bf')))
 on conflict (key) do nothing;
@@ -170,8 +171,58 @@ $$;
 -- ------------------------------------------------------------------ public API (called by public/js/api.js → supabaseApi)
 create or replace function public.api_get_term() returns jsonb
 language sql stable security definer set search_path = public as $$
-  select jsonb_build_object('active_term', (select value from settings where key = 'active_term'))
+  select jsonb_build_object('active_term', (select value from settings where key = 'active_term'),
+                            'guest_enabled', coalesce((select value from settings where key = 'guest_enabled'), 'true') = 'true')
 $$;
+
+-- ------------------------------------------------------------------ guests (visitors from outside the school)
+-- A guest code names a class: 5g … 8g (General), 9g/9a … 12g/12a (General/Advanced). Arabic digits and the Arabic letters
+-- ع (عام) / م (متقدم) are accepted too, e.g. ٩م. Guests take exams and see their result, but NOTHING is saved.
+create or replace function public._guest_class(p_code text) returns jsonb language sql immutable as $$
+  with c as (select lower(regexp_replace(translate(coalesce(p_code, ''), '٠١٢٣٤٥٦٧٨٩۰۱۲۳۴۵۶۷۸۹عم', '01234567890123456789ga'), '\s', '', 'g')) v)
+  select case when v ~ '^[5-8]g$' then jsonb_build_object('grade_num', substring(v from '^\d+')::int, 'track', 'General')
+              when v ~ '^(9|10|11|12)[ga]$' then jsonb_build_object('grade_num', substring(v from '^\d+')::int,
+                                                                      'track', case when right(v, 1) = 'a' then 'Advanced' else 'General' end)
+         end from c
+$$;
+
+-- exam visible to a guest: published, active term, same grade, track All or the guest's track (sections don't apply)
+create or replace function public._guest_visible(e public.exams, g int, tr text) returns boolean language sql stable security definer set search_path = public as $$
+  select e.is_published and e.grade_num = g and (e.track = 'All' or e.track = tr) and e.term = (select value from settings where key = 'active_term')
+$$;
+
+create or replace function public.api_set_guest(p_token text, p jsonb) returns jsonb
+language plpgsql security definer set search_path = public as $$
+declare on_ boolean := coalesce((p->>'enabled')::boolean, true);
+begin
+  perform _sess(p_token, array['admin']);
+  insert into settings (key, value) values ('guest_enabled', case when on_ then 'true' else 'false' end)
+    on conflict (key) do update set value = excluded.value;
+  if not on_ then delete from sessions where role = 'guest'; end if;   -- switching off signs current guests out
+  return jsonb_build_object('guest_enabled', on_);
+end $$;
+
+-- scores a guest's answers from the stored key and returns the result + key; INSERTS NOTHING
+create or replace function public.api_guest_submit(p_token text, p jsonb) returns jsonb
+language plpgsql stable security definer set search_path = public as $$
+declare s jsonb := _sess(p_token, array['guest']); e exams; got numeric := 0; tot numeric; pct numeric; q jsonb; i int; ans jsonb;
+begin
+  select * into e from exams where id = (p->>'exam_id')::uuid;
+  if e is null then perform _err('not_found', 'Exam not found'); end if;
+  if not _guest_visible(e, (s->>'grade_num')::int, s->>'track') then perform _err('forbidden', 'This exam is not available'); end if;
+  for q, i in select x, (o - 1)::int from jsonb_array_elements(e.questions) with ordinality t(x, o) loop
+    ans := p->'answers'->(i::text);
+    if ans is not null and jsonb_typeof(ans->'picked') = 'number' and (ans->>'picked')::int = (q->>'correct')::int then
+      got := got + coalesce((q->>'marks')::numeric, 0);
+    end if;
+  end loop;
+  tot := _total(e.questions);
+  pct := case when tot > 0 then round(got / tot * 100, 2) else 0 end;
+  return jsonb_build_object('guest', true, 'exam_id', e.id, 'score_gained', got, 'total_marks', tot, 'percentage', pct,
+    'passed', case when pct >= coalesce((e.config->>'passingPercent')::numeric, 50) then 1 else 0 end,
+    'key', (select jsonb_agg(jsonb_build_object('correct', (x->>'correct')::int, 'feedback', coalesce(x->>'feedback', '')) order by o)
+            from jsonb_array_elements(e.questions) with ordinality t(x, o)));
+end $$;
 
 -- Login never raises (a raise would roll back the failed-attempt counter): errors come back as { error, message }.
 create or replace function public.api_login(p jsonb) returns jsonb
@@ -180,7 +231,19 @@ declare
   r text := p->>'role'; k text := (p->>'role') || ':' || _client_ip(); g login_guard; pin text; hash text; st students;
   v_data jsonb; tok text; nm text;
 begin
-  if coalesce(r, '') not in ('admin', 'teacher', 'student') then return jsonb_build_object('error', 'bad_role'); end if;
+  if coalesce(r, '') not in ('admin', 'teacher', 'student', 'guest') then return jsonb_build_object('error', 'bad_role'); end if;
+  if r = 'guest' then   -- guest codes are not secret, so no lock-out; they only open practice (nothing is saved)
+    if coalesce((select value from settings where key = 'guest_enabled'), 'true') <> 'true' then
+      return jsonb_build_object('error', 'guest_disabled', 'message', 'Guest practice is switched off');
+    end if;
+    v_data := _guest_class(p->>'code');
+    if v_data is null then return jsonb_build_object('error', 'bad_guest_code', 'message', 'Unknown guest code'); end if;
+    v_data := v_data || jsonb_build_object('name', 'Guest');
+    delete from sessions where expires_at < now();
+    tok := encode(gen_random_bytes(32), 'hex');
+    insert into sessions (token, role, data, expires_at) values (tok, 'guest', v_data, now() + interval '12 hours');
+    return v_data || jsonb_build_object('role', 'guest', 'token', tok);
+  end if;
   select * into g from login_guard where key = k;
   if g.locked_until is not null and g.locked_until > now() then
     return jsonb_build_object('error', 'locked', 'message', ceil(extract(epoch from g.locked_until - now()))::int::text);
@@ -304,12 +367,16 @@ end $$;
 -- full exam. Students: only published + visible + active term, and WITHOUT the answer key / worked solutions.
 create or replace function public.api_exam(p_token text, p_id uuid) returns jsonb
 language plpgsql stable security definer set search_path = public as $$
-declare s jsonb := _sess(p_token, array['admin', 'teacher', 'student']); e exams; j jsonb;
+declare s jsonb := _sess(p_token, array['admin', 'teacher', 'student', 'guest']); e exams; j jsonb;
 begin
   select * into e from exams where id = p_id;
   if e is null then perform _err('not_found', 'Exam not found'); end if;
   j := to_jsonb(e) || jsonb_build_object('is_published', case when e.is_published then 1 else 0 end);
-  if s->>'role' = 'student' then
+  if s->>'role' = 'guest' then
+    if not _guest_visible(e, (s->>'grade_num')::int, s->>'track') then perform _err('forbidden', 'This exam is not available'); end if;
+    j := jsonb_set(j, '{questions}', (select coalesce(jsonb_agg(q - 'correct' - 'feedback' order by i), '[]') from jsonb_array_elements(e.questions) with ordinality t(q, i)));
+    j := j || jsonb_build_object('teacher_name', '');   -- teacher names are not shown to visitors
+  elsif s->>'role' = 'student' then
     if not e.is_published or not _visible(e, (s->>'grade_num')::int, s->>'track', s->>'section')
        or e.term <> (select value from settings where key = 'active_term') then
       perform _err('forbidden', 'This exam is not available');
@@ -397,11 +464,12 @@ end $$;
 
 create or replace function public.api_student_exams(p_token text) returns jsonb
 language plpgsql stable security definer set search_path = public as $$
-declare s jsonb := _sess(p_token, array['student']); v_term text := (select value from settings where key = 'active_term');
+declare s jsonb := _sess(p_token, array['student', 'guest']); v_term text := (select value from settings where key = 'active_term');
+  guest boolean := s->>'role' = 'guest';
 begin
   return jsonb_build_object('active_term', v_term, 'exams', coalesce((
     select jsonb_agg(x order by x->>'subject', x->>'created_at' desc) from (
-      select jsonb_build_object('id', e.id, 'title', e.title, 'subject', e.subject, 'teacher_name', e.teacher_name, 'term', e.term,
+      select jsonb_build_object('id', e.id, 'title', e.title, 'subject', e.subject, 'teacher_name', case when guest then '' else e.teacher_name end, 'term', e.term,
         'q_count', jsonb_array_length(e.questions), 'total_marks', _total(e.questions),
         'duration_minutes', (e.config->>'durationMinutes')::numeric, 'calculator_allowed', coalesce((e.config->>'calculatorAllowed')::boolean, false),
         'my_attempts', (select count(*) from attempts a where a.exam_id = e.id and a.student_id = s->>'student_id'),
@@ -409,7 +477,8 @@ begin
       from exams e
       left join lateral (select score_gained, percentage, passed from attempts a where a.exam_id = e.id and a.student_id = s->>'student_id'
                          order by percentage desc, time_spent_seconds, submitted_at limit 1) b on true
-      where e.is_published and e.term = v_term and _visible(e, (s->>'grade_num')::int, s->>'track', s->>'section')) y), '[]'));
+      where case when guest then _guest_visible(e, (s->>'grade_num')::int, s->>'track')
+                 else e.is_published and e.term = v_term and _visible(e, (s->>'grade_num')::int, s->>'track', s->>'section') end) y), '[]'));
 end $$;
 
 create or replace function public.api_my_attempts(p_token text, p jsonb) returns jsonb

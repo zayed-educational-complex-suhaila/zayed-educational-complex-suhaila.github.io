@@ -60,11 +60,15 @@ I18N.add({
   en: { hello: 'Welcome, {id}', hello_sub: 'Choose an exam and practise as many times as you like — your best score is kept.', avail: 'Available training exams', avail_sub: '{n} exam(s) for {g} · {tr} · {s} · {term}',
     history: 'My practice history', history_sub: 'Every attempt you have submitted.', all_subj: 'All subjects', start: 'Start Practice', again: 'Practice Again', my_attempts: 'My attempts', best: 'Best score',
     none_yet: 'Not attempted yet', no_exams: 'No exams have been published for your class in this term yet. Check again soon!', no_hist: 'You have not submitted any attempts in this term yet.',
-    k_exams: 'Exams available', k_done: 'Exams practised', k_att: 'Total attempts', k_avg: 'Average best', att_n: 'Attempt #{n}', calc_ok: 'Calculator', q_n: '{n} questions', m_n: '{n} marks', by: 'By {x}', exam_day: 'Official exam day' },
+    k_exams: 'Exams available', k_done: 'Exams practised', k_att: 'Total attempts', k_avg: 'Average best', att_n: 'Attempt #{n}', calc_ok: 'Calculator', q_n: '{n} questions', m_n: '{n} marks', by: 'By {x}', exam_day: 'Official exam day',
+    g_hello: 'Welcome, visitor', g_sub: 'Practise as many times as you like. Your answers are marked at the end with the full review — nothing is saved.', g_avail_sub: '{n} exam(s) for {g} · {tr} · {term}',
+    g_note: 'Guest practice', g_note_v: 'Not saved', g_card: 'Practice only — your result shows at the end' },
   ar: { hello: 'مرحباً، {id}', hello_sub: 'اختر اختباراً وتدرّب عليه بعدد غير محدود من المرات — نحتفظ بأفضل نتيجة لك.', avail: 'الاختبارات التدريبية المتاحة', avail_sub: '{n} اختبار لـ {g} · {tr} · {s} · {term}',
     history: 'سجل تدريبي', history_sub: 'جميع المحاولات التي قمت بتسليمها.', all_subj: 'جميع المواد', start: 'ابدأ التدريب', again: 'تدرّب مجدداً', my_attempts: 'محاولاتي', best: 'أفضل نتيجة',
     none_yet: 'لم تحاول بعد', no_exams: 'لم يتم نشر اختبارات لصفك في هذا الفصل بعد. تحقق لاحقاً!', no_hist: 'لم تسلّم أي محاولة في هذا الفصل بعد.',
-    k_exams: 'الاختبارات المتاحة', k_done: 'اختبارات تدرّبت عليها', k_att: 'إجمالي المحاولات', k_avg: 'متوسط أفضل نتيجة', att_n: 'المحاولة {n}', calc_ok: 'آلة حاسبة', q_n: '{n} سؤال', m_n: '{n} درجة', by: 'إعداد: {x}', exam_day: 'موعد الاختبار الرسمي' },
+    k_exams: 'الاختبارات المتاحة', k_done: 'اختبارات تدرّبت عليها', k_att: 'إجمالي المحاولات', k_avg: 'متوسط أفضل نتيجة', att_n: 'المحاولة {n}', calc_ok: 'آلة حاسبة', q_n: '{n} سؤال', m_n: '{n} درجة', by: 'إعداد: {x}', exam_day: 'موعد الاختبار الرسمي',
+    g_hello: 'أهلاً بك أيها الزائر', g_sub: 'تدرّب بعدد غير محدود من المرات. تُصحَّح إجاباتك في النهاية مع المراجعة الكاملة — ولا يُحفظ أي شيء.', g_avail_sub: '{n} اختبار لـ {g} · {tr} · {term}',
+    g_note: 'تدريب الزائر', g_note_v: 'لا يُحفظ', g_card: 'للتدريب فقط — تظهر نتيجتك في النهاية' },
 });
 const { $, $$, esc } = UI; const t = (k, v) => I18N.t(k, v);
 const SUBJ_ICON = { Mathematics: 'analytics', Science: 'idea-gear', Physics: 'cycle', Chemistry: 'design-tools', Biology: 'idea-box', 'Computer Science': 'laptop-shield', English: 'mail', Arabic: 'easel', 'Islamic Education': 'archive', 'Social Studies': 'map', Other: 'checklist' };
@@ -73,8 +77,10 @@ let S, DATA = { exams: [], active_term: 'Term 1' }, subj = '', hTerm = '';
 
 const ring = p => { const c = 2 * Math.PI * 19, g = p === null ? 0 : c * p / 100; return `<svg class="ring" viewBox="0 0 48 48"><circle cx="24" cy="24" r="19" fill="none" stroke="#EADFD3" stroke-width="7"/><circle cx="24" cy="24" r="19" fill="none" stroke="${p === null ? '#EADFD3' : p >= 50 ? '#2E7D5E' : '#E08A4F'}" stroke-width="7" stroke-dasharray="${g} ${c}" transform="rotate(-90 24 24)" stroke-linecap="round"/><text x="24" y="28" text-anchor="middle" font-size="11" font-weight="800" fill="#89191E">${p === null ? '—' : Math.round(p) + '%'}</text></svg>`; };
 
+const isGuest = () => S && S.role === 'guest';
 function drawKpis() {
   const ex = DATA.exams, done = ex.filter(e => e.my_attempts > 0);
+  if (isGuest()) { $('#meKpis').innerHTML = `<div class="kpi"><div class="l">${t('k_exams')}</div><div class="v">${ex.length}</div></div><div class="kpi gold"><div class="l">${t('g_note')}</div><div class="v" style="font-size:18px">${t('g_note_v')}</div></div>`; return; }
   const avg = done.length ? done.reduce((a, e) => a + e.my_best_pct, 0) / done.length : null;
   $('#meKpis').innerHTML = `<div class="kpi"><div class="l">${t('k_exams')}</div><div class="v">${ex.length}</div></div>
     <div class="kpi olive"><div class="l">${t('k_done')}</div><div class="v">${done.length} / ${ex.length}</div><div class="bar"><i style="width:${ex.length ? done.length / ex.length * 100 : 0}%"></i></div></div>
@@ -87,16 +93,17 @@ function drawExams() {
   $('#pills').innerHTML = `<button class="pill ${!subj ? 'on' : ''}" data-s="">${t('all_subj')}<span class="n num">${DATA.exams.length}</span></button>` +
     subjects.map(s => `<button class="pill ${subj === s ? 'on' : ''}" data-s="${esc(s)}">${esc(t(s))}<span class="n num">${DATA.exams.filter(e => dep(e.subject) === s).length}</span></button>`).join('');
   $$('#pills .pill').forEach(b => b.onclick = () => { subj = b.dataset.s; drawExams(); });
-  $('#availSub').textContent = t('avail_sub', { n: DATA.exams.length, g: I18N.gradeLabel(S.grade_num), tr: t(S.track), s: S.section, term: t(DATA.active_term) });
+  $('#availSub').textContent = isGuest() ? t('g_avail_sub', { n: DATA.exams.length, g: I18N.gradeLabel(S.grade_num), tr: t(S.track), term: t(DATA.active_term) })
+    : t('avail_sub', { n: DATA.exams.length, g: I18N.gradeLabel(S.grade_num), tr: t(S.track), s: S.section, term: t(DATA.active_term) });
   const list = DATA.exams.filter(e => !subj || dep(e.subject) === subj);
   if (!list.length) { $('#grid').innerHTML = `<div class="empty" style="grid-column:1/-1"><img src="${UI.ORN('clock')}" alt="">${t('no_exams')}</div>`; return; }
   $('#grid').innerHTML = list.map(e => `<article class="ecard" style="--subj:${SUBJ_COLOR[e.subject] || '#A35D25'}">
-    <div class="top"><div class="ico"><img src="${UI.ORN(SUBJ_ICON[e.subject] || 'checklist')}" alt=""></div><div style="min-width:0"><div class="subj">${dep(e.subject) !== e.subject ? esc(t('Science')) + ' · ' : ''}${esc(t(e.subject))}</div><h3 dir="auto">${esc(e.title)}</h3><div class="small muted" dir="auto">${esc(t('by', { x: e.teacher_name }))}</div></div></div>
+    <div class="top"><div class="ico"><img src="${UI.ORN(SUBJ_ICON[e.subject] || 'checklist')}" alt=""></div><div style="min-width:0"><div class="subj">${dep(e.subject) !== e.subject ? esc(t('Science')) + ' · ' : ''}${esc(t(e.subject))}</div><h3 dir="auto">${esc(e.title)}</h3>${e.teacher_name ? `<div class="small muted" dir="auto">${esc(t('by', { x: e.teacher_name }))}</div>` : ''}</div></div>
     <div class="meta"><span class="badge b-blue num">${t('q_n', { n: e.q_count })}</span><span class="badge b-gold num">${t('m_n', { n: e.total_marks })}</span>
       <span class="badge b-gray num">${UI.ICONS.clock.replace('<svg', '<svg style="width:13px;height:13px;fill:currentColor"')} ${e.duration_minutes ? e.duration_minutes + ' ' + t('minutes') : t('no_limit')}</span>
       ${Catalog.SCHEDULE[e.subject] ? `<span class="badge b-gold num" title="${esc(t('exam_day'))}">📅 ${Catalog.SCHEDULE[e.subject].date}</span>` : ''}
       ${e.calculator_allowed ? `<span class="badge b-olive">${UI.ICONS.calc.replace('<svg', '<svg style="width:13px;height:13px;fill:currentColor"')} ${t('calc_ok')}</span>` : ''}</div>
-    <div class="score">${ring(e.my_best_pct)}<div><b>${e.my_attempts ? `${I18N.num(e.my_best_score, 1)} / ${I18N.num(e.total_marks)}` : t('none_yet')}</b><span>${t('my_attempts')}: <span class="num">${e.my_attempts}</span>${e.my_attempts ? ` · ${e.my_best_passed ? `<span class="badge b-ok">${t('passed')}</span>` : `<span class="badge b-warn">${t('failed')}</span>`}` : ''}</span></div></div>
+    ${isGuest() ? `<div class="score"><img src="${UI.ORN('checklist')}" alt="" style="width:40px"><div><b>${t('g_card')}</b></div></div>` : `<div class="score">${ring(e.my_best_pct)}<div><b>${e.my_attempts ? `${I18N.num(e.my_best_score, 1)} / ${I18N.num(e.total_marks)}` : t('none_yet')}</b><span>${t('my_attempts')}: <span class="num">${e.my_attempts}</span>${e.my_attempts ? ` · ${e.my_best_passed ? `<span class="badge b-ok">${t('passed')}</span>` : `<span class="badge b-warn">${t('failed')}</span>`}` : ''}</span></div></div>`}
     <div class="act"><a class="btn ${e.my_attempts ? 'btn-ghost' : 'btn-primary'} btn-block" href="exam.html?id=${encodeURIComponent(e.id)}">${UI.ICONS.play}<span>${e.my_attempts ? t('again') : t('start')}</span></a></div></article>`).join('');
 }
 async function drawHistory() {
@@ -112,17 +119,24 @@ async function drawHistory() {
 $('#hTerm').onchange = e => { hTerm = e.target.value; drawHistory(); };
 
 function heroText() {
+  if (isGuest()) {
+    UI.setHero(t('g_hello'), t('g_sub'));
+    const h = $('#heroSub'); if (h) h.insertAdjacentHTML('afterend', `<div class="hero-me" id="heroMe"><span>${esc(t('role_guest'))}</span><span>${esc(I18N.gradeLabel(S.grade_num))}</span><span>${esc(t(S.track))}</span></div>`);
+    const old = $$('#heroMe'); if (old.length > 1) old.slice(1).forEach(x => x.remove()); return;
+  }
   UI.setHero(t('hello', { id: S.student_id }), t('hello_sub'));
   const h = $('#heroSub'); if (h) h.insertAdjacentHTML('afterend', `<div class="hero-me" id="heroMe"><span class="num">${esc(S.student_id)}</span><span>${esc(I18N.gradeLabel(S.grade_num))}</span><span>${esc(t(S.track))}</span><span>${esc(S.section)}</span></div>`);
   const old = $$('#heroMe'); if (old.length > 1) old.slice(1).forEach(x => x.remove());
 }
 (async () => {
-  try { S = await UI.requireRole('student'); } catch (_) { return; }
+  try { S = await UI.requireRole('student', 'guest'); } catch (_) { return; }
   await UI.header({ session: S, title: '', subtitle: '', ornament: 'learning' });
   UI.footer(); heroText(); I18N.apply();
+  if (isGuest()) $('#hist').closest('section').hidden = true;   // guests have no saved history
+  const history = () => { if (!isGuest()) drawHistory(); };
   try { DATA = await API.studentExams(); } catch (e) { UI.handle(e); }
-  drawKpis(); drawExams(); drawHistory();
-  I18N.onChange(() => { $$('#heroMe').forEach(x => x.remove()); heroText(); drawKpis(); drawExams(); drawHistory(); });
+  drawKpis(); drawExams(); history();
+  I18N.onChange(() => { $$('#heroMe').forEach(x => x.remove()); heroText(); drawKpis(); drawExams(); history(); });
 })();
 </script>
 </body>

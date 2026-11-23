@@ -103,11 +103,11 @@ const PARAMS = new URLSearchParams(location.search);
 let PREVIEW = PARAMS.get('preview') === '1';
 
 /*@JS_T@*/
-Object.assign(T.en,{saving:"Saving and scoring your attempt…",questions:"questions",i_term:"Term",i_track:"Track",i_section:"Section",i_id:"Student ID",preview_banner:"PREVIEW MODE — this attempt will NOT be saved",
+Object.assign(T.en,{saving:"Saving and scoring your attempt…",guest_label:"Guest",guest_nosave:"Practice result — not saved (guest).",questions:"questions",i_term:"Term",i_track:"Track",i_section:"Section",i_id:"Student ID",preview_banner:"PREVIEW MODE — this attempt will NOT be saved",
  r_parts:"Performance by part",try_again:"Try Again",back_exams:"Back to My Exams",back_portal:"Back to Portal",logout:"Logout",saved_ok:"Your attempt was saved (attempt #{n}).",save_err:"Your attempt could not be saved: {m}",retry:"Retry",
  preview_nosave:"Preview mode: results are not saved.",load_err:"This exam could not be loaded.",go_back:"Go back",signin_needed:"Please sign in first.",general:"General",advanced:"Advanced",all:"All",
  Mathematics:"Mathematics",Science:"Science",English:"English",Arabic:"Arabic","Islamic Education":"Islamic Education","Social Studies":"Social Studies",Physics:"Physics",Chemistry:"Chemistry",Biology:"Biology","Computer Science":"Computer Science",Other:"Other"});
-Object.assign(T.ar,{saving:"جارٍ حفظ محاولتك وتصحيحها…",questions:"أسئلة",i_term:"الفصل الدراسي",i_track:"المسار",i_section:"الشعبة",i_id:"رقم الطالب",preview_banner:"وضع المعاينة — لن يتم حفظ هذه المحاولة",
+Object.assign(T.ar,{saving:"جارٍ حفظ محاولتك وتصحيحها…",guest_label:"زائر",guest_nosave:"نتيجة تدريبية — لا تُحفظ (زائر).",questions:"أسئلة",i_term:"الفصل الدراسي",i_track:"المسار",i_section:"الشعبة",i_id:"رقم الطالب",preview_banner:"وضع المعاينة — لن يتم حفظ هذه المحاولة",
  r_parts:"الأداء حسب الجزء",try_again:"حاول مجدداً",back_exams:"العودة إلى اختباراتي",back_portal:"العودة إلى البوابة",logout:"تسجيل الخروج",saved_ok:"تم حفظ محاولتك (المحاولة رقم {n}).",save_err:"تعذر حفظ محاولتك: {m}",retry:"إعادة المحاولة",
  preview_nosave:"وضع المعاينة: لا يتم حفظ النتائج.",load_err:"تعذر تحميل هذا الاختبار.",go_back:"رجوع",signin_needed:"الرجاء تسجيل الدخول أولاً.",general:"عام",advanced:"متقدم",all:"الكل",
  Mathematics:"الرياضيات",Science:"العلوم",English:"اللغة الإنجليزية",Arabic:"اللغة العربية","Islamic Education":"التربية الإسلامية","Social Studies":"الدراسات الاجتماعية",Physics:"الفيزياء",Chemistry:"الكيمياء",Biology:"الأحياء","Computer Science":"علوم الحاسوب",Other:"أخرى"});
@@ -151,7 +151,7 @@ function show(id){ $$('.screen').forEach(s=>s.classList.toggle('on',s.id===id));
 $$('[data-lang]').forEach(b=>b.onclick=toggleLang);
 
 /* ---------- load exam from API ---------- */
-function portalUrl(){ if(!ME) return 'index.html'; return ME.role==='student'?'student.html':ME.role==='admin'?'admin.html':'teacher.html'; }
+function portalUrl(){ if(!ME) return 'index.html'; return ME.role==='student'||ME.role==='guest'?'student.html':ME.role==='admin'?'admin.html':'teacher.html'; }
 function loadFail(msg){ $('#loadScreen').innerHTML=`<div class="lerr">${esc(t('load_err'))}<br><small>${esc(msg||'')}</small></div><button class="lbtn" onclick="location.href=portalUrl()">${t('go_back')}</button>`; }
 const plainTxt = h => String(h||'').replace(/<[^>]+>/g,'').replace(/\$+([^$]*)\$+/g,'$1').replace(/\\[a-zA-Z]+/g,' ').replace(/[{}]/g,'').replace(/\s+/g,' ').trim();
 // ---------------------------------------------------------------------------
@@ -245,7 +245,7 @@ async function boot(){
   try{ lang = localStorage.getItem('zec.lang') || ''; }catch(_){}
   ME = await API.me();
   if(!ME){ location.replace('index.html'); return; }
-  if(ME.role!=='student') PREVIEW = true;            // staff never create attempts
+  if(ME.role!=='student' && ME.role!=='guest') PREVIEW = true;   // staff never create attempts (guests are marked but never saved)
   const id = PARAMS.get('id'); if(!id){ loadFail('Missing exam id'); return; }
   try{ EXAM = await API.exam(id); }catch(e){ loadFail(e.message); return; }
   const cfg = EXAM.config || {};
@@ -265,7 +265,7 @@ async function boot(){
   PASS_MARK = Math.ceil(TOTAL_MARKS*C.passingPercent/100);
   EXAM_TITLE = EXAM.title || `Grade ${C.grade} - ${C.subject} - ${C.term}`;
   document.title = EXAM_TITLE;
-  st.user = ME.role==='student' ? ME.student_id : (ME.name || 'Preview');
+  st.user = ME.role==='student' ? ME.student_id : ME.role==='guest' ? t('guest_label') : (ME.name || 'Preview');
   if(PREVIEW){ const b=document.createElement('div'); b.className='prev-banner'; b.id='prevBanner'; $('#examScreen').prepend(b); }
   applyA(); applyLang(); startExam();
 }
@@ -422,7 +422,8 @@ function buildPayload(){
 async function saveAttempt(){
   if(PREVIEW) return;
   st.saveErr=null;
-  try{ st.saved = await API.submitAttempt(st.payload); if(st.saved&&st.saved.key) applyKey(st.saved.key); toast('success',t('saved_ok',{n:st.saved.attempt_number})); }
+  try{ if(ME.role==='guest'){ st.saved = await API.guestSubmit(st.payload); if(st.saved&&st.saved.key) applyKey(st.saved.key); }   // guest: marked, NOT saved
+       else { st.saved = await API.submitAttempt(st.payload); if(st.saved&&st.saved.key) applyKey(st.saved.key); toast('success',t('saved_ok',{n:st.saved.attempt_number})); } }
   catch(e){ st.saveErr=e.message||String(e); toast('error',t('save_err',{m:st.saveErr})); }
   showResults();
 }
@@ -459,8 +460,8 @@ function showResults(){
      <div class="stem">${r.q.en?`<div dir="ltr">${keepHtml(r.q.en)}</div>`:''}${r.q.ar?`<div dir="rtl" class="ar-text">${keepHtml(r.q.ar)}</div>`:''}${r.q.image_url?`<img class="q-img" src="${esc(r.q.image_url)}" alt="">`:''}</div>
      <div class="opts ${arOnly?'rtl':''}">${r.q.options.map((o,k)=>`<div class="opt ${k===r.q.correct?'good':k===r.pk?'bad':''}" style="grid-template-columns:34px 1fr 30px"><span class="l">${String.fromCharCode(97+k)}.</span><span class="ot" dir="auto">${optHtml(r.q,k)}</span><span></span></div>`).join('')}</div>
      ${r.q.feedback?`<div class="fb" dir="auto"><b>${t('r_sol')}:</b> ${keepHtml(r.q.feedback)}</div>`:''}</div>`; }).join('')}</div>`:'';
-  const saveState = PREVIEW ? `<div class="save-state pv">${t('preview_nosave')}</div>` : st.saveErr ? `<div class="save-state err">${esc(t('save_err',{m:st.saveErr}))}<button onclick="saveAttempt()">${t('retry')}</button></div>` : st.saved ? `<div class="save-state ok">${t('saved_ok',{n:st.saved.attempt_number})}</div>` : '';
-  const backLbl = ME && ME.role==='student' ? t('back_exams') : t('back_portal');
+  const saveState = PREVIEW ? `<div class="save-state pv">${t('preview_nosave')}</div>` : st.saveErr ? `<div class="save-state err">${esc(t('save_err',{m:st.saveErr}))}<button onclick="saveAttempt()">${t('retry')}</button></div>` : st.saved && st.saved.guest ? `<div class="save-state pv">${t('guest_nosave')}</div>` : st.saved ? `<div class="save-state ok">${t('saved_ok',{n:st.saved.attempt_number})}</div>` : '';
+  const backLbl = ME && (ME.role==='student'||ME.role==='guest') ? t('back_exams') : t('back_portal');
   $('#resultScreen').innerHTML=`<div class="res-top"><h2 dir="auto">${esc(EXAM_TITLE)} <small style="font-weight:400;opacity:.8">· ${esc(C.term)}</small></h2><div style="display:flex;gap:8px;flex-wrap:wrap">
     <button class="rbtn" onclick="retake()">${ico.again}${t('try_again')}</button><button class="rbtn" onclick="backHome()">${ico.home}${backLbl}</button><button class="rbtn" onclick="logout()" title="${t('logout')}">${ico.out}</button></div></div>
   <div class="res-wrap" id="resBody">${saveState}
@@ -469,7 +470,7 @@ function showResults(){
     <div class="card"><div><b>${PASS_MARK}</b><small>${t('r_pass')}</small></div></div>
     <div class="card ${pass?'pass':'fail'}"><div><b>${pass?t('passed'):t('failed')}</b><small>${t('r_res')}</small></div>${ico.x}</div></div>
    <div class="chartbox"><svg viewBox="0 0 150 150"><circle cx="75" cy="75" r="60" fill="none" stroke="#f95484" stroke-width="26"/><circle cx="75" cy="75" r="60" fill="none" stroke="#8acc36" stroke-width="26" stroke-dasharray="${g} ${circ}" transform="rotate(-90 75 75)"/><text x="75" y="81" text-anchor="middle" font-size="20" font-weight="800" fill="#34495a">${pct.toFixed(0)}%</text></svg>
-    <div class="leg"><p><i style="background:#8acc36"></i>${t('r_gained')}: ${s.got}</p><p><i style="background:#f95484"></i>${t('r_missed')}: ${TOTAL_MARKS-s.got}</p><p>${s.c} / ${TOTAL_Q}</p><p>${esc(st.user)}${ME&&ME.section?' · '+esc(ME.section):''}</p><p style="color:#667;font-size:12px">${t('i_term')}: ${esc(C.term)} · ${t('made_by')}: ${esc(C.author)}</p></div></div>
+    <div class="leg"><p><i style="background:#8acc36"></i>${t('r_gained')}: ${s.got}</p><p><i style="background:#f95484"></i>${t('r_missed')}: ${TOTAL_MARKS-s.got}</p><p>${s.c} / ${TOTAL_Q}</p><p>${esc(st.user)}${ME&&ME.section?' · '+esc(ME.section):''}</p><p style="color:#667;font-size:12px">${t('i_term')}: ${esc(C.term)}${C.author ? ' · ' + t('made_by') + ': ' + esc(C.author) : ''}</p></div></div>
    <table class="rt"><thead><tr><th>${t('r_qt')}</th><th class="c">${t('r_mark')}</th><th class="c">${t('r_tot')}</th><th class="c">${t('r_result')}</th></tr></thead><tbody>${table}</tbody></table>
    <div class="expbar"><button style="background:#f95484" onclick="exportPDF()">${t('pdf')}</button><button style="background:#6fa329" onclick="exportXLS()">${t('xls')}</button><button style="background:#24475b" onclick="print()">${t('print')}</button><button style="background:#0F6FC6" onclick="retake()">${t('try_again')}</button><button style="background:#64748b" onclick="backHome()">${backLbl}</button></div>
    ${review}</div>`;
