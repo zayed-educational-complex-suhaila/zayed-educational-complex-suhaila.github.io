@@ -7,9 +7,9 @@ I18N.add({
     f_grades: 'Grades', f_sections: 'Sections', f_students: 'Students',
     r_student_s: 'Student ID', r_teacher_s: 'Teacher PIN', r_admin_s: 'Admin PIN', r_guest_s: 'Visitors',
     our_students: 'Suhaila Complex students', our_students_s: 'Sign in with your Student ID.',
-    other_students: 'Students from other schools', other_students_s: 'Practise our exams with your name and your class code.', other_students_link: 'From another school? Practise here',
+    other_students: 'Students from other schools', other_students_s: 'Practise our exams — type your name and choose your grade and track.', other_students_link: 'From another school? Practise here',
     guest_name: 'Your name', ph_guest_name: 'e.g. Ahmed Ali',
-    guest_code: 'Class code', ph_guest: 'e.g. 9a', guest_hint: 'Class code = your grade and track: 5g … 8g, then 9g / 9a … 12g / 12a (g = General, a = Advanced). Your results are saved under your name — type the same name and code next time to see them. Only you see them.',
+    guest_code: 'Class code', ph_guest: 'e.g. 9a', guest_hint: 'Choose your grade and track. Your results are saved under your name — use the same name, grade and track next time to see them. Only you see them.',
     need_code: 'Type your class code, e.g. 9a.', need_guest_name: 'Type your name.', err_guest_name_required: 'Please type your name (2–40 letters).', err_bad_guest_code: 'That code is not valid. Use your grade and track, e.g. 7g, 10a.', err_guest_disabled: 'Guest practice is switched off at the moment.',
     ph_student: 'e.g. 2012345678', stu_hint: 'Type your Student ID exactly as on your school record. Arabic or English digits both work.',
     teacher_pin: '4-digit Teacher PIN', teacher_name: 'Teacher name', ph_tname: 'Your full name', admin_pin: '4-digit Admin PIN', enter: 'Sign in',
@@ -21,9 +21,9 @@ I18N.add({
     f_grades: 'الصفوف', f_sections: 'شعبة', f_students: 'طالب',
     r_student_s: 'رقم الطالب', r_teacher_s: 'رمز المعلم', r_admin_s: 'رمز الإدارة', r_guest_s: 'للزوار',
     our_students: 'طلاب مجمع سهيلة', our_students_s: 'ادخل برقم الطالب.',
-    other_students: 'طلاب مدارس أخرى', other_students_s: 'تدرّب على اختباراتنا باسمك ورمز صفك.', other_students_link: 'طالب من مدرسة أخرى؟ تدرّب من هنا',
+    other_students: 'طلاب مدارس أخرى', other_students_s: 'تدرّب على اختباراتنا — اكتب اسمك واختر صفك ومسارك.', other_students_link: 'طالب من مدرسة أخرى؟ تدرّب من هنا',
     guest_name: 'اسمك', ph_guest_name: 'مثال: أحمد علي',
-    guest_code: 'رمز الصف', ph_guest: 'مثال: 9a', guest_hint: 'رمز الصف = صفك ومسارك: من 5g إلى 8g، ثم 9g / 9a إلى 12g / 12a (g = عام، a = متقدم). تُحفظ نتائجك باسمك — اكتب الاسم والرمز نفسيهما في المرة القادمة لتراها. لا يراها أحد غيرك.',
+    guest_code: 'رمز الصف', ph_guest: 'مثال: 9a', guest_hint: 'اختر صفك ومسارك. تُحفظ نتائجك باسمك — استخدم الاسم والصف والمسار نفسها في المرة القادمة لتراها. لا يراها أحد غيرك.',
     need_code: 'اكتب رمز الصف، مثال: 9a.', need_guest_name: 'اكتب اسمك.', err_guest_name_required: 'الرجاء كتابة اسمك (من 2 إلى 40 حرفاً).', err_bad_guest_code: 'الرمز غير صحيح. اكتب الصف والمسار، مثال: 7g أو 10a.', err_guest_disabled: 'التدريب للزوار متوقف حالياً.',
     ph_student: 'مثال: 2012345678', stu_hint: 'اكتب رقم الطالب كما هو في السجل المدرسي، ويمكن استخدام الأرقام العربية أو الإنجليزية.',
     teacher_pin: 'رمز المعلم (4 أرقام)', teacher_name: 'اسم المعلم', ph_tname: 'الاسم الكامل', admin_pin: 'رمز الإدارة (4 أرقام)', enter: 'دخول',
@@ -54,6 +54,20 @@ function fillTeacherSelects() {
 }
 I18N.onChange(fillTeacherSelects);
 
+// Students from other schools choose grade + track (Grades 5–8: General only; 9–12: General or Advanced).
+// The choice is sent as the class code the server expects (e.g. 9 + Advanced -> "9a").
+function fillGuestClass(keep = {}) {
+  const gS = $('#gGrade'), tS = $('#gTrack'); if (!gS) return;
+  const g = Number(keep.grade || gS.value || 5);
+  UI.fillSelect(gS, [5, 6, 7, 8, 9, 10, 11, 12].map(n => ({ value: n, label: I18N.gradeLabel(n) })), g);
+  const tracks = g <= 8 ? ['General'] : ['General', 'Advanced'];
+  const tr = tracks.includes(keep.track || tS.value) ? (keep.track || tS.value) : 'General';
+  UI.fillSelect(tS, tracks.map(x => ({ value: x, label: t(x) })), tr);
+  tS.disabled = tracks.length === 1;
+}
+const guestCode = () => $('#gGrade').value + ($('#gTrack').value === 'Advanced' ? 'a' : 'g');
+if ($('#gGrade')) { $('#gGrade').addEventListener('change', () => fillGuestClass()); I18N.onChange(() => fillGuestClass()); }
+
 async function run(form, fn) {
   msgBox = form.querySelector('.msg'); $$('.msg').forEach(m => { m.innerHTML = ''; });
   const btn = form.querySelector('button[type=submit]'); btn.disabled = true;
@@ -71,8 +85,8 @@ formOf('#f-teacher').onsubmit = e => { e.preventDefault(); run(e.target, async (
   localStorage.setItem('zec.teacherPrefs', JSON.stringify({ name: p.teacher_name, grade: p.grade, track: p.track, subject: p.subject }));
   location.href = 'teacher.html'; }); };
 formOf('#f-guest').onsubmit = e => { e.preventDefault(); run(e.target, async () => {
-  const name = $('#gName').value.trim().replace(/\s+/g, ' '), code = $('#gCode').value.trim();
-  if (name.length < 2) { msg(t('need_guest_name')); return; } if (!code) { msg(t('need_code')); return; }
+  const name = $('#gName').value.trim().replace(/\s+/g, ' '), code = guestCode();
+  if (name.length < 2) { msg(t('need_guest_name')); return; }
   await API.login('guest', { code, name }); try { localStorage.setItem('zec.guestPrefs', JSON.stringify({ name, code })); } catch (_) {}
   location.href = 'student.html'; }); };
 formOf('#f-admin').onsubmit = e => { e.preventDefault(); run(e.target, async () => {
@@ -87,5 +101,9 @@ formOf('#f-admin').onsubmit = e => { e.preventDefault(); run(e.target, async () 
   try { const s = await API.me(); if (s) { location.replace(s.role === 'student' || s.role === 'guest' ? 'student.html' : s.role + '.html'); return; } } catch (_) {}
   const tiles = $$('.role').map(b => b.dataset.role); let r = tiles[0]; try { const saved = sessionStorage.getItem('gate.role'); if (tiles.includes(saved)) r = saved; } catch (_) {}
   if (r) pickRole(r);   // the students page has no tiles (both boxes are always shown)
-  try { const g = JSON.parse(localStorage.getItem('zec.guestPrefs') || '{}'); if ($('#gName') && g.name) { $('#gName').value = g.name; $('#gCode').value = g.code || ''; } } catch (_) {}
+  // remember the last visitor name + class on this device
+  let prev = {}; try { prev = JSON.parse(localStorage.getItem('zec.guestPrefs') || '{}'); } catch (_) {}
+  const cls = prev.code && API.parseGuestCode ? API.parseGuestCode(prev.code) : null;
+  fillGuestClass(cls ? { grade: cls.grade_num, track: cls.track } : {});
+  if ($('#gName') && prev.name) $('#gName').value = prev.name;
 })();

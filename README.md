@@ -22,7 +22,6 @@ Bilingual (عربي / English) practice-exam website in the SwiftAssess exam sty
    The defaults are written in this public repository.
 
 ### Students from other schools (طلاب مدارس أخرى)
-On the main sign-in page, below the box for Suhaila Complex students, students from other schools type **their name and
 their class code**: `5g` … `8g`, then `9g`/`9a` … `12g`/`12a` (g = General, a = Advanced; Arabic digits and ع/م also work).
 They see every published exam of that grade and track in the active term (no teacher names). Their results are saved in
 `visitor_attempts` under **name + class code, for them only**: typing the same name and code shows their history again
