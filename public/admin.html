@@ -26,6 +26,10 @@
   .cls .secs { display: flex; flex-wrap: wrap; gap: 6px; margin: 8px 0; }
   .cls .subjs { display: flex; flex-wrap: wrap; gap: 4px; }
   .cls .subjs span { font-size: 11px; padding: 2px 7px; border-radius: 999px; font-weight: 800; }
+  .cls .subjs .p { background: #FBEBD3; color: #9A5B13; }
+  .sec-rows { display: grid; gap: 4px; margin-top: 10px; border-top: 1px dashed var(--line); padding-top: 8px; }
+  .sec-row { display: flex; flex-wrap: wrap; gap: 4px 10px; align-items: baseline; font-size: 12px; padding: 4px 8px; border-radius: 8px; background: var(--ok-bg); }
+  .sec-row.bad { background: var(--bad-bg); } .sec-row b { color: var(--navy); } .sec-row .st { flex-basis: 100%; font-weight: 800; color: var(--ok); } .sec-row.bad .st { color: var(--bad); }
   .cls .subjs .y { background: var(--ok-bg); color: var(--ok); } .cls .subjs .n { background: var(--bad-bg); color: var(--bad); }
   .pin-card { max-width: 420px; }
   @media (max-width: 900px) { .control { grid-template-columns: 1fr; } }
@@ -120,7 +124,7 @@ I18N.add({
     a_overview: 'All Classes & Uploads', a_results: 'School-Wide Results', a_roster: 'Student Roster (Grades 5–12)', a_security: 'Security Settings',
     classes_t: 'Grades, tracks & sections', classes_s: '{g} grade-tracks · {s} sections · {n} students', only_missing: 'Show classes missing uploads',
     uploads_t: 'Uploaded exams', uploads_s: 'Preview, publish / hide, edit grade-track-subject-title, or delete.', open_teacher: 'Open teacher upload',
-    exams_n: '{n} exam(s)', no_uploads: 'No uploads yet', missing_n: '{n} subject(s) missing',
+    exams_n: '{n} exam(s)', students_n: '{n} students', sec_complete: 'All subjects uploaded', no_uploads: 'No uploads yet', missing_n: '{n} subject(s) missing',
     results_s: 'Best score per student by default — toggle All Attempts, filter, and export.',
     roster_s: '{n} students in {s} sections (Grades 5–12). Only Student IDs are stored — no names.', roster_up: 'Upload new roster (.xlsx)',
     roster_confirm: 'Replace the roster with “{f}”? Students not in the new file will no longer be able to sign in. Existing attempts are kept.', roster_ok: 'Roster synced: {n} students in {s} sections (+{a} / −{r}).',
@@ -138,7 +142,7 @@ I18N.add({
     a_overview: 'جميع الصفوف والاختبارات', a_results: 'نتائج المدرسة', a_roster: 'سجل الطلبة (الصفوف 5–12)', a_security: 'إعدادات الأمان',
     classes_t: 'الصفوف والمسارات والشعب', classes_s: '{g} صف ومسار · {s} شعبة · {n} طالباً', only_missing: 'عرض الصفوف التي تنقصها اختبارات',
     uploads_t: 'الاختبارات المرفوعة', uploads_s: 'معاينة، نشر / إخفاء، تعديل الصف والمسار والمادة والعنوان، أو الحذف.', open_teacher: 'فتح صفحة رفع المعلم',
-    exams_n: '{n} اختبار', no_uploads: 'لا توجد اختبارات', missing_n: 'تنقص {n} مادة',
+    exams_n: '{n} اختبار', students_n: '{n} طالباً', sec_complete: 'جميع المواد مرفوعة', no_uploads: 'لا توجد اختبارات', missing_n: 'تنقص {n} مادة',
     results_s: 'أفضل نتيجة لكل طالب افتراضياً — يمكن عرض جميع المحاولات والتصفية والتصدير.',
     roster_s: '{n} طالباً في {s} شعبة (الصفوف 5–12). تُحفظ أرقام الطلبة فقط دون الأسماء.', roster_up: 'رفع سجل جديد (.xlsx)',
     roster_confirm: 'استبدال السجل بالملف "{f}"؟ لن يتمكن الطلبة غير الموجودين في الملف الجديد من الدخول، وتبقى المحاولات السابقة محفوظة.', roster_ok: 'تمت مزامنة السجل: {n} طالباً في {s} شعبة (+{a} / −{r}).',
@@ -201,13 +205,24 @@ async function drawClasses() {
   const cards = Reports.GRADE_TRACKS.filter(x => (!g || x.grade_num === Number(g)) && (!tr || x.track === tr)).map(x => {
     const secs = SECS.filter(s => s.grade_num === x.grade_num && s.track === x.track);
     const ex = exams.filter(e => e.grade_num === x.grade_num && (e.track === x.track || e.track === 'All'));
-    const have = new Set(ex.map(e => e.subject)); const taught = Catalog.subjectsFor(x.grade_num, x.track); const missing = taught.filter(s => !have.has(s));
-    return { x, secs, ex, have, missing, taught };
+    const taught = Catalog.subjectsFor(x.grade_num, x.track);
+    const forSec = sec => ex.filter(e => { const ts = e.target_sections || ['ALL']; return ts.includes('ALL') || ts.includes(sec); });
+    // per section: which taught subjects have at least one exam for that section
+    const rows = secs.map(s => { const sx = forSec(s.section), have = new Set(sx.map(e => e.subject));
+      return { s, n: sx.length, have, missing: taught.filter(sub => !have.has(sub)) }; });
+    const covered = sub => rows.length ? rows.filter(r => r.have.has(sub)).length : (ex.some(e => e.subject === sub) ? 1 : 0);
+    const all = rows.length || 1, have = new Set(ex.map(e => e.subject));
+    const missing = taught.filter(sub => covered(sub) < all);
+    return { x, rows, ex, have, missing, taught, covered, all };
   }).filter(c => !onlyMissing || c.missing.length);
-  $('#classes').innerHTML = cards.map(c => `<div class="cls ${c.ex.length ? '' : 'missing'}">
+  const subjName = s => Catalog.departmentOf(s) !== s ? t('Science') + ' – ' + t(s) : t(s);
+  $('#classes').innerHTML = cards.map(c => `<div class="cls ${c.missing.length ? 'missing' : ''}">
       <h3>${esc(UI.gradeTrackLabel(c.x.grade_num, c.x.track))} <span class="badge ${c.ex.length ? 'b-blue' : 'b-bad'} num" style="margin-inline-start:auto">${c.ex.length ? t('exams_n', { n: c.ex.length }) : t('no_uploads')}</span></h3>
-      <div class="secs">${c.secs.map(s => `<span class="badge b-gray"><bdi>${esc(s.section)}</bdi> · <span class="num">${s.student_count}</span></span>`).join('')}</div>
-      <div class="subjs">${c.taught.map(s => `<span class="${c.have.has(s) ? 'y' : 'n'}" title="${esc(Catalog.teachersFor(s, c.x.grade_num, c.x.track).join('، '))}">${c.have.has(s) ? '✓' : '✗'} ${esc(Catalog.departmentOf(s) !== s ? t('Science') + ' – ' + t(s) : t(s))}</span>`).join('')}${[...c.have].filter(s => !c.taught.includes(s)).map(s => `<span class="y">✓ ${esc(t(s))}</span>`).join('')}</div>
+      <div class="subjs">${c.taught.map(s => { const k = c.covered(s), cls = k >= c.all ? 'y' : k ? 'p' : 'n';
+        return `<span class="${cls}" title="${esc(Catalog.teachersFor(s, c.x.grade_num, c.x.track).join('، '))}">${cls === 'y' ? '✓' : cls === 'p' ? '◐' : '✗'} ${esc(subjName(s))}${cls === 'p' ? ` <span class="num">${k}/${c.all}</span>` : ''}</span>`; }).join('')}${[...c.have].filter(s => !c.taught.includes(s)).map(s => `<span class="y">✓ ${esc(t(s))}</span>`).join('')}</div>
+      ${c.rows.length ? `<div class="sec-rows">${c.rows.map(r => `<div class="sec-row ${r.missing.length ? 'bad' : 'ok'}">
+        <b><bdi>${esc(r.s.section)}</bdi></b><span class="muted num">${t('students_n', { n: r.s.student_count })}</span><span class="muted num">${t('exams_n', { n: r.n })}</span>
+        <span class="st">${r.missing.length ? '✗ ' + r.missing.map(m => esc(subjName(m))).join('، ') : '✓ ' + t('sec_complete')}</span></div>`).join('')}</div>` : ''}
       ${c.missing.length ? `<div class="small" style="color:var(--bad);margin-top:6px">${t('missing_n', { n: c.missing.length })}</div>` : ''}</div>`).join('') || `<div class="empty">${t('no_data')}</div>`;
 }
 ['#cGrade', '#cTrack', '#cTerm', '#onlyMissing'].forEach(s => $(s).addEventListener('change', () => drawClasses().catch(UI.handle)));
