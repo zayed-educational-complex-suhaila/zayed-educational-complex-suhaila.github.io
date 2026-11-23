@@ -241,6 +241,13 @@ function splitBi(s) {
       if (a && b && aAr !== bAr) return aAr ? { en: b, ar: a } : { en: a, ar: b };
     }
   }
+  // "عربي (English words)" or "English (عربي)": the other language in BRACKETS at the end. Only when the brackets hold real
+  // words (lowercase letters): a word of 4+ letters with lowercase), so (ATP), (amu), (A) are left alone.
+  { const bm = s.match(/^([\s\S]*?\S)\s*\(([^()]*)\)\s*$/);
+    if (bm) { const out = bm[1].trim(), inn = bm[2].trim();
+      const oAr = AR_LETTER.test(noMath(out)), iAr = AR_LETTER.test(noMath(inn)), oEn = /[A-Za-z]{3,}/.test(noMath(out)), iEn = /(?=[A-Za-z]*[a-z])[A-Za-z]{4,}/.test(noMath(inn));
+      if (oAr && !oEn && iEn && !iAr) return { en: inn, ar: out };
+      if (oEn && !oAr && iAr && !/[A-Za-z]{3,}/.test(noMath(inn))) { const maths = (out.match(/\$[^$]+\$/g) || []).join(' '); return { en: out, ar: maths ? maths + '، ' + inn : inn }; } } }
   return null;
 }
 
