@@ -10,7 +10,7 @@
 <link rel="stylesheet" href="vendor/katex/katex.min.css">
 <script defer src="vendor/katex/katex.min.js"></script>
 <script defer src="vendor/katex/auto-render.min.js"></script>
-<link rel="stylesheet" href="css/portal.css?v=20261123g">
+<link rel="stylesheet" href="css/portal.css?v=20261127a">
 <style>
   .control { display: grid; grid-template-columns: minmax(0, 340px) minmax(0, 1fr); gap: 16px; margin-bottom: 18px; }
   .term-switch { display: flex; gap: 6px; background: var(--sky-2); border: 1px solid var(--line); padding: 5px; border-radius: 12px; }
@@ -109,21 +109,25 @@
     <div class="card" style="grid-column:1/-1"><div class="card-h"><img class="ill" src="assets/ornaments/idea-box.svg" alt=""><div style="flex:1"><h2 data-i18n="guest_t"></h2><div class="sub" data-i18n="guest_s"></div></div>
       <label class="check" style="font-weight:800"><input type="checkbox" id="guestOn"> <span data-i18n="guest_on"></span></label></div>
       <div class="card-b"><div class="row" id="guestCodes" style="gap:8px"></div><p class="small muted" style="margin:10px 0 0" data-i18n="guest_how"></p></div></div>
+    <div class="card" style="grid-column:1/-1"><div class="card-h"><img class="ill" src="assets/ornaments/analytics.svg" alt=""><div style="flex:1"><h2 data-i18n="pics_t"></h2><div class="sub" data-i18n="pics_s"></div></div>
+      <button class="btn btn-primary" id="picsGo" data-i18n="pics_go"></button></div>
+      <div class="card-b"><div id="picsOut" class="small muted" data-i18n="pics_note"></div></div></div>
   </div></section>
 </main>
 <div id="appFooter"></div>
 
 <script src="vendor/exceljs.min.js"></script>
 <script src="vendor/jszip.min.js"></script>
-<script src="js/config.js?v=20261123g"></script>
-<script src="js/i18n.js?v=20261123g"></script>
-<script src="js/shared/teachers-data.js?v=20261123g"></script>
-<script src="js/shared/catalog.js?v=20261123g"></script>
-<script src="js/shared/reports.js?v=20261123g"></script>
-<script src="js/shared/roster-parser.js?v=20261123g"></script>
-<script src="js/api.js?v=20261123g"></script>
-<script src="js/ui.js?v=20261123g"></script>
-<script src="js/panels.js?v=20261123g"></script>
+<script src="js/config.js?v=20261127a"></script>
+<script src="js/i18n.js?v=20261127a"></script>
+<script src="js/shared/teachers-data.js?v=20261127a"></script>
+<script src="js/shared/catalog.js?v=20261127a"></script>
+<script src="js/shared/reports.js?v=20261127a"></script>
+<script src="js/shared/roster-parser.js?v=20261127a"></script>
+<script src="js/api.js?v=20261127a"></script>
+<script src="js/shared/pictures.js?v=20261127a"></script>
+<script src="js/ui.js?v=20261127a"></script>
+<script src="js/panels.js?v=20261127a"></script>
 <script>
 I18N.add({
   en: { portal: 'Administrator Control Panel', portal_sub: 'All grades 5–12, every section, every upload and every result in one place.',
@@ -142,6 +146,7 @@ I18N.add({
     search_id: 'Search Student ID…', count: 'Students', more_rows: 'Showing first {n} — refine the search to see more.',
     pin_admin: 'Administrator PIN', pin_teacher: 'Teacher PIN', pin_s: 'Used to open this control panel.', pin_s2: 'Shared by all teachers to open the Teacher Portal.',
     new_pin: 'New 4-digit PIN', confirm_pin: 'Confirm new PIN', pin_mismatch: 'The two PINs do not match.', pin_bad: 'The PIN must be exactly 4 digits.', pin_ok: 'PIN updated.', exporting: 'Preparing workbook…',
+    pics_t: 'Compress exam pictures', pics_s: 'Makes the pictures inside every exam much smaller, so exams open faster and the site stays within the free download allowance. Nothing else in the exams changes.', pics_go: 'Compress pictures', pics_note: 'Run it once now. New uploads are compressed automatically.', pics_run: 'Compressing… exam {i} of {n}', pics_done: 'Done: {c} pictures compressed in {e} exams — {b} MB → {a} MB.', pics_fail: '{n} exam(s) could not be saved: {m}',
     vis_t: 'Visitors from other schools', vis_total: 'visitors so far', vis_today: 'Today', vis_week: 'Last 7 days', vis_visits: 'Sign-ins', vis_practice: 'Exams taken', vis_none: 'No visitors yet',
     guest_t: 'Students from other schools (class codes)', guest_s: 'On the main sign-in page, students from other schools type their name and class code. They see every published exam of that grade and track in the active term. Their results are saved under their name for them only — staff never see them and they are not counted in school results or reports.',
     guest_on: 'Guest codes on', guest_how: 'g = General, a = Advanced. Switching off signs current guests out immediately.', guest_ok_on: 'Guest codes are ON.', guest_ok_off: 'Guest codes are OFF.' },
@@ -161,6 +166,7 @@ I18N.add({
     search_id: 'ابحث برقم الطالب…', count: 'الطلبة', more_rows: 'عرض أول {n} — حدّد البحث لرؤية المزيد.',
     pin_admin: 'رمز الإدارة', pin_teacher: 'رمز المعلمين', pin_s: 'يُستخدم لفتح لوحة التحكم هذه.', pin_s2: 'رمز مشترك لجميع المعلمين لفتح بوابة المعلم.',
     new_pin: 'الرمز الجديد (4 أرقام)', confirm_pin: 'تأكيد الرمز الجديد', pin_mismatch: 'الرمزان غير متطابقين.', pin_bad: 'يجب أن يتكون الرمز من 4 أرقام.', pin_ok: 'تم تحديث الرمز.', exporting: 'جارٍ تجهيز الملف…',
+    pics_t: 'ضغط صور الاختبارات', pics_s: 'يصغّر حجم الصور داخل جميع الاختبارات كثيراً، فتفتح الاختبارات أسرع ويبقى الموقع ضمن حد التنزيل المجاني. لا يتغيّر أي شيء آخر في الاختبارات.', pics_go: 'ضغط الصور', pics_note: 'شغّله مرة واحدة الآن. الاختبارات الجديدة تُضغط صورها تلقائياً.', pics_run: 'جارٍ الضغط… الاختبار {i} من {n}', pics_done: 'تم: ضُغطت {c} صورة في {e} اختبار — {b} م.ب ← {a} م.ب.', pics_fail: 'تعذّر حفظ {n} اختبار: {m}',
     vis_t: 'زوار من مدارس أخرى', vis_total: 'زائراً حتى الآن', vis_today: 'اليوم', vis_week: 'آخر 7 أيام', vis_visits: 'مرات الدخول', vis_practice: 'اختبارات منجزة', vis_none: 'لا يوجد زوار بعد',
     guest_t: 'طلاب مدارس أخرى (رموز الصفوف)', guest_s: 'في صفحة الدخول الرئيسية يكتب طلاب المدارس الأخرى اسمهم ورمز صفهم، فيرون جميع الاختبارات المنشورة لذلك الصف والمسار في الفصل الحالي. تُحفظ نتائجهم بأسمائهم ولهم فقط — لا يراها الموظفون ولا تُحتسب في نتائج المدرسة أو تقاريرها.',
     guest_on: 'تفعيل رموز الزوار', guest_how: 'g = عام، a = متقدم. عند الإيقاف يُسجَّل خروج الزوار الحاليين فوراً.', guest_ok_on: 'رموز الزوار مفعّلة.', guest_ok_off: 'رموز الزوار متوقفة.' },
@@ -303,6 +309,28 @@ $('#guestOn').onchange = async e => {
 };
 
 /* ---------- boot ---------- */
+/* ---------- one-time: compress the pictures inside all exams ---------- */
+$('#picsGo').onclick = async () => {
+  const btn = $('#picsGo'), out = $('#picsOut'); btn.disabled = true;
+  let before = 0, after = 0, pics = 0, done = 0; const fails = [];
+  try {
+    const list = await API.exams({});
+    for (let i = 0; i < list.length; i++) {
+      out.textContent = t('pics_run', { i: i + 1, n: list.length });
+      try {
+        const e = await API.exam(list[i].id);
+        const r = await Pictures.compressQuestions(e.questions);
+        before += r.before; after += r.after;
+        if (r.changed && r.after < r.before) { await API.setExamPictures(e.id, r.questions); pics += r.changed; done++; }
+      } catch (err) { fails.push(list[i].title + ' (' + UI.errMsg(err) + ')'); }
+    }
+    const mb = x => (x / 1048576).toFixed(1);
+    out.innerHTML = `<div class="notice ok">${esc(t('pics_done', { c: pics, e: done, b: mb(before), a: mb(after) }))}</div>` +
+      (fails.length ? `<div class="notice err" style="margin-top:8px">${esc(t('pics_fail', { n: fails.length, m: fails.join('، ') }))}</div>` : '');
+  } catch (err) { UI.handle(err); out.textContent = ''; }
+  btn.disabled = false;
+};
+
 /* ---------- outside-visitor counter ---------- */
 async function drawVisitors() {
   const box = $('#visitors'); if (!box || !API.visitorStats) return;

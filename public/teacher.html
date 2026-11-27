@@ -10,7 +10,7 @@
 <link rel="stylesheet" href="vendor/katex/katex.min.css">
 <script defer src="vendor/katex/katex.min.js"></script>
 <script defer src="vendor/katex/auto-render.min.js"></script>
-<link rel="stylesheet" href="css/portal.css?v=20261123g">
+<link rel="stylesheet" href="css/portal.css?v=20261127a">
 <style>
   .steps { display: grid; gap: 16px; }
   .step-n { width: 34px; height: 34px; border-radius: 50%; background: var(--navy); color: #fff; display: inline-flex; align-items: center; justify-content: center; font-weight: 800; flex: none; }
@@ -119,18 +119,19 @@
 
 <script src="vendor/exceljs.min.js"></script>
 <script src="vendor/jszip.min.js"></script>
-<script src="js/config.js?v=20261123g"></script>
-<script src="js/i18n.js?v=20261123g"></script>
-<script src="js/shared/teachers-data.js?v=20261123g"></script>
-<script src="js/shared/catalog.js?v=20261123g"></script>
-<script src="js/shared/reports.js?v=20261123g"></script>
-<script src="js/shared/roster-parser.js?v=20261123g"></script>
-<script src="js/shared/exam-parser.js?v=20261123g"></script>
-<script src="js/shared/excel-templates.js?v=20261123g"></script>
-<script src="js/shared/ai-prompts.js?v=20261123g"></script>
-<script src="js/api.js?v=20261123g"></script>
-<script src="js/ui.js?v=20261123g"></script>
-<script src="js/panels.js?v=20261123g"></script>
+<script src="js/config.js?v=20261127a"></script>
+<script src="js/i18n.js?v=20261127a"></script>
+<script src="js/shared/teachers-data.js?v=20261127a"></script>
+<script src="js/shared/catalog.js?v=20261127a"></script>
+<script src="js/shared/reports.js?v=20261127a"></script>
+<script src="js/shared/roster-parser.js?v=20261127a"></script>
+<script src="js/shared/exam-parser.js?v=20261127a"></script>
+<script src="js/shared/pictures.js?v=20261127a"></script>
+<script src="js/shared/excel-templates.js?v=20261127a"></script>
+<script src="js/shared/ai-prompts.js?v=20261127a"></script>
+<script src="js/api.js?v=20261127a"></script>
+<script src="js/ui.js?v=20261127a"></script>
+<script src="js/panels.js?v=20261127a"></script>
 <script>
 I18N.add({
   en: { portal: 'Teacher Portal', portal_sub: 'Upload practice exams, manage them and follow every student’s results.',
@@ -278,12 +279,9 @@ drop.addEventListener('drop', e => { const f = e.dataTransfer.files[0]; if (f) h
 $('#file').onchange = e => { const f = e.target.files[0]; if (f) handleFile(f); e.target.value = ''; };
 
 const toDataUrl = (bytes, ext) => new Promise(res => { const r = new FileReader(); r.onload = () => res(r.result); r.readAsDataURL(new Blob([bytes], { type: ext === 'svg' ? 'image/svg+xml' : 'image/' + (ext === 'jpg' ? 'jpeg' : ext) })); });
-// downscale very large pictures so exams stay light (max 1400 px, keeps PNG transparency)
-function shrink(dataUrl) {
-  return new Promise(res => { const img = new Image(); img.onload = () => { const max = 1400; if (img.width <= max && img.height <= max) return res(dataUrl);
-    const k = Math.min(max / img.width, max / img.height), c = document.createElement('canvas'); c.width = Math.round(img.width * k); c.height = Math.round(img.height * k);
-    c.getContext('2d').drawImage(img, 0, 0, c.width, c.height); res(c.toDataURL(dataUrl.startsWith('data:image/png') ? 'image/png' : 'image/jpeg', .9)); }; img.onerror = () => res(dataUrl); img.src = dataUrl; });
-}
+// make pictures small so exams stay light (max 1100 px, WebP, keeps transparency)
+// (compressed to WebP by js/shared/pictures.js — usually 5–10× smaller, so exams download quickly)
+function shrink(dataUrl) { return window.Pictures ? Pictures.compress(dataUrl) : Promise.resolve(dataUrl); }
 
 async function handleFile(file) {
   $('#parseOut').innerHTML = `<div class="notice info"><span class="spinner"></span> ${t('parsing')}</div>`; $('#step3').hidden = true; parsed = null;

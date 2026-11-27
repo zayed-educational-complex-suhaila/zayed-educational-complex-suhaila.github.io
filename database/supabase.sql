@@ -459,6 +459,43 @@ begin
   return j;
 end $$;
 
+-- tiny check used by the browser's exam cache: same access rules as api_exam, returns only when the exam last changed
+-- (reads no questions, so it costs almost nothing to call)
+create or replace function public.api_exam_version(p_token text, p_id uuid) returns jsonb
+language plpgsql stable security definer set search_path = public as $$
+declare s jsonb := _sess(p_token, array['admin', 'teacher', 'student', 'guest']);
+  g int; tr text; ts jsonb; pub boolean; tm text; upd timestamptz;
+begin
+  select grade_num, track, target_sections, is_published, term, updated_at into g, tr, ts, pub, tm, upd from exams where id = p_id;
+  if upd is null then perform _err('not_found', 'Exam not found'); end if;
+  if s->>'role' in ('guest', 'student') then
+    if not pub or tm <> (select value from settings where key = 'active_term') or g <> (s->>'grade_num')::int
+       or not (tr = 'All' or tr = s->>'track')
+       or (s->>'role' = 'student' and not (ts ? 'ALL' or ts ? (s->>'section'))) then
+      perform _err('forbidden', 'This exam is not available');
+    end if;
+  end if;
+  return jsonb_build_object('updated_at', upd);
+end $$;
+
+-- admin: save an exam's questions again after its pictures were compressed in the browser.
+-- Only pictures may change: the number of questions, their text, options, answers and marks must stay the same.
+create or replace function public.api_set_exam_pictures(p_token text, p_id uuid, p jsonb) returns jsonb
+language plpgsql security definer set search_path = public as $$
+declare old jsonb; nq jsonb := p->'questions';
+begin
+  perform _sess(p_token, array['admin']);
+  select questions into old from exams where id = p_id;
+  if old is null then perform _err('not_found', 'Exam not found'); end if;
+  if jsonb_typeof(nq) <> 'array' or jsonb_array_length(nq) <> jsonb_array_length(old) then perform _err('invalid_exam', 'Question count changed'); end if;
+  if exists (select 1 from jsonb_array_elements(old) with ordinality a(q, i) join jsonb_array_elements(nq) with ordinality b(q, i) using (i)
+             where (a.q - 'image_url' - 'option_images') is distinct from (b.q - 'image_url' - 'option_images')) then
+    perform _err('invalid_exam', 'Only pictures may change');
+  end if;
+  update exams set questions = nq, updated_at = now() where id = p_id;
+  return jsonb_build_object('ok', true, 'bytes', length(nq::text));
+end $$;
+
 create or replace function public._check_questions(q jsonb) returns void language plpgsql immutable as $$
 declare x jsonb; n int; c int; i int := 0;
 begin

@@ -88,11 +88,37 @@ function supabaseApi() {
     return data;
   }
   const T = (fn, extra) => rpc(fn, { p_token: getTok(), ...extra });
+  // ---- exam cache: each exam is kept in this browser (IndexedDB) and downloaded again only when it has changed.
+  // The cache is per role, so a student's copy (no answer key) is never mixed with a teacher's copy.
+  const RK = 'zec.role';
+  const getRole = () => { try { return localStorage.getItem(RK); } catch (_) { return null; } };
+  const setRole = v => { try { v ? localStorage.setItem(RK, v) : localStorage.removeItem(RK); } catch (_) { /* */ } };
+  let xdb = null;
+  const xcDb = () => xdb || (xdb = new Promise((res, rej) => { const r = indexedDB.open('zec-exam-cache', 1);
+    r.onupgradeneeded = () => r.result.createObjectStore('x'); r.onsuccess = () => res(r.result); r.onerror = () => rej(r.error); }));
+  const xcGet = async k => { try { const d = await xcDb(); return await new Promise(res => { const r = d.transaction('x').objectStore('x').get(k); r.onsuccess = () => res(r.result || null); r.onerror = () => res(null); }); } catch (_) { return null; } };
+  const xcPut = async (k, v) => { try { const d = await xcDb(); const tx = d.transaction('x', 'readwrite'), st = tx.objectStore('x'); st.put(v, k);
+    const keys = await new Promise(res => { const r = st.getAllKeys(); r.onsuccess = () => res(r.result || []); r.onerror = () => res([]); });
+    if (keys.length > 60) keys.slice(0, keys.length - 60).forEach(x => { if (x !== k) st.delete(x); });   // keep the cache small
+  } catch (_) { /* storage blocked: just no cache */ } };
+  const xcClear = async () => { try { const d = await xcDb(); d.transaction('x', 'readwrite').objectStore('x').clear(); } catch (_) { /* */ } };
+  async function cachedExam(id) {
+    const role = getRole(), key = role + ':' + id;
+    if (!role) return T('api_exam', { p_id: id });
+    const c = await xcGet(key);
+    if (c && c.v) {
+      const v = await T('api_exam_version', { p_id: id });   // throws "forbidden" if the exam was hidden, just like api_exam
+      if (v && v.updated_at === c.v) return c.data;
+    }
+    const data = await T('api_exam', { p_id: id });
+    if (data && data.updated_at) xcPut(key, { v: data.updated_at, data });
+    return data;
+  }
   const api = {
     mode: 'supabase',
     getTerm: () => rpc('api_get_term'),
     setActiveTerm: term => T('api_set_term', { p: { active_term: term } }),
-    async login(role, payload) { const s = await rpc('api_login', { p: { role, ...payload } }); setTok(s.token); delete s.token; return s; },
+    async login(role, payload) { const s = await rpc('api_login', { p: { role, ...payload } }); setTok(s.token); setRole(role); delete s.token; return s; },
     async me() { if (!getTok()) return null; try { return await rpc('api_me', { p_token: getTok() }); } catch (_) { return null; } },
     async logout() { try { await rpc('api_logout', { p_token: getTok() }); } catch (_) { /* */ } setTok(null); return { ok: true }; },
     changePin: (kind, new_pin) => T('api_change_pin', { p: { kind, new_pin } }),
@@ -104,7 +130,8 @@ function supabaseApi() {
       return T('api_import_roster', { p: { students: r.students, notes: r.notes || [] } });
     },
     exams: f => T('api_exams', { p: f || {} }),
-    exam: id => T('api_exam', { p_id: id }),
+    exam: id => cachedExam(id),
+    setExamPictures: (id, questions) => T('api_set_exam_pictures', { p_id: id, p: { questions } }).then(r => { xcClear(); return r; }),
     createExam: payload => T('api_create_exam', { p: payload }),
     updateExam: (id, patch) => T('api_update_exam', { p_id: id, p: patch }),
     deleteExam: id => T('api_delete_exam', { p_id: id }),
@@ -307,6 +334,13 @@ function demoApi() {
         config: p.config || {}, passages: p.passages || {}, questions: p.questions, is_published: p.is_published === false ? 0 : 1, created_at: nowIso(), updated_at: nowIso(),
       };
       const exams = await get('exams'); exams.push(e); await put('exams', exams); return { id: e.id };
+    },
+    async setExamPictures(id, questions) {
+      await init(); need('admin'); const exams = await get('exams'); const e = exams.find(x => x.id === id);
+      if (!e) throw new ApiError('not_found', 'Exam not found', 404);
+      const bare = q => { const c = { ...q }; delete c.image_url; delete c.option_images; return JSON.stringify(c); };
+      if (!Array.isArray(questions) || questions.length !== e.questions.length || questions.some((q, i) => bare(q) !== bare(e.questions[i]))) throw new ApiError('invalid_exam', 'Only pictures may change', 400);
+      e.questions = questions; e.updated_at = nowIso(); await put('exams', exams); return { ok: true, bytes: JSON.stringify(questions).length };
     },
     async updateExam(id, patch) {
       await init(); const s = need('admin', 'teacher'); const exams = await get('exams'); const e = exams.find(x => x.id === id);
